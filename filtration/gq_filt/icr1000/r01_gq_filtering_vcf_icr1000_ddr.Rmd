@@ -1,0 +1,200 @@
+---
+title: "r01_gq_filtering_icr1000_ddr"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 15 May 2018  
+Updated: David Gilfoyle 15 May 2018
+
+---
+
+# Summary
+
+GQ Filtering Remove Phred < 20  
+Dataset: ICR1000 
+Gene Selection: DNA Repair Genes  
+Input Variants: 13,916
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Make sure all the libraries installed 
+#install.packages("vcfR")
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/qual_filt/icr1000"
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Load RData file - contains dataframe containing all variants
+load(paste(input_folder, "r01_icr1000_ddr_qual_filt.RData", sep="/"))
+
+# Check input fixed column dataframe
+dim(fixed_qfilt_icr1000_ddr.df)
+class(fixed_qfilt_icr1000_ddr.df)
+str(fixed_qfilt_icr1000_ddr.df)
+colnames(fixed_qfilt_icr1000_ddr.df)
+fixed_qfilt_icr1000_ddr.df[1:20,1:10]
+
+# Check input genotype matrix
+dim(gt_qfilt_icr1000_ddr.mx)
+class(gt_qfilt_icr1000_ddr.mx)
+gt_qfilt_icr1000_ddr.mx[1:5,1:5]
+
+# Check input GQ matrix
+dim(gq_qfilt_icr1000_ddr.mx)
+class(gq_qfilt_icr1000_ddr.mx)
+gq_qfilt_icr1000_ddr.mx[1:5,1:5]
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/filtration/gq_filt/icr1000"
+output_folder="/home/ec2-user/results/filtered/gq_filt/icr1000"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# gq_filtering
+
+```{r gq_filtering}
+
+# Check input
+gt_qfilt_icr1000_ddr.mx[1:10,1:4]
+gq_qfilt_icr1000_ddr.mx[1:10,1:4]
+
+# Filter GT for GQ > 20 
+NA -> gt_qfilt_icr1000_ddr.mx[ gq_qfilt_icr1000_ddr.mx < 20 ]
+
+# Check output
+gt_qfilt_icr1000_ddr.mx[1:10,1:4]
+gq_qfilt_icr1000_ddr.mx[1:10,1:4]
+
+# Cleanup
+rm(gq_qfilt_icr1000_ddr.mx)
+
+```
+
+# recode_gt_to_additive
+
+** add comments **
+
+```{r relrecode_gt_to_additive}
+
+# Set up empty matrix with 'NA' in cells, add row and column names from genotype matrix
+gt_qfilt_icr1000_ddr_additive.mx <- matrix(NA, 
+                                           ncol=ncol(gt_qfilt_icr1000_ddr.mx),
+                                           nrow=nrow(gt_qfilt_icr1000_ddr.mx))
+colnames(gt_qfilt_icr1000_ddr_additive.mx) <- colnames(gt_qfilt_icr1000_ddr.mx)
+rownames(gt_qfilt_icr1000_ddr_additive.mx) <- rownames(gt_qfilt_icr1000_ddr.mx)
+
+#table(gt_qfilt_icr1000_ddr.mx)
+#summary(as.factor(gt_qfilt_icr1000_ddr.mx))
+gt_qfilt_icr1000_ddr_additive.mx[65:70,1:4]
+
+0 -> gt_qfilt_icr1000_ddr_additive.mx[ gt_qfilt_icr1000_ddr.mx == "0/0" ]
+1 -> gt_qfilt_icr1000_ddr_additive.mx[ gt_qfilt_icr1000_ddr.mx == "0/1" ]
+1 -> gt_qfilt_icr1000_ddr_additive.mx[ gt_qfilt_icr1000_ddr.mx == "1/0" ]
+2 -> gt_qfilt_icr1000_ddr_additive.mx[ gt_qfilt_icr1000_ddr.mx == "1/1" ]
+
+gt_qfilt_icr1000_ddr_additive.mx[65:70,1:4]
+
+rm(gt_qfilt_icr1000_ddr.mx)
+
+```
+
+# filter_by_call_rate
+
+** add comments **
+
+```{r filter_by_call_rate}
+
+call_rate.udf <- function(vector_of_genotypes){
+  result <- sum(!is.na(vector_of_genotypes)) / length(vector_of_genotypes)
+  return(result)
+}
+
+call_rate <- apply(gt_qfilt_icr1000_ddr_additive.mx, 1, call_rate.udf)
+hist(call_rate, xlim=c(0,1))
+
+call_rate_pass <- call_rate >= 0.8
+sum(call_rate_pass)
+
+gt_crfilt_qfilt_icr1000_ddr_additive.mx <- gt_qfilt_icr1000_ddr_additive.mx[call_rate_pass,]
+fixed_crfilt_qfilt_icr1000_ddr.df <- fixed_qfilt_icr1000_ddr.df[call_rate_pass,]
+
+dim(gt_crfilt_qfilt_icr1000_ddr_additive.mx)
+dim(fixed_crfilt_qfilt_icr1000_ddr.df)
+
+call_rate <- apply(gt_crfilt_qfilt_icr1000_ddr_additive.mx, 1, call_rate.udf)
+hist(call_rate, xlim=c(0,1))
+
+rm(gt_qfilt_icr1000_ddr_additive.mx, fixed_qfilt_icr1000_ddr.df, call_rate.udf)
+
+```
+
+# recalculate_af
+
+** add comments **
+
+```{r recalculate_af}
+
+# calculate ac
+new_AC <- apply(gt_crfilt_qfilt_icr1000_ddr_additive.mx, 1, sum, na.rm=T)
+new_AC[1:5]
+
+get_AN.udf <- function(vector_of_additive_genotypes){
+  result <- 2*sum(!is.na(vector_of_additive_genotypes))
+  return(result)
+}
+
+new_AN <- apply(gt_crfilt_qfilt_icr1000_ddr_additive.mx, 1, get_AN.udf)
+
+new_AN[1:5]
+hist(new_AN)
+sum(new_AN==0)
+
+new_AF <- new_AC / new_AN
+hist(new_AF)
+
+fixed_crfilt_qfilt_icr1000_ddr.df <- cbind(fixed_crfilt_qfilt_icr1000_ddr.df, new_AC, new_AN, new_AF)
+
+rm(get_AN.udf, new_AC, new_AN, new_AF)
+
+```
+
+# save_results
+
+```{r save_results}
+
+save.image(paste(output_folder, "r01_icr1000_ddr_gq_filt.RData", sep="/"))
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```

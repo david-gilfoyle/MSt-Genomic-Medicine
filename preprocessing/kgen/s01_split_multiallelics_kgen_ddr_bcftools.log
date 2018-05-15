@@ -1,0 +1,8 @@
+Started s01_split_multiallelics_kgen_ddr_bcftools.sh
+Fri 20 Apr 13:55:02 UTC 2018
+
+Splitting multiallelic sites ...
+Lines   total/split/realigned/skipped:	366922/1621/0/0
+
+Completed s01_split_multiallelics_kgen_ddr_bcftools.sh
+Fri 20 Apr 13:56:02 UTC 2018

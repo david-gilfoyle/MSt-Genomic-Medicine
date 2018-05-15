@@ -1,0 +1,10 @@
+Using wget to download CCDS dataset for GRCh37 Genome Build
+Mon  7 May 12:21:49 UTC 2018
+
+Target folder:
+/home/ec2-user/resources/ccds
+
+2018-05-07 12:21:52 URL: ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS//archive/15/CCDS.current.txt [8557278] -> "CCDS.current.txt" [1]
+Copied all files
+Mon  7 May 12:21:52 UTC 2018
+

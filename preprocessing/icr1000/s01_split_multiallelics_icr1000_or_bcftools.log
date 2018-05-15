@@ -1,0 +1,8 @@
+Started s01_split_multiallelics_icr1000_or_bcftools.sh
+Thu 12 Apr 09:04:25 UTC 2018
+
+Splitting multiallelic sites ...
+Lines   total/split/realigned/skipped:	6514/61/0/0
+
+Completed s01_split_multiallelics_icr1000_or_bcftools.sh
+Thu 12 Apr 09:04:56 UTC 2018

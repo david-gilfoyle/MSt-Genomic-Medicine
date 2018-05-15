@@ -1,0 +1,16 @@
+Starting s01_merge_vcfs_kgen_or_picard.sh
+Fri 20 Apr 17:23:02 UTC 2018
+
+17:23:02.949 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/ec2-user/tools/picard/picard.jar!/com/intel/gkl/native/libgkl_compression.so
+[Fri Apr 20 17:23:02 UTC 2018] MergeVcfs INPUT=[/home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr1_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr2_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr3_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr5_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr6_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr7_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr8_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr9_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr10_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr11_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr12_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr14_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr15_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr16_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr17_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr19_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chr22_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_chrX_raw.vcf] OUTPUT=/home/ec2-user/results/preprocessed/kgen/s01_or_kgen_merged_raw.vcf.gz    VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=true CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json USE_JDK_DEFLATER=false USE_JDK_INFLATER=false
+[Fri Apr 20 17:23:02 UTC 2018] Executing as ec2-user@ip-172-31-43-223 on Linux 4.9.91-40.57.amzn1.x86_64 amd64; OpenJDK 64-Bit Server VM 1.8.0_161-b14; Deflater: Intel; Inflater: Intel; Provider GCS is not available; Picard version: 2.18.2-SNAPSHOT
+INFO	2018-04-20 17:23:06	MergeVcfs	Processed        10,000 records.  Elapsed time: 00:00:03s.  Time for last 10,000:    2s.  Last read position: 1:248,366,145
+INFO	2018-04-20 17:23:08	MergeVcfs	Processed        20,000 records.  Elapsed time: 00:00:05s.  Time for last 10,000:    2s.  Last read position: 9:114,090,908
+INFO	2018-04-20 17:23:10	MergeVcfs	Processed        30,000 records.  Elapsed time: 00:00:07s.  Time for last 10,000:    1s.  Last read position: 11:6,913,343
+INFO	2018-04-20 17:23:12	MergeVcfs	Processed        40,000 records.  Elapsed time: 00:00:09s.  Time for last 10,000:    1s.  Last read position: 11:57,927,466
+INFO	2018-04-20 17:23:14	MergeVcfs	Processed        50,000 records.  Elapsed time: 00:00:11s.  Time for last 10,000:    1s.  Last read position: 14:20,264,735
+[Fri Apr 20 17:23:15 UTC 2018] picard.vcf.MergeVcfs done. Elapsed time: 0.21 minutes.
+Runtime.totalMemory()=553123840
+Finishing s01_merge_vcfs_kgen_or_picard.sh
+Fri 20 Apr 17:23:15 UTC 2018
+

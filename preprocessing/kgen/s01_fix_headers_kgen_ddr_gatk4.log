@@ -1,0 +1,53 @@
+Starting s01_fix_headers_kgen_gatk4.sh
+Fri 20 Apr 14:23:17 UTC 2018
+
+Checking VCF format for adherence to VCF format, including REF allele match using GATK v 4.0.2.1
+Fri 20 Apr 14:23:17 UTC 2018
+
+Using GATK jar /home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=1 -jar /home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar ValidateVariants -V /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_split.vcf -R /home/ec2-user/resources/gatk_b37_bundle/human_g1k_v37.fasta
+14:23:19.368 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar!/com/intel/gkl/native/libgkl_compression.so
+14:23:19.523 INFO  ValidateVariants - ------------------------------------------------------------
+14:23:19.523 INFO  ValidateVariants - The Genome Analysis Toolkit (GATK) v4.0.2.1
+14:23:19.524 INFO  ValidateVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+14:23:19.524 INFO  ValidateVariants - Executing as ec2-user@ip-172-31-43-223 on Linux v4.9.91-40.57.amzn1.x86_64 amd64
+14:23:19.524 INFO  ValidateVariants - Java runtime: OpenJDK 64-Bit Server VM v1.8.0_161-b14
+14:23:19.525 INFO  ValidateVariants - Start Date/Time: 20 April 2018 14:23:19 UTC
+14:23:19.525 INFO  ValidateVariants - ------------------------------------------------------------
+14:23:19.525 INFO  ValidateVariants - ------------------------------------------------------------
+14:23:19.525 INFO  ValidateVariants - HTSJDK Version: 2.14.3
+14:23:19.525 INFO  ValidateVariants - Picard Version: 2.17.2
+14:23:19.525 INFO  ValidateVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 1
+14:23:19.525 INFO  ValidateVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+14:23:19.525 INFO  ValidateVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+14:23:19.525 INFO  ValidateVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+14:23:19.526 INFO  ValidateVariants - Deflater: IntelDeflater
+14:23:19.526 INFO  ValidateVariants - Inflater: IntelInflater
+14:23:19.526 INFO  ValidateVariants - GCS max retries/reopens: 20
+14:23:19.526 INFO  ValidateVariants - Using google-cloud-java patch 6d11bef1c81f885c26b2b56c8616b7a705171e4f from https://github.com/droazen/google-cloud-java/tree/dr_all_nio_fixes
+14:23:19.526 INFO  ValidateVariants - Initializing engine
+14:23:19.923 INFO  FeatureManager - Using codec VCFCodec to read file file:///home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_split.vcf
+14:23:19.965 INFO  ValidateVariants - Done initializing engine
+14:23:19.965 INFO  ProgressMeter - Starting traversal
+14:23:19.966 INFO  ProgressMeter -        Current Locus  Elapsed Minutes    Variants Processed  Variants/Minute
+14:23:29.975 INFO  ProgressMeter -          16:89843694              0.2                320000        1918465.2
+14:23:31.361 INFO  ProgressMeter -          X:154313581              0.2                368639        1941056.6
+14:23:31.361 INFO  ProgressMeter - Traversal complete. Processed 368639 total variants in 0.2 minutes.
+14:23:31.361 INFO  ValidateVariants - Shutting down engine
+[20 April 2018 14:23:31 UTC] org.broadinstitute.hellbender.tools.walkers.variantutils.ValidateVariants done. Elapsed time: 0.20 minutes.
+Runtime.totalMemory()=743440384
+Fixing VCF header using Picard v 2.18.2)
+Fri 20 Apr 14:23:31 UTC 2018
+
+14:23:32.054 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/ec2-user/tools/picard/picard.jar!/com/intel/gkl/native/libgkl_compression.so
+[Fri Apr 20 14:23:32 UTC 2018] FixVcfHeader INPUT=/home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_split.vcf OUTPUT=/home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_split_fixed.vcf    CHECK_FIRST_N_RECORDS=-1 ENFORCE_SAME_SAMPLES=true VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=false CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json USE_JDK_DEFLATER=false USE_JDK_INFLATER=false
+[Fri Apr 20 14:23:32 UTC 2018] Executing as ec2-user@ip-172-31-43-223 on Linux 4.9.91-40.57.amzn1.x86_64 amd64; OpenJDK 64-Bit Server VM 1.8.0_161-b14; Deflater: Intel; Inflater: Intel; Provider GCS is not available; Picard version: 2.18.2-SNAPSHOT
+INFO	2018-04-20 14:23:32	FixVcfHeader	Reading in records to re-build the header.
+INFO	2018-04-20 14:25:06	FixVcfHeader	VCF header re-built.
+INFO	2018-04-20 14:25:06	FixVcfHeader	Writing the output VCF.
+[Fri Apr 20 14:25:40 UTC 2018] picard.vcf.FixVcfHeader done. Elapsed time: 2.14 minutes.
+Runtime.totalMemory()=446169088
+Finishing s01_fix_headers_kgen_gatk4.sh
+Fri 20 Apr 14:25:40 UTC 2018
+

@@ -1,0 +1,40 @@
+Starting Preprocessed 1000 Genome Project File Quality Control (DNA Repair Genes)
+Sun 22 Apr 21:02:24 UTC 2018
+
+Source VCF File: /home/ec2-user/resources/kgen/source/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz
+Num of variants: 84,801,880
+Num of samples: -1
+
+Parsing bcftools stats output: /home/ec2-user/results/preprocessed/vcf_stats/kgen_ddr/kgen_downloaded_vcfstats.txt
+Plotting graphs: python plot.py
+Creating PDF: pdflatex summary.tex >plot-vcfstats.log 2>&1
+Finished: /home/ec2-user/results/preprocessed/vcf_stats/kgen_ddr/downloaded//summary.pdf
+
+DDR / OR Gene Selected VCF File: /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_merged_raw.vcf.gz
+Num of variants: 366,922
+Num of samples: 2,504
+
+Multialleleic Masked VCF File: /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_ma.vcf
+Num of variants: 1,621
+Num of samples: 2,504
+
+Multialleleic Flagged VCF File: /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_fma.vcf
+Num of variants: 366,922
+Num of samples: 2,504
+
+Multialleleic Split VCF File: /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_split.vcf
+Num of variants: 368,639
+Num of samples: 2,504
+
+Multialleleic Split Fixed VCF File: /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_split_fixed.vcf
+Num of variants: 368,639
+Num of samples: 2,504
+
+Parsing bcftools stats output: /home/ec2-user/results/preprocessed/vcf_stats/kgen_ddr/kgen_ddr_split_fixed_vcfstats.txt
+Plotting graphs: python plot.py
+Creating PDF: pdflatex summary.tex >plot-vcfstats.log 2>&1
+Finished: /home/ec2-user/results/preprocessed/vcf_stats/kgen_ddr/split//summary.pdf
+
+Finishing Preprocessed 1000 Genome Project File Quality Control (DNA Repair Genes)
+Sun 22 Apr 21:10:08 UTC 2018
+

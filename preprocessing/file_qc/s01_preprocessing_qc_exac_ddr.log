@@ -1,0 +1,34 @@
+Starting Preprocessed ExAC File Quality Control (DNA Repair Genes)
+Sun 22 Apr 18:39:08 UTC 2018
+
+Source VCF File: /home/ec2-user/resources/exac_v1/ExAC.r1.sites.vep.vcf.gz
+Num of variants: 9,362,318
+
+Parsing bcftools stats output: /home/ec2-user/results/preprocessed/vcf_stats/exac_full_ddr/exac_full_downloaded_vcfstats.txt
+Plotting graphs: python plot.py
+Creating PDF: pdflatex summary.tex >plot-vcfstats.log 2>&1
+Finished: /home/ec2-user/results/preprocessed/vcf_stats/exac_full_ddr/downloaded//summary.pdf
+
+DDR / OR Gene Selected VCF File: /home/ec2-user/results/preprocessed/exac_v1/s01_ddr_exac_raw.vcf
+Num of variants: 131,445
+
+Multialleleic Masked VCF File: /home/ec2-user/results/preprocessed/exac_v1/s01_ddr_exac_ma.vcf
+Num of variants: 10,144
+
+Multialleleic Flagged VCF File: /home/ec2-user/results/preprocessed/exac_v1/s01_ddr_exac_fma.vcf
+Num of variants: 131,445
+
+Cleaned Multialleleic Flagged VCF File: /home/ec2-user/results/preprocessed/exac_v1/s01_ddr_exac_clean.vcf
+Num of variants: 131,445
+
+Multialleleic Split VCF File: /home/ec2-user/results/preprocessed/exac_v1/s01_ddr_exac_split.vcf
+Num of variants: 142,625
+
+Parsing bcftools stats output: /home/ec2-user/results/preprocessed/vcf_stats/exac_full_ddr/exac_full_ddr_split_vcfstats.txt
+Plotting graphs: python plot.py
+Creating PDF: pdflatex summary.tex >plot-vcfstats.log 2>&1
+Finished: /home/ec2-user/results/preprocessed/vcf_stats/exac_full_ddr/split//summary.pdf
+
+Finishing Preprocessed ExAC File Quality Control (DNA Repair Genes)
+Sun 22 Apr 18:47:26 UTC 2018
+

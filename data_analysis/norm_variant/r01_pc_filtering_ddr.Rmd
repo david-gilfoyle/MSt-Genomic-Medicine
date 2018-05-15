@@ -1,0 +1,192 @@
+---
+title: "r01_pc_filtering_ddr"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 7 May 2018  
+Updated: David Gilfoyle 13 May 2018
+
+---
+
+# Summary
+
+Filtering of AF filtered dataset to select protein-coding variants (by Consequence) to support assessment of normalised protein-coding variants against total DDR CCDS length  
+Dataset: All  
+Gene Selection: DNA Repair Genes (removing PMS2P3, PRKDC and RECQL4)  
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+```
+
+# load_rdata_files
+
+```{r load_rdata_files}
+
+# Setup input folders
+exac_input_folder="/home/ec2-user/results/filtered/af_filt/exac_v1"
+icr1000_input_folder="/home/ec2-user/results/filtered/af_filt/icr1000"
+kgen_input_folder="/home/ec2-user/results/filtered/af_filt/kgen"
+
+# Load RData files - contain dataframes containing all variants (genotype matrices are removed)
+load(paste(exac_input_folder, "r01_exac_full_ddr_af_filtered.RData", sep="/"))
+load(paste(exac_input_folder, "r01_exac_nontcga_ddr_af_filtered.RData", sep="/"))
+load(paste(icr1000_input_folder, "r01_icr1000_ddr_af_filtered.RData", sep="/"))
+rm(gt_af_filt_icr1000_ddr.mx)
+load(paste(kgen_input_folder, "r01_kgen_ddr_af_filtered.RData", sep="/"))
+rm(gt_af_filt_kgen_ddr.mx)
+
+# Check input dataframe
+dim(fixed_af_filt_exac_full_ddr.df) # should be 99,236
+dim(fixed_af_filt_exac_nontcga_ddr.df) # should be 92,077
+dim(fixed_af_filt_icr1000_ddr.df) # should be 6,442
+dim(fixed_af_filt_kgen_ddr.df) # should be 313,889
+
+# Setup base folder
+base_folder="/home/ec2-user/scripts/data_analysis/norm_variant"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# variants_associated_with_ddr_genes
+
+```{r variants_associated_with_ddr_genes}
+
+# Set of DDR genes supporting variant filtration (removing "PMS2P3", "PRKDC" and "RECQL4" missing from CCDS r13 [GRCh37] file)
+ddr_genes <- c("UNG", "SMUG1", "MBD4", "TDG", "OGG1", "MUTYH", "NTHL1", "MPG", "NEIL1", "NEIL2", "NEIL3", "HMGB1", "APEX1", "APEX2", "LIG3", "XRCC1", "PNKP", "APLF", "PARP1", "PARP2", "PARP3", "MGMT", "ALKBH2", "ALKBH3", "TDP1", "TDP2", "MSH2", "MSH3", "MSH6", "MLH1", "PMS2", "MSH4", "MSH5", "MLH3", "PMS1", "XPC", "RAD23B", "CETN2", "RAD23A", "XPA", "DDB1", "DDB2", "RPA1", "RPA2", "RPA3", "ERCC3", "ERCC2", "GTF2H1", "GTF2H2", "GTF2H3", "GTF2H4", "GTF2H5", "CDK7", "CCNH", "MNAT1", "ERCC5", "ERCC1", "ERCC4", "LIG1", "RBX1", "CUL4A", "CUL4B", "ERCC8", "ERCC6", "UVSSA", "XAB2", "MMS19", "RAD51", "RAD51B", "RAD51D", "DMC1", "XRCC2", "XRCC3", "RAD52", "RAD54L", "RAD54B", "BRCA1", "SHFM1", "RAD50", "MRE11A", "NBN", "RBBP8", "MUS81", "EME1", "EME2", "SLX1A", "SLX1B", "GEN1", "BARD1", "BABAM1", "FAM175A", "BRE", "UIMC1", "BRCC3", "SYCP3", "FANCA", "FANCB", "FANCC", "BRCA2", "FANCD2", "FANCE", "FANCF", "FANCG", "FANCI", "BRIP1", "FANCL", "FANCM", "PALB2", "RAD51C", "SLX4", "C1orf86", "C19orf40", "APITD1", "WDR48", "USP1", "C17orf70", "HES1", "RMI1", "RMI2", "TOP3A", "UBE2T", "XRCC6", "XRCC5", "LIG4", "XRCC4", "DCLRE1C", "NHEJ1", "DNTT", "NUDT1", "DUT", "RRM2B", "POLB", "POLG", "POLD1", "POLE", "PCNA", "REV3L", "MAD2L2", "REV1", "POLH", "POLI", "POLQ", "POLK", "POLL", "POLM", "POLN", "FEN1", "FAN1", "TREX1", "TREX2", "EXO1", "APTX", "SPO11", "ENDOV", "UBE2A", "UBE2B", "RAD18", "SHPRH", "HLTF", "RNF168", "SPRTN", "RNF8", "RNF4", "UBE2V2", "UBE2N", "H2AFX", "CHAF1A", "SETMAR", "BLM", "WRN", "ATM", "MPLKIP", "DCLRE1A", "DCLRE1B", "RPA4", "PRPF19", "RECQL", "RECQL5", "HELQ", "RDM1", "NABP2", "RFC1", "RFC2", "RFC3", "RFC4", "RFC5", "ATR", "ATRIP", "MDC1", "RAD1", "RAD9A", "HUS1", "RAD17", "CHEK1", "CHEK2", "TP53", "TP53BP1", "RIF1", "TOPBP1", "CLK2", "PER1")
+
+# Filtering of variants based on DDR genes using SYMBOL 
+exac_full_ddr.df <- fixed_af_filt_exac_full_ddr.df %>%
+  filter(fixed_af_filt_exac_full_ddr.df$SYMBOL %in% ddr_genes)
+
+exac_nontcga_ddr.df <- fixed_af_filt_exac_nontcga_ddr.df %>%
+  filter(fixed_af_filt_exac_nontcga_ddr.df$SYMBOL %in% ddr_genes)
+
+icr1000_ddr.df <- fixed_af_filt_icr1000_ddr.df %>%
+  filter(fixed_af_filt_icr1000_ddr.df$SYMBOL %in% ddr_genes)
+
+kgen_ddr.df <- fixed_af_filt_kgen_ddr.df %>%
+  filter(fixed_af_filt_kgen_ddr.df$SYMBOL %in% ddr_genes)
+
+# Check DDR gene filtered dataframes
+dim(exac_full_ddr.df) # should be 87,168
+dim(exac_nontcga_ddr.df) # should be 80,858
+dim(icr1000_ddr.df) # should be 5,651
+dim(kgen_ddr.df) # should be 266,765
+
+# Clean-up
+rm(fixed_af_filt_exac_full_ddr.df, fixed_af_filt_exac_nontcga_ddr.df, fixed_af_filt_icr1000_ddr.df, fixed_af_filt_kgen_ddr.df)
+
+```
+
+# pc_filtering
+
+Filtering based on VEP consequences:  
+1) synonymous_variant  
+2) missense_variant  
+3) inframe_insertion  
+4) inframe_deletion  
+5) stop_gained  
+6) stop_lost  
+7) stop_retained_variant  
+8) start_lost  
+9) frameshift_variant  
+10) coding_sequence_variant  
+11) protein_altering_variant  
+
+```{r pc_filtering}
+
+# Filtration based on consequence
+exac_full_pc_ddr.df <- exac_full_ddr.df %>% 
+  filter(grepl("synonymous_variant",Consequence) |
+           grepl("missense_variant",Consequence) |
+           grepl("inframe_insertion", Consequence) |
+           grepl("inframe_deletion", Consequence) |
+           grepl("stop_gained",Consequence) |
+           grepl("stop_lost",Consequence) |
+           grepl("stop_retained_variant",Consequence) |
+           grepl("start_lost",Consequence) |
+           grepl("frameshift_variant",Consequence) |
+           grepl("coding_sequence_variant",Consequence) |
+           grepl("protein_altering_variant",Consequence))
+
+exac_nontcga_pc_ddr.df <- exac_nontcga_ddr.df %>% 
+  filter(grepl("synonymous_variant",Consequence) |
+           grepl("missense_variant",Consequence) |
+           grepl("inframe_insertion", Consequence) |
+           grepl("inframe_deletion", Consequence) |
+           grepl("stop_gained",Consequence) |
+           grepl("stop_lost",Consequence) |
+           grepl("stop_retained_variant",Consequence) |
+           grepl("start_lost",Consequence) |
+           grepl("frameshift_variant",Consequence) |
+           grepl("coding_sequence_variant",Consequence) |
+           grepl("protein_altering_variant",Consequence))
+
+icr1000_pc_ddr.df <- icr1000_ddr.df %>% 
+  filter(grepl("synonymous_variant",Consequence) |
+           grepl("missense_variant",Consequence) |
+           grepl("inframe_insertion", Consequence) |
+           grepl("inframe_deletion", Consequence) |
+           grepl("stop_gained",Consequence) |
+           grepl("stop_lost",Consequence) |
+           grepl("stop_retained_variant",Consequence) |
+           grepl("start_lost",Consequence) |
+           grepl("frameshift_variant",Consequence) |
+           grepl("coding_sequence_variant",Consequence) |
+           grepl("protein_altering_variant",Consequence))
+
+kgen_pc_ddr.df <- kgen_ddr.df %>% 
+  filter(grepl("synonymous_variant",Consequence) |
+           grepl("missense_variant",Consequence) |
+           grepl("inframe_insertion", Consequence) |
+           grepl("inframe_deletion", Consequence) |
+           grepl("stop_gained",Consequence) |
+           grepl("stop_lost",Consequence) |
+           grepl("stop_retained_variant",Consequence) |
+           grepl("start_lost",Consequence) |
+           grepl("frameshift_variant",Consequence) |
+           grepl("coding_sequence_variant",Consequence) |
+           grepl("protein_altering_variant",Consequence))
+
+# Clean-up
+rm(exac_full_ddr.df, exac_nontcga_ddr.df, icr1000_ddr.df, kgen_ddr.df, ddr_genes)
+
+# Check output dataframes
+unique(exac_full_pc_ddr.df$Consequence)
+dim(exac_full_pc_ddr.df)
+unique(exac_nontcga_pc_ddr.df$Consequence)
+dim(exac_nontcga_pc_ddr.df)
+unique(icr1000_pc_ddr.df$Consequence)
+dim(icr1000_pc_ddr.df)
+unique(kgen_pc_ddr.df$Consequence)
+dim(kgen_pc_ddr.df)
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```
+

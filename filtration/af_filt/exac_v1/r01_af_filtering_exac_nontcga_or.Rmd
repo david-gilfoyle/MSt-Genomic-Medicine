@@ -1,0 +1,114 @@
+---
+title: "r01_af_filtering_exac_nontcga_or"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 3 May 2018  
+Updated: David Gilfoyle 4 May 2018
+
+---
+
+# Summary
+
+Variant filtering of QUAL filtered dataset based on AF <= 0.01  
+Dataset: ExAC (Non-TCGA)  
+Gene Selection: Olfactory Receptor Genes  
+Input Variants: 53,522
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/qual_filt/exac_v1"
+
+# Load RData file - contains dataframe containing all variants
+load(paste(input_folder, "r01_exac_nontcga_or_qual_filt.RData", sep="/"))
+
+# Setup script input dataframe naming
+input.df <- fixed_qfilt_exac_nontcga_or.df
+rm(fixed_qfilt_exac_nontcga_or.df)
+
+# Check input dataframe
+dim(input.df)
+class(input.df)
+input.df[1:20,1:10]
+class(input.df$AF)
+input.df$AF[1:20]
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/filtration/af_filt/exac_v1"
+output_folder="/home/ec2-user/results/filtered/af_filt/exac_v1"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# af_filtering
+
+Allele frequency filtering based on selection of rare variants (AF <= 0.01) within data set
+
+```{r af_filtering}
+
+# Filter AF <= 0.01
+output.df <- input.df %>% 
+  filter(as.numeric(AF) <= 0.01)
+
+# Check output dataframe
+dim(output.df)
+class(output.df)
+output.df[1:20,1:10]
+output.df$AF[1:20]
+
+```
+
+# update_dataframe_naming
+
+```{r update_dataframe_naming}
+
+# Reset of output dataframe names
+fixed_af_filt_exac_nontcga_or.df <- output.df
+
+# Clean-up
+rm(input.df, output.df)
+
+```
+
+# save_results
+
+```{r save_results}
+
+save.image(paste(output_folder, "r01_exac_nontcga_or_af_filtered.RData", sep="/"))
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```
+

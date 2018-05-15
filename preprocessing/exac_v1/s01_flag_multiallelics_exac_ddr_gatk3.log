@@ -1,0 +1,8 @@
+Started s01_flag_multiallelics_exac_ddr_gatk3.sh
+Sun  1 Apr 19:18:25 UTC 2018
+
+Making mask for multiallelic variants ...
+Adding flag for multiallelic variants ...
+
+Completed s01_flag_multiallelics_exac_ddr_gatk3.sh
+Sun  1 Apr 19:29:15 UTC 2018

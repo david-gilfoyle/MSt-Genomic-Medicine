@@ -1,0 +1,47 @@
+Starting s01_merge_vcfs_kgen_picard.sh
+Fri 20 Apr 17:20:57 UTC 2018
+
+17:20:58.136 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/ec2-user/tools/picard/picard.jar!/com/intel/gkl/native/libgkl_compression.so
+[Fri Apr 20 17:20:58 UTC 2018] MergeVcfs INPUT=[/home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr1_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr2_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr3_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr4_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr5_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr6_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr7_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr8_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr9_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr10_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr11_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr12_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr13_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr14_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr15_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr16_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr17_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr18_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr19_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr20_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chr22_raw.vcf, /home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_chrX_raw.vcf] OUTPUT=/home/ec2-user/results/preprocessed/kgen/s01_ddr_kgen_merged_raw.vcf.gz    VERBOSITY=INFO QUIET=false VALIDATION_STRINGENCY=STRICT COMPRESSION_LEVEL=5 MAX_RECORDS_IN_RAM=500000 CREATE_INDEX=true CREATE_MD5_FILE=false GA4GH_CLIENT_SECRETS=client_secrets.json USE_JDK_DEFLATER=false USE_JDK_INFLATER=false
+[Fri Apr 20 17:20:58 UTC 2018] Executing as ec2-user@ip-172-31-43-223 on Linux 4.9.91-40.57.amzn1.x86_64 amd64; OpenJDK 64-Bit Server VM 1.8.0_161-b14; Deflater: Intel; Inflater: Intel; Provider GCS is not available; Picard version: 2.18.2-SNAPSHOT
+INFO	2018-04-20 17:21:01	MergeVcfs	Processed        10,000 records.  Elapsed time: 00:00:03s.  Time for last 10,000:    2s.  Last read position: 1:226,579,744
+INFO	2018-04-20 17:21:03	MergeVcfs	Processed        20,000 records.  Elapsed time: 00:00:05s.  Time for last 10,000:    2s.  Last read position: 2:28,365,679
+INFO	2018-04-20 17:21:06	MergeVcfs	Processed        30,000 records.  Elapsed time: 00:00:07s.  Time for last 10,000:    2s.  Last read position: 2:47,755,946
+INFO	2018-04-20 17:21:07	MergeVcfs	Processed        40,000 records.  Elapsed time: 00:00:09s.  Time for last 10,000:    1s.  Last read position: 2:68,765,774
+INFO	2018-04-20 17:21:08	MergeVcfs	Processed        50,000 records.  Elapsed time: 00:00:10s.  Time for last 10,000:    1s.  Last read position: 2:190,674,141
+INFO	2018-04-20 17:21:09	MergeVcfs	Processed        60,000 records.  Elapsed time: 00:00:11s.  Time for last 10,000:    1s.  Last read position: 3:4,349,651
+INFO	2018-04-20 17:21:10	MergeVcfs	Processed        70,000 records.  Elapsed time: 00:00:12s.  Time for last 10,000:    1s.  Last read position: 3:10,132,644
+INFO	2018-04-20 17:21:11	MergeVcfs	Processed        80,000 records.  Elapsed time: 00:00:13s.  Time for last 10,000:    1s.  Last read position: 3:133,358,713
+INFO	2018-04-20 17:21:12	MergeVcfs	Processed        90,000 records.  Elapsed time: 00:00:14s.  Time for last 10,000:    1s.  Last read position: 4:2,088,799
+INFO	2018-04-20 17:21:13	MergeVcfs	Processed       100,000 records.  Elapsed time: 00:00:15s.  Time for last 10,000:    1s.  Last read position: 4:39,296,268
+INFO	2018-04-20 17:21:14	MergeVcfs	Processed       110,000 records.  Elapsed time: 00:00:16s.  Time for last 10,000:    1s.  Last read position: 5:68,554,194
+INFO	2018-04-20 17:21:15	MergeVcfs	Processed       120,000 records.  Elapsed time: 00:00:17s.  Time for last 10,000:    1s.  Last read position: 5:80,149,827
+INFO	2018-04-20 17:21:16	MergeVcfs	Processed       130,000 records.  Elapsed time: 00:00:18s.  Time for last 10,000:    1s.  Last read position: 5:131,935,536
+INFO	2018-04-20 17:21:17	MergeVcfs	Processed       140,000 records.  Elapsed time: 00:00:19s.  Time for last 10,000:    1s.  Last read position: 6:43,587,184
+INFO	2018-04-20 17:21:18	MergeVcfs	Processed       150,000 records.  Elapsed time: 00:00:20s.  Time for last 10,000:    1s.  Last read position: 7:6,046,439
+INFO	2018-04-20 17:21:20	MergeVcfs	Processed       160,000 records.  Elapsed time: 00:00:21s.  Time for last 10,000:    1s.  Last read position: 7:47,926,787
+INFO	2018-04-20 17:21:21	MergeVcfs	Processed       170,000 records.  Elapsed time: 00:00:23s.  Time for last 10,000:    1s.  Last read position: 7:96,332,857
+INFO	2018-04-20 17:21:22	MergeVcfs	Processed       180,000 records.  Elapsed time: 00:00:24s.  Time for last 10,000:    1s.  Last read position: 8:48,807,899
+INFO	2018-04-20 17:21:23	MergeVcfs	Processed       190,000 records.  Elapsed time: 00:00:25s.  Time for last 10,000:    1s.  Last read position: 9:32,995,656
+INFO	2018-04-20 17:21:24	MergeVcfs	Processed       200,000 records.  Elapsed time: 00:00:26s.  Time for last 10,000:    1s.  Last read position: 9:110,094,060
+INFO	2018-04-20 17:21:25	MergeVcfs	Processed       210,000 records.  Elapsed time: 00:00:27s.  Time for last 10,000:    1s.  Last read position: 10:131,323,244
+INFO	2018-04-20 17:21:26	MergeVcfs	Processed       220,000 records.  Elapsed time: 00:00:28s.  Time for last 10,000:    1s.  Last read position: 11:22,646,629
+INFO	2018-04-20 17:21:27	MergeVcfs	Processed       230,000 records.  Elapsed time: 00:00:29s.  Time for last 10,000:    1s.  Last read position: 11:108,214,892
+INFO	2018-04-20 17:21:28	MergeVcfs	Processed       240,000 records.  Elapsed time: 00:00:30s.  Time for last 10,000:    1s.  Last read position: 12:118,469,542
+INFO	2018-04-20 17:21:29	MergeVcfs	Processed       250,000 records.  Elapsed time: 00:00:31s.  Time for last 10,000:    1s.  Last read position: 13:32,962,685
+INFO	2018-04-20 17:21:30	MergeVcfs	Processed       260,000 records.  Elapsed time: 00:00:32s.  Time for last 10,000:    1s.  Last read position: 14:45,656,436
+INFO	2018-04-20 17:21:31	MergeVcfs	Processed       270,000 records.  Elapsed time: 00:00:33s.  Time for last 10,000:    1s.  Last read position: 14:68,414,220
+INFO	2018-04-20 17:21:32	MergeVcfs	Processed       280,000 records.  Elapsed time: 00:00:34s.  Time for last 10,000:    1s.  Last read position: 14:68,805,597
+INFO	2018-04-20 17:21:33	MergeVcfs	Processed       290,000 records.  Elapsed time: 00:00:35s.  Time for last 10,000:    1s.  Last read position: 14:69,168,292
+INFO	2018-04-20 17:21:34	MergeVcfs	Processed       300,000 records.  Elapsed time: 00:00:36s.  Time for last 10,000:    1s.  Last read position: 15:43,769,497
+INFO	2018-04-20 17:21:35	MergeVcfs	Processed       310,000 records.  Elapsed time: 00:00:37s.  Time for last 10,000:    1s.  Last read position: 16:3,653,586
+INFO	2018-04-20 17:21:37	MergeVcfs	Processed       320,000 records.  Elapsed time: 00:00:38s.  Time for last 10,000:    1s.  Last read position: 16:89,873,844
+INFO	2018-04-20 17:21:38	MergeVcfs	Processed       330,000 records.  Elapsed time: 00:00:40s.  Time for last 10,000:    1s.  Last read position: 17:48,458,766
+INFO	2018-04-20 17:21:39	MergeVcfs	Processed       340,000 records.  Elapsed time: 00:00:41s.  Time for last 10,000:    1s.  Last read position: 18:20,448,743
+INFO	2018-04-20 17:21:40	MergeVcfs	Processed       350,000 records.  Elapsed time: 00:00:42s.  Time for last 10,000:    1s.  Last read position: 19:44,079,764
+INFO	2018-04-20 17:21:41	MergeVcfs	Processed       360,000 records.  Elapsed time: 00:00:43s.  Time for last 10,000:    1s.  Last read position: 22:38,922,376
+[Fri Apr 20 17:21:42 UTC 2018] picard.vcf.MergeVcfs done. Elapsed time: 0.74 minutes.
+Runtime.totalMemory()=245891072
+Finishing s01_merge_vcfs_kgen_picard.sh
+Fri 20 Apr 17:21:42 UTC 2018
+

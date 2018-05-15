@@ -1,0 +1,26 @@
+Starting Preprocessed ICR1000 File Quality Control (DNA Repair Genes)
+Sun 22 Apr 19:52:38 UTC 2018
+
+Source VCF File: /home/ec2-user/resources/icr1000/1958BC_hg19.vcf.gz
+Num of variants: 938,490
+Num of samples: 999
+
+DDR / OR Gene Selected VCF File: /home/ec2-user/results/preprocessed/icr1000/s01_ddr_icr1000_raw.vcf
+Num of variants: 13,482
+Num of samples: 999
+
+Multialleleic Masked VCF File: /home/ec2-user/results/preprocessed/icr1000/s01_ddr_icr1000_ma.vcf
+Num of variants: 272
+Num of samples: 999
+
+Multialleleic Flagged VCF File: /home/ec2-user/results/preprocessed/icr1000/s01_ddr_icr1000_fma.vcf
+Num of variants: 13,482
+Num of samples: 999
+
+Multialleleic Split VCF File: /home/ec2-user/results/preprocessed/icr1000/s01_ddr_icr1000_split.vcf
+Num of variants: 13,916
+Num of samples: 999
+
+Finishing Preprocessed ICR1000 File Quality Control (DNA Repair Genes)
+Sun 22 Apr 19:55:05 UTC 2018
+

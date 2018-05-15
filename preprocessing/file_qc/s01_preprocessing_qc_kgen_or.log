@@ -1,0 +1,31 @@
+Starting Preprocessed 1000 Genome Project File Quality Control (Olfactory Receptor Genes)
+Sun 22 Apr 21:01:13 UTC 2018
+
+DDR / OR Gene Selected VCF File: /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_merged_raw.vcf.gz
+Num of variants: 59,001
+Num of samples: 2,504
+
+Multialleleic Masked VCF File: /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_ma.vcf
+Num of variants: 379
+Num of samples: 2,504
+
+Multialleleic Flagged VCF File: /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_fma.vcf
+Num of variants: 59,001
+Num of samples: 2,504
+
+Multialleleic Split VCF File: /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_split.vcf
+Num of variants: 59,404
+Num of samples: 2,504
+
+Multialleleic Split Fixed VCF File: /home/ec2-user/results/preprocessed/kgen/s01_or_kgen_split_fixed.vcf
+Num of variants: 59,404
+Num of samples: 2,504
+
+Parsing bcftools stats output: /home/ec2-user/results/preprocessed/vcf_stats/kgen_or/kgen_or_split_fixed_vcfstats.txt
+Plotting graphs: python plot.py
+Creating PDF: pdflatex summary.tex >plot-vcfstats.log 2>&1
+Finished: /home/ec2-user/results/preprocessed/vcf_stats/kgen_or/split//summary.pdf
+
+Finishing Preprocessed 1000 Genome Project File Quality Control (Olfactory Receptor Genes)
+Sun 22 Apr 21:01:23 UTC 2018
+

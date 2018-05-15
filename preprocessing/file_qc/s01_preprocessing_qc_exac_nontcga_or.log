@@ -1,0 +1,26 @@
+Starting Preprocessed ExAC Non-TCGA File Quality Control (Olfactory Receptor Genes)
+Sun 22 Apr 19:30:06 UTC 2018
+
+DDR / OR Gene Selected VCF File: /home/ec2-user/results/preprocessed/exac_v1/s01_or_exac_nontcga_raw.vcf
+Num of variants: 58,874
+
+Multialleleic Masked VCF File: /home/ec2-user/results/preprocessed/exac_v1/s01_or_exac_nontcga_ma.vcf
+Num of variants: 4,752
+
+Multialleleic Flagged VCF File: /home/ec2-user/results/preprocessed/exac_v1/s01_or_exac_nontcga_fma.vcf
+Num of variants: 58,874
+
+Cleaned Multialleleic Flagged VCF File: /home/ec2-user/results/preprocessed/exac_v1/s01_or_exac_nontcga_clean.vcf
+Num of variants: 58,874
+
+Multialleleic Split VCF File: /home/ec2-user/results/preprocessed/exac_v1/s01_or_exac_nontcga_split.vcf
+Num of variants: 63,919
+
+Parsing bcftools stats output: /home/ec2-user/results/preprocessed/vcf_stats/exac_nontcga_or/exac_nontcga_or_split_vcfstats.txt
+Plotting graphs: python plot.py
+Creating PDF: pdflatex summary.tex >plot-vcfstats.log 2>&1
+Finished: /home/ec2-user/results/preprocessed/vcf_stats/exac_nontcga_or/split//summary.pdf
+
+Finishing Preprocessed ExAC Non-TCGA File Quality Control (Olfactory Receptor Genes)
+Sun 22 Apr 19:31:55 UTC 2018
+

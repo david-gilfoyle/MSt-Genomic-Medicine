@@ -1,0 +1,35 @@
+Using wget to download ExAC version 1 dataset (including non-TCGA subset)
+Sat 24 Mar 17:16:06 UTC 2018
+
+Downloading ExAC v1 (including non-TCGA subset)
+
+Files to download
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/ExAC.r1.sites.vep.vcf.gz
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/ExAC.r1.sites.vep.vcf.gz.tbi
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/subsets/ExAC_nonTCGA.r1.sites.vep.vcf.gz
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/subsets/ExAC_nonTCGA.r1.sites.vep.vcf.gz.tbi
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.ftp_structure
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.histogram_annotation
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.known_issues
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.new_annotations
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.population_annotations
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.release1
+ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.VEP_annotations
+
+Target folder:
+/home/ec2-user/resources/exac_v1
+2018-03-24 17:20:22 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/ExAC.r1.sites.vep.vcf.gz [4899467643] -> "ExAC.r1.sites.vep.vcf.gz" [1]
+2018-03-24 17:20:24 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/ExAC.r1.sites.vep.vcf.gz.tbi [888538] -> "ExAC.r1.sites.vep.vcf.gz.tbi" [1]
+2018-03-24 17:24:02 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/subsets/ExAC_nonTCGA.r1.sites.vep.vcf.gz [4484459663] -> "ExAC_nonTCGA.r1.sites.vep.vcf.gz" [1]
+2018-03-24 17:24:04 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/subsets/ExAC_nonTCGA.r1.sites.vep.vcf.gz.tbi [883935] -> "ExAC_nonTCGA.r1.sites.vep.vcf.gz.tbi" [1]
+2018-03-24 17:24:06 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.ftp_structure [4460] -> "README.ftp_structure" [1]
+2018-03-24 17:24:07 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.histogram_annotation [741] -> "README.histogram_annotation" [1]
+2018-03-24 17:24:08 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.known_issues [2380] -> "README.known_issues" [1]
+2018-03-24 17:24:09 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.new_annotations [432] -> "README.new_annotations" [1]
+2018-03-24 17:24:11 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.population_annotations [5262] -> "README.population_annotations" [1]
+2018-03-24 17:24:12 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.release1 [710] -> "README.release1" [1]
+2018-03-24 17:24:13 URL: ftp://ftp.broadinstitute.org/pub/ExAC_release/release1/README.VEP_annotations [159] -> "README.VEP_annotations" [1]
+
+Completed downloading all data
+Sat 24 Mar 17:24:13 UTC 2018
+

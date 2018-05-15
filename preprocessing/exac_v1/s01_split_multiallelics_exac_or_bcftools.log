@@ -1,0 +1,9 @@
+Started s01_split_multiallelics_exac_or_bcftools.sh
+Sun  1 Apr 19:41:16 UTC 2018
+
+Removing non-compliant fields ...
+Splitting multiallelic sites ...
+Lines   total/split/realigned/skipped:	63710/5667/0/0
+
+Completed s01_split_multiallelics_exac_or_bcftools.sh
+Sun  1 Apr 19:41:19 UTC 2018

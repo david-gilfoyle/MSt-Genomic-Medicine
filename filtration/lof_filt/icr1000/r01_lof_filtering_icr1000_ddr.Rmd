@@ -1,0 +1,288 @@
+---
+title: "r01_lof_filtering_icr1000_ddr"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 3 May 2018  
+Updated: David Gilfoyle 4 May 2018
+
+---
+
+# Summary
+
+Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC)  
+and HC LoF variants in genes with pLI >= 0.9  
+Dataset: ICR1000  
+Gene Selection: DNA Repair Genes  
+Input Variants: 6,442
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/af_filt/icr1000"
+
+# Load RData file - contains dataframe containing all variants
+load(paste(input_folder, "r01_icr1000_ddr_af_filtered.RData", sep="/"))
+
+# Setup script input dataframe naming
+input.df <- fixed_af_filt_icr1000_ddr.df
+rm(fixed_af_filt_icr1000_ddr.df)
+input.mx <- gt_af_filt_icr1000_ddr.mx
+rm(gt_af_filt_icr1000_ddr.mx)
+
+# Check input dataframe
+dim(input.df)
+class(input.df)
+input.df[1:20,1:10]
+class(input.df$Consequence)
+input.df$Consequence[1:20]
+class(input.df$LoF)
+input.df$LoF[1:20]
+class(input.df$CADD_PHRED)
+input.df$CADD_PHRED[1:20]
+class(input.df$ExACpLI)
+input.df$ExACpLI[1:20]
+
+dim(input.mx)
+class(input.mx)
+input.mx[1:5,1:5]
+
+# Check rowmnames are same 
+sum(rownames(input.mx) != rownames(input.df)) # should be 0
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/filtration/lof_filt/icr1000"
+output_folder="/home/ec2-user/results/filtered/lof_filt/icr1000"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# variants_associated_with_ddr_genes
+
+```{r variants_associated_with_ddr_genes}
+
+# Set of DDR genes supporting variant filtration
+ddr_genes <- c("UNG", "SMUG1", "MBD4", "TDG", "OGG1", "MUTYH", "NTHL1", "MPG", "NEIL1", "NEIL2", "NEIL3", "HMGB1", "APEX1", "APEX2", "LIG3", "XRCC1", "PNKP", "APLF", "PARP1", "PARP2", "PARP3", "MGMT", "ALKBH2", "ALKBH3", "TDP1", "TDP2", "MSH2", "MSH3", "MSH6", "MLH1", "PMS2", "MSH4", "MSH5", "MLH3", "PMS1", "PMS2P3", "XPC", "RAD23B", "CETN2", "RAD23A", "XPA", "DDB1", "DDB2", "RPA1", "RPA2", "RPA3", "ERCC3", "ERCC2", "GTF2H1", "GTF2H2", "GTF2H3", "GTF2H4", "GTF2H5", "CDK7", "CCNH", "MNAT1", "ERCC5", "ERCC1", "ERCC4", "LIG1", "RBX1", "CUL4A", "CUL4B", "ERCC8", "ERCC6", "UVSSA", "XAB2", "MMS19", "RAD51", "RAD51B", "RAD51D", "DMC1", "XRCC2", "XRCC3", "RAD52", "RAD54L", "RAD54B", "BRCA1", "SHFM1", "RAD50", "MRE11A", "NBN", "RBBP8", "MUS81", "EME1", "EME2", "SLX1A", "SLX1B", "GEN1", "BARD1", "BABAM1", "FAM175A", "BRE", "UIMC1", "BRCC3", "SYCP3", "FANCA", "FANCB", "FANCC", "BRCA2", "FANCD2", "FANCE", "FANCF", "FANCG", "FANCI", "BRIP1", "FANCL", "FANCM", "PALB2", "RAD51C", "SLX4", "C1orf86", "C19orf40", "APITD1", "WDR48", "USP1", "C17orf70", "HES1", "RMI1", "RMI2", "TOP3A", "UBE2T", "XRCC6", "XRCC5", "PRKDC", "LIG4", "XRCC4", "DCLRE1C", "NHEJ1", "DNTT", "NUDT1", "DUT", "RRM2B", "POLB", "POLG", "POLD1", "POLE", "PCNA", "REV3L", "MAD2L2", "REV1", "POLH", "POLI", "POLQ", "POLK", "POLL", "POLM", "POLN", "FEN1", "FAN1", "TREX1", "TREX2", "EXO1", "APTX", "SPO11", "ENDOV", "UBE2A", "UBE2B", "RAD18", "SHPRH", "HLTF", "RNF168", "SPRTN", "RNF8", "RNF4", "UBE2V2", "UBE2N", "H2AFX", "CHAF1A", "SETMAR", "BLM", "WRN", "RECQL4", "ATM", "MPLKIP", "DCLRE1A", "DCLRE1B", "RPA4", "PRPF19", "RECQL", "RECQL5", "HELQ", "RDM1", "NABP2", "RFC1", "RFC2", "RFC3", "RFC4", "RFC5", "ATR", "ATRIP", "MDC1", "RAD1", "RAD9A", "HUS1", "RAD17", "CHEK1", "CHEK2", "TP53", "TP53BP1", "RIF1", "TOPBP1", "CLK2", "PER1")
+
+# Filtering of variants based on DDR genes using SYMBOL 
+input.df <- tibble::rownames_to_column(input.df, var = "rowname")
+output.df <- input.df %>%
+  filter(input.df$SYMBOL %in% ddr_genes)
+output.df <- tibble::column_to_rownames(output.df, var = "rowname")
+
+removed_variant.df <- input.df %>%
+  filter(!input.df$SYMBOL %in% ddr_genes)
+
+# Check output dataframe
+dim(output.df)
+class(output.df)
+output.df[1:20,1:10]
+class(input.df$SYMBOL)
+unique(output.df$SYMBOL)
+unique(removed_variant.df$SYMBOL)
+
+```
+
+# lof_filtering
+
+Filtering based on VEP consequences:  
+1) splice_acceptor_variant  
+2) splice_donor_variant  
+3) stop_gained  
+4) stop_lost  
+5) start_lost  
+6) frameshift_variant  
+
+```{r lof_filtering}
+
+# Filtration based on consequence
+output.df <- tibble::rownames_to_column(output.df, var = "rowname")
+output.df <- output.df %>% 
+  filter(grepl("splice_acceptor_variant",Consequence) | 
+         grepl("splice_donor_variant",Consequence) | 
+         grepl("stop_gained",Consequence) | 
+         grepl("stop_lost",Consequence) |
+         grepl("start_lost",Consequence) |
+         grepl("frameshift_variant",Consequence))
+output.df <- tibble::column_to_rownames(output.df, var = "rowname")
+
+# Check output dataframe
+dim(output.df)
+output.df[1:20,1:10]
+output.df$Consequence[1:20]
+output.df$CADD_PHRED[1:20]
+output.df$LoF[1:20]
+
+```
+
+# syncronise_filtered_variants_and_genotype_data_lof 
+
+```{r syncronise_qual_filtered_variants_and_genotype_data_lof}
+
+# Isolate relavent rows from genotype matrix
+output.mx <- input.mx[rownames(output.df),]
+
+# Compare filtered fixed column dataframe and genotype matrix
+output.df[1:20,1:5]
+output.mx[1:20,1:2]
+
+```
+
+# additional_filtering_loftee_hc
+
+Output assessed based on further filtering with:  
+1) LOFTEE high confidence - assessment indicates that some entries are NA - these appear to be mainly start_lost and stop_lost and they will be retained. However, removal of low confidence variants (LC) is considered appropriate to enrich dataset for potentially deleterious variants  
+2) CADD_PHRED > 15 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED <= 15 is considered appropriate to enrich dataset for potentially deleterious variants
+
+```{r additional_filtering_loftee_hc}
+
+# Assessment of impact of filtering LoF (LOFTEE) = High Confidence (HC)
+sum(is.na(output.df$LoF))
+sum(output.df$Consequence == "start_lost")
+sum(output.df$Consequence == "stop_lost")
+sum(output.df$LoF == "HC", na.rm = TRUE)
+sum(output.df$LoF == "LC", na.rm = TRUE)
+
+# output_lof_na.df <- output.df %>% 
+#   filter(is.na(LoF))
+
+# Assessment of filtering CADD_PHREDD > 15
+sum(is.na(output.df$CADD_PHRED))
+sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) < 15, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) > 15, na.rm = TRUE)
+
+# output_cadd_na.df <- output.df %>% 
+#  filter(is.na(CADD_PHRED))
+
+# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED > 15
+output.df <- tibble::rownames_to_column(output.df, var = "rowname")
+output_hc.df <- output.df %>% 
+  filter((LoF == "HC") |
+           (is.na(LoF))) %>%
+  filter((as.numeric(CADD_PHRED) > 15) |
+           (is.na(CADD_PHRED)))
+output_hc.df <- tibble::column_to_rownames(output_hc.df, var = "rowname")
+
+# Check output dataframe
+dim(output_hc.df)
+output_hc.df[1:20,1:10]
+output_hc.df$Consequence[1:20]
+output_hc.df$CADD_PHRED[1:20]
+output_hc.df$LoF[100:120] # range updated to show presence of NA
+unique(output_hc.df$SYMBOL)
+
+```
+
+# syncronise_filtered_variants_and_genotype_data_loftee_hc 
+
+```{r syncronise_qual_filtered_variants_and_genotype_data_loftee_hc}
+
+# Isolate relavent rows from genotype matrix
+output_hc.mx <- output.mx[rownames(output_hc.df),]
+
+# Compare filtered fixed column dataframe and genotype matrix
+output_hc.df[1:20,1:5]
+output_hc.mx[1:20,1:2]
+
+```
+
+# additional_filtering_exac_pli
+
+LoF variants in a single allele are expected to have a greater impact in loss intolerant genes (ExAC pLI >= 0.9) 
+
+```{r additional_filtering_exac_pli}
+
+# Assessment of impact of filtering ExAC pLI >= 0.9
+sum(is.na(output_hc.df$ExACpLI))
+sum(as.numeric(output_hc.df$ExACpLI) < 0.9, na.rm = TRUE)
+sum(as.numeric(output_hc.df$ExACpLI) >= 0.9, na.rm = TRUE)
+
+# Additional filtration based on ExAC pLI >= 0.9
+output_hc.df <- tibble::rownames_to_column(output_hc.df, var = "rowname")
+output_hc_pli.df <- output_hc.df %>% 
+  filter(as.numeric(ExACpLI) >= 0.9)
+output_hc_pli.df <- tibble::column_to_rownames(output_hc_pli.df, var = "rowname")
+
+# Check output dataframe
+dim(output_hc_pli.df)
+output_hc_pli.df[1:2,1:10]
+output_hc_pli.df$Consequence[1:2]
+output_hc_pli.df$CADD_PHRED[1:2]
+output_hc_pli.df$LoF[1:2]
+output_hc_pli.df$ExACpLI[1:2]
+unique(output_hc_pli.df$SYMBOL)
+
+```
+
+# syncronise_filtered_variants_and_genotype_data_exac_pli 
+
+```{r syncronise_qual_filtered_variants_and_genotype_data_exac_pli}
+
+# Isolate relavent rows from genotype matrix
+output_hc_pli.mx <- output_hc.mx[rownames(output_hc_pli.df),]
+
+# Compare filtered fixed column dataframe and genotype matrix
+output_hc_pli.df[1:2,1:5]
+output_hc_pli.mx[1:2]
+
+```
+
+# update_dataframe_naming
+
+```{r update_dataframe_naming}
+
+# Reset of output dataframe names
+fixed_lof_filt_icr1000_ddr.df <- output.df
+fixed_lof_hc_filt_icr1000_ddr.df <- output_hc.df
+fixed_lof_hc_pli_filt_icr1000_ddr.df <- output_hc_pli.df
+gt_lof_filt_icr1000_ddr.mx <- output.mx
+gt_lof_hc_filt_icr1000_ddr.mx <- output_hc.mx
+gt_lof_hc_pli_filt_icr1000_ddr.mx <- output_hc_pli.mx
+
+# Clean-up
+rm(input.df, output.df, output_hc.df, output_hc_pli.df, input.mx, output.mx, output_hc.mx, output_hc_pli.mx, ddr_genes, removed_variant.df)
+
+```
+
+# save_results
+
+```{r save_results}
+
+save.image(paste(output_folder, "r01_icr1000_ddr_lof_filtered.RData", sep="/"))
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```
+

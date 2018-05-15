@@ -1,0 +1,27 @@
+Starting Preprocessed ICR1000 File Quality Control (Olfactory Receptor Genes)
+Tue 24 Apr 21:28:33 UTC 2018
+
+DDR / OR Gene Selected VCF File: /home/ec2-user/results/preprocessed/icr1000/s01_or_icr1000_raw.vcf
+Num of variants: 6,514
+Num of samples: 999
+
+Multialleleic Masked VCF File: /home/ec2-user/results/preprocessed/icr1000/s01_or_icr1000_ma.vcf
+Num of variants: 61
+Num of samples: 999
+
+Multialleleic Flagged VCF File: /home/ec2-user/results/preprocessed/icr1000/s01_or_icr1000_fma.vcf
+Num of variants: 6,514
+Num of samples: 999
+
+Multialleleic Split VCF File: /home/ec2-user/results/preprocessed/icr1000/s01_or_icr1000_split.vcf
+Num of variants: 6,585
+Num of samples: 999
+
+Parsing bcftools stats output: /home/ec2-user/results/preprocessed/vcf_stats/icr1000_or/icr1000_or_split_vcfstats.txt
+Plotting graphs: python plot.py
+Creating PDF: pdflatex summary.tex >plot-vcfstats.log 2>&1
+Finished: /home/ec2-user/results/preprocessed/vcf_stats/icr1000_or/split//summary.pdf
+
+Finishing Preprocessed ICR1000 File Quality Control (Olfactory Receptor Genes)
+Tue 24 Apr 21:30:09 UTC 2018
+

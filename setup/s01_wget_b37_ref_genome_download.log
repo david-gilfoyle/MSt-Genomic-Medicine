@@ -1,0 +1,38 @@
+Using wget to download GRCh37/hg19 Human Reference Genome
+Sat 24 Mar 22:54:49 UTC 2018
+
+Downloading GRCh37/hg19 Human Reference Genome
+
+Files to download
+ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.dict.gz
+ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.dict.gz.md5
+ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.fasta.fai.gz
+ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.fasta.fai.gz.md5
+ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.fasta.gz
+ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.fasta.gz.md5
+
+Target folder:
+/home/ec2-user/resources/gatk_b37_bundle
+2018-03-24 22:54:50 URL: ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.dict.gz [2597] -> "human_g1k_v37.dict.gz" [1]
+2018-03-24 22:54:51 URL: ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.dict.gz.md5 [92] -> "human_g1k_v37.dict.gz.md5" [1]
+2018-03-24 22:54:52 URL: ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.fasta.fai.gz [1044] -> "human_g1k_v37.fasta.fai.gz" [1]
+2018-03-24 22:54:53 URL: ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.fasta.fai.gz.md5 [97] -> "human_g1k_v37.fasta.fai.gz.md5" [1]
+2018-03-24 22:56:06 URL: ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.fasta.gz [869925027] -> "human_g1k_v37.fasta.gz" [1]
+2018-03-24 22:56:07 URL: ftp://gsapubftp-anonymous@ftp.broadinstitute.org/bundle//b37/human_g1k_v37.fasta.gz.md5 [93] -> "human_g1k_v37.fasta.gz.md5" [1]
+
+md5 checksums prior to and following transfer
+human_g1k_v37.dict.gz.md5
+3c7aa6aab87ec12a5375ac2dc64bb2a7  /humgen/gsa-scr1/pub/bundle/2.8/b37/human_g1k_v37.dict.gz
+3c7aa6aab87ec12a5375ac2dc64bb2a7  human_g1k_v37.dict.gz
+
+human_g1k_v37.fasta.fai.gz.md5
+97636a54ceb7c2d6d3a87e8541a5e440  /humgen/gsa-scr1/pub/bundle/2.8/b37/human_g1k_v37.fasta.fai.gz
+97636a54ceb7c2d6d3a87e8541a5e440  human_g1k_v37.fasta.fai.gz
+
+human_g1k_v37.fasta.gz.md5
+efb731898d4527cb60a98348b4d12b76  /humgen/gsa-scr1/pub/bundle/2.8/b37/human_g1k_v37.fasta.gz
+efb731898d4527cb60a98348b4d12b76  human_g1k_v37.fasta.gz
+
+Completed downloading all data
+Sat 24 Mar 22:56:09 UTC 2018
+

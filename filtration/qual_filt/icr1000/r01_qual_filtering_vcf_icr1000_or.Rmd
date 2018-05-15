@@ -1,0 +1,166 @@
+---
+title: "r01_qual_filtering_icr1000_or"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 2 May 2018  
+Updated: David Gilfoyle 2 May 2018
+
+---
+
+# Summary
+
+QUAL Filtering Based on TiTv Cut-off ~2.0  
+Dataset: ICR1000 
+Gene Selection: Olfactory Receptor Genes  
+Input Variants: 6,585
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Make sure all the libraries installed 
+#install.packages("vcfR")
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+# Setup input folder
+input_folder="/home/ec2-user/results/r_import/icr1000"
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Load RData file - contains dataframe containing all variants
+load(paste(input_folder, "r01_import_vcf_icr1000_or.RData", sep="/"))
+
+# Check input fixed column dataframe
+dim(fixed_icr1000_or.df)
+class(fixed_icr1000_or.df)
+str(fixed_icr1000_or.df)
+colnames(fixed_icr1000_or.df)
+fixed_icr1000_or.df[1:20,1:10]
+
+# Check input genotype matrix
+dim(gt_icr1000_or.mx)
+class(gt_icr1000_or.mx)
+gt_icr1000_or.mx[1:5,1:5]
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/qual_filt/icr1000"
+output_folder="/home/ec2-user/results/qual_filt/icr1000"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# syncronise_row_names
+During vcfR seperation of genotypes rownames are entered as chromosome/position/row number,  
+unless a dbSNP reference is present, in which case row label is dbSNP ref/row number.  
+This section aims to enter comparable rownames to the fixed column dataframe to allow selection of  
+genotypes following filtering of fixed column dataframe.  
+
+```{r syncronise_row_names}
+
+# Vector of rs-IDs that will be used for "known" variants (with known rs-IDs)
+old_vars <- as.vector(fixed_icr1000_or.df$ID)
+old_vars[1:10]
+
+# Vector of labels that will be used for "new" variants (w/o rs-IDs)
+new_vars <- paste(fixed_icr1000_or.df$CHROM, fixed_icr1000_or.df$POS, sep="_")
+new_vars[1:10]
+
+# Write known rs-IDs to the labels
+labels <- old_vars
+labels[1:10]
+
+# Write "new_vars" to the labels
+new_vars[is.na(old_vars)] -> labels[is.na(old_vars)]
+labels[1:10]
+
+# Add row numbers to the end of labels
+labels <- paste(labels, 1:nrow(fixed_icr1000_or.df), sep="_")
+labels[1:10]
+
+# Assign the rownames to data frame
+labels -> rownames(fixed_icr1000_or.df)
+
+# Check rowmnames are same 
+fixed_icr1000_or.df[1:5,1:10]
+gt_icr1000_or.mx[1:5,1:5]
+sum(rownames(gt_icr1000_or.mx) != rownames(fixed_icr1000_or.df)) # should be 0
+
+# Clean up
+rm(labels, new_vars, old_vars)
+
+```
+
+# qual_filtering
+
+```{r qual_filtering}
+
+# Filter QUAL > 288 based on source ICR1000 TiTv 2.01 (as determined by VCFStats)
+fixed_icr1000_or.df <- tibble::rownames_to_column(fixed_icr1000_or.df, var = "rowname")
+fixed_qfilt_icr1000_or.df <- fixed_icr1000_or.df %>% 
+  filter(QUAL > 288)
+fixed_qfilt_icr1000_or.df <- tibble::column_to_rownames(fixed_qfilt_icr1000_or.df, var = "rowname")
+
+# Check output dataframe
+dim(fixed_qfilt_icr1000_or.df)
+class(fixed_qfilt_icr1000_or.df)
+str(fixed_qfilt_icr1000_or.df)
+colnames(fixed_qfilt_icr1000_or.df)
+fixed_qfilt_icr1000_or.df[1:20,1:10]
+
+# Cleanup
+rm(fixed_icr1000_or.df)
+
+```
+
+# syncronise_qual_filtered_variants_and_genotype_data 
+
+```{r syncronise_qual_filtered_variants_and_genotype_data}
+
+# Isolate relavent rows from genotype matrix
+gt_qfilt_icr1000_or.mx <- gt_icr1000_or.mx[rownames(fixed_qfilt_icr1000_or.df),]
+
+# Compare filtered fixed column dataframe and genotype matrix
+fixed_qfilt_icr1000_or.df[1:20,1:10]
+gt_qfilt_icr1000_or.mx[1:20,1:5]
+
+# Clean up
+rm(gt_icr1000_or.mx)
+
+```
+
+# save_results
+
+```{r save_results}
+
+save.image(paste(output_folder, "r01_icr1000_or_qual_filt.RData", sep="/"))
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```
