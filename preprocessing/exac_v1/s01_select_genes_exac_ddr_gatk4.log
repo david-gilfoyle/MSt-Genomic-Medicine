@@ -1,7 +1,0 @@
-Started s01_select_genes_exac_ddr_gatk4.sh
-Sun  1 Apr 19:11:08 UTC 2018
-
-Selecting DDR gene variants from ExAC (full dataset) ...
-
-Completed s01_select_genes_exac_ddr_gatk4.sh
-Sun  1 Apr 19:12:40 UTC 2018
