@@ -6,7 +6,7 @@ editor_options:
 ---
 
 Started: David Gilfoyle 2 May 2018  
-Updated: David Gilfoyle 2 May 2018
+Updated: David Gilfoyle 16 May 2018
 
 ---
 
@@ -56,9 +56,14 @@ dim(gt_icr1000_or.mx)
 class(gt_icr1000_or.mx)
 gt_icr1000_or.mx[1:5,1:5]
 
+# Check input GQ matrix
+dim(gq_icr1000_or.mx)
+class(gq_icr1000_or.mx)
+gq_icr1000_or.mx[1:5,1:5]
+
 # Setup base and output folders
-base_folder="/home/ec2-user/scripts/qual_filt/icr1000"
-output_folder="/home/ec2-user/results/qual_filt/icr1000"
+base_folder="/home/ec2-user/scripts/filtration/qual_filt/icr1000"
+output_folder="/home/ec2-user/results/filtered/qual_filt/icr1000"
 
 getwd()
 setwd(base_folder)
@@ -102,7 +107,9 @@ labels -> rownames(fixed_icr1000_or.df)
 # Check rowmnames are same 
 fixed_icr1000_or.df[1:5,1:10]
 gt_icr1000_or.mx[1:5,1:5]
+gq_icr1000_or.mx[1:5,1:5]
 sum(rownames(gt_icr1000_or.mx) != rownames(fixed_icr1000_or.df)) # should be 0
+sum(rownames(gq_icr1000_or.mx) != rownames(fixed_icr1000_or.df)) # should be 0
 
 # Clean up
 rm(labels, new_vars, old_vars)
@@ -142,8 +149,15 @@ gt_qfilt_icr1000_or.mx <- gt_icr1000_or.mx[rownames(fixed_qfilt_icr1000_or.df),]
 fixed_qfilt_icr1000_or.df[1:20,1:10]
 gt_qfilt_icr1000_or.mx[1:20,1:5]
 
+# Isolate relavent rows from GQ matrix
+gq_qfilt_icr1000_or.mx <- gq_icr1000_or.mx[rownames(fixed_qfilt_icr1000_or.df),]
+
+# Compare filtered fixed column dataframe and GQ matrix
+fixed_qfilt_icr1000_or.df[1:20,1:10]
+gq_qfilt_icr1000_or.mx[1:20,1:5]
+
 # Clean up
-rm(gt_icr1000_or.mx)
+rm(gt_icr1000_or.mx, gq_icr1000_or.mx)
 
 ```
 

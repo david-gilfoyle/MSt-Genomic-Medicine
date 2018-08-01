@@ -6,7 +6,7 @@ editor_options:
 ---
 
 Started: David Gilfoyle 2 May 2018  
-Updated: David Gilfoyle 2 May 2018
+Updated: David Gilfoyle 16 May 2018
 
 ---
 
@@ -52,8 +52,8 @@ colnames(fixed_exac_nontcga_ddr.df)
 fixed_exac_nontcga_ddr.df[1:20,1:10]
 
 # Setup base and output folders
-base_folder="/home/ec2-user/scripts/qual_filt/exac_v1"
-output_folder="/home/ec2-user/results/qual_filt/exac_v1"
+base_folder="/home/ec2-user/scripts/filtration/qual_filt/exac_v1"
+output_folder="/home/ec2-user/results/filtered/qual_filt/exac_v1"
 
 getwd()
 setwd(base_folder)

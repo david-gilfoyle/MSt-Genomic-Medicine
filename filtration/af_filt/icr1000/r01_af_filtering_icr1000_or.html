@@ -123,19 +123,19 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 4 May 2018</p>
+Updated: David Gilfoyle 16 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of QUAL filtered dataset based on AF &lt;= 0.01<br />
+<p>Variant filtering of GQ filtered dataset based on AF &lt;= 0.01<br />
 Dataset: ICR1000<br />
 Gene Selection: Olfactory Receptor Genes<br />
-Input Variants: 5,189</p>
+Input Variants: 4,200</p>
 </div>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-04 14:39:16 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 16:24:43 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -154,95 +154,95 @@ library(dplyr)</code></pre>
 <div id="load_rdata_file" class="section level1">
 <h1>load_rdata_file</h1>
 <pre class="r"><code># Setup input folder
-input_folder=&quot;/home/ec2-user/results/filtered/qual_filt/icr1000&quot;
+input_folder=&quot;/home/ec2-user/results/filtered/gq_filt/icr1000&quot;
 
 # Load RData file - contains dataframe containing all variants
-load(paste(input_folder, &quot;r01_icr1000_or_qual_filt.RData&quot;, sep=&quot;/&quot;))
+load(paste(input_folder, &quot;r01_icr1000_or_gq_filt.RData&quot;, sep=&quot;/&quot;))
 
 # Setup script input dataframe naming
-input.df &lt;- fixed_qfilt_icr1000_or.df
-rm(fixed_qfilt_icr1000_or.df)
-input.mx &lt;- gt_qfilt_icr1000_or.mx
-rm(gt_qfilt_icr1000_or.mx)
+input.df &lt;- fixed_crfilt_icr1000_or.df
+rm(fixed_crfilt_icr1000_or.df)
+input.mx &lt;- gt_add_crfilt_icr1000_or.mx
+rm(gt_add_crfilt_icr1000_or.mx)
 
 # Check input dataframe and matrix
 dim(input.df)</code></pre>
-<pre><code>## [1] 5189   92</code></pre>
+<pre><code>## [1] 4200   95</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>input.df[1:20,1:10]</code></pre>
-<pre><code>##                CHROM    POS          ID REF ALT     QUAL FILTER ABHet
-## rs201219564_4      1  69270 rs201219564   A   G 32265.00   &lt;NA&gt; 0.508
-## 1_69453_7          1  69453        &lt;NA&gt;   G   A  8028.81   &lt;NA&gt; 0.667
-## rs75062661_9       1  69511  rs75062661   A   G 16617.40   &lt;NA&gt;    NA
-## rs75062661_10      1  69511  rs75062661   A   T 16617.40   &lt;NA&gt;    NA
-## rs55874132_11      1  69552  rs55874132   G   C  1248.10   &lt;NA&gt; 0.825
-## rs372127752_12     1  69569 rs372127752   T   C  2682.41   &lt;NA&gt; 0.771
-## 1_69751_14         1  69751        &lt;NA&gt;   C   T   769.35   &lt;NA&gt; 0.867
-## rs200505207_15     1  69761 rs200505207   A   T 16581.30   &lt;NA&gt; 0.627
-## 1_69849_16         1  69849        &lt;NA&gt;   G   A   452.10   &lt;NA&gt; 0.843
-## 1_69869_17         1  69869        &lt;NA&gt;   T   A   339.65   &lt;NA&gt; 0.746
-## rs200676709_18     1  69897 rs200676709   T   C 57811.60   &lt;NA&gt; 0.749
-## 1_69932_20         1  69932        &lt;NA&gt;   C   T  2132.04   &lt;NA&gt; 0.806
-## 1_69996_23         1  69996        &lt;NA&gt;   T   C   352.23   &lt;NA&gt; 0.782
-## 1_621358_26        1 621358        &lt;NA&gt;   C   A   603.10   &lt;NA&gt; 0.785
-## 1_621465_31        1 621465        &lt;NA&gt;   G   A  1150.62   &lt;NA&gt;    NA
-## 1_621465_32        1 621465        &lt;NA&gt;   G   T  1150.62   &lt;NA&gt;    NA
-## 1_621536_36        1 621536        &lt;NA&gt;   C   G   841.43   &lt;NA&gt; 0.770
-## 1_621646_39        1 621646        &lt;NA&gt;   A   C  5126.91   &lt;NA&gt; 0.837
-## 1_621716_40        1 621716        &lt;NA&gt;   C   T   505.37   &lt;NA&gt; 0.841
-## 1_621770_41        1 621770        &lt;NA&gt;   G   A   984.11   &lt;NA&gt;    NA
+<pre><code>##                CHROM       POS          ID REF ALT      QUAL FILTER ABHet
+## 1_69849_16         1     69849        &lt;NA&gt;   G   A    452.10   &lt;NA&gt; 0.843
+## 1_69869_17         1     69869        &lt;NA&gt;   T   A    339.65   &lt;NA&gt; 0.746
+## rs200676709_18     1     69897 rs200676709   T   C  57811.60   &lt;NA&gt; 0.749
+## 1_69932_20         1     69932        &lt;NA&gt;   C   T   2132.04   &lt;NA&gt; 0.806
+## 1_69996_23         1     69996        &lt;NA&gt;   T   C    352.23   &lt;NA&gt; 0.782
+## rs10489826_48      1 158368309  rs10489826   T   G  79037.10   &lt;NA&gt; 0.504
+## rs60530245_49      1 158368315  rs60530245   G   A  62020.50   &lt;NA&gt; 0.509
+## 1_158368319_50     1 158368319        &lt;NA&gt;   A   T    597.17   &lt;NA&gt; 0.355
+## rs115782542_51     1 158368356 rs115782542   A   G   9804.70   &lt;NA&gt; 0.517
+## rs61818748_52      1 158368392  rs61818748   C   T 118841.00   &lt;NA&gt; 0.516
+## rs369275036_53     1 158368422 rs369275036   T   A    973.17   &lt;NA&gt; 0.513
+## rs34465440_54      1 158368541  rs34465440   A   G 542717.00   &lt;NA&gt; 0.503
+## rs140067092_55     1 158368679 rs140067092   G   T   2537.18   &lt;NA&gt; 0.519
+## rs6662382_56       1 158368846   rs6662382   T   C 653741.00   &lt;NA&gt; 0.483
+## 1_158368883_57     1 158368883        &lt;NA&gt;   A   G    862.17   &lt;NA&gt; 0.647
+## rs139821511_58     1 158368917 rs139821511   G   A   3481.96   &lt;NA&gt; 0.519
+## rs61818749_59      1 158368964  rs61818749   C   T 267224.00   &lt;NA&gt; 0.470
+## rs61818750_60      1 158368974  rs61818750   A   G 253080.00   &lt;NA&gt; 0.476
+## rs139130604_61     1 158369041 rs139130604   G   A   1602.18   &lt;NA&gt; 0.462
+## 1_158369048_62     1 158369048        &lt;NA&gt;   G  GA    776.12   &lt;NA&gt;    NA
 ##                ABHom  AC
-## rs201219564_4  0.928 825
-## 1_69453_7      0.826 408
-## rs75062661_9      NA 659
-## rs75062661_10     NA  24
-## rs55874132_11  0.949 134
-## rs372127752_12 0.937 220
-## 1_69751_14     0.964  80
-## rs200505207_15 0.984 130
 ## 1_69849_16     0.992  25
 ## 1_69869_17     0.995   4
 ## rs200676709_18 0.985 554
 ## 1_69932_20     0.994  54
 ## 1_69996_23     0.991  10
-## 1_621358_26    0.985  22
-## 1_621465_31       NA  45
-## 1_621465_32       NA  23
-## 1_621536_36    0.918  67
-## 1_621646_39    0.992 157
-## 1_621716_40    0.950 100
-## 1_621770_41       NA  20</code></pre>
-<pre class="r"><code>class(input.df$AF)</code></pre>
-<pre><code>## [1] &quot;character&quot;</code></pre>
-<pre class="r"><code>input.df$AF[1:20]</code></pre>
-<pre><code>##  [1] &quot;0.883&quot;    &quot;0.504&quot;    &quot;0.886&quot;    &quot;0.032&quot;    &quot;0.097&quot;    &quot;0.15&quot;    
-##  [7] &quot;0.04&quot;     &quot;0.065&quot;    &quot;0.013&quot;    &quot;0.002008&quot; &quot;0.277&quot;    &quot;0.027&quot;   
-## [13] &quot;0.00501&quot;  &quot;0.011&quot;    &quot;0.023&quot;    &quot;0.012&quot;    &quot;0.04&quot;     &quot;0.079&quot;   
-## [19] &quot;0.05&quot;     &quot;0.032&quot;</code></pre>
+## rs10489826_48  0.999 221
+## rs60530245_49  0.999 155
+## 1_158368319_50 0.999   1
+## rs115782542_51 0.999  16
+## rs61818748_52  0.999 141
+## rs369275036_53 0.998   1
+## rs34465440_54  0.997 670
+## rs140067092_55 0.998   2
+## rs6662382_56   0.998 671
+## 1_158368883_57 0.999   1
+## rs139821511_58 0.999   3
+## rs61818749_59  0.998 221
+## rs61818750_60  0.998 221
+## rs139130604_61 0.999   2
+## 1_158369048_62    NA   2</code></pre>
+<pre class="r"><code>class(input.df$new_AF)</code></pre>
+<pre><code>## [1] &quot;numeric&quot;</code></pre>
+<pre class="r"><code>input.df$new_AF[1:20]</code></pre>
+<pre><code>##  [1] 0.0088131610 0.0010729614 0.2819089900 0.0222101842 0.0037313433
+##  [6] 0.1099397590 0.0772316951 0.0005005005 0.0080080080 0.0705705706
+## [11] 0.0005005005 0.3351703407 0.0010010010 0.3358358358 0.0005005005
+## [16] 0.0015015015 0.1106106106 0.1106106106 0.0010020040 0.0010010010</code></pre>
 <pre class="r"><code>dim(input.mx)</code></pre>
-<pre><code>## [1] 5189  999</code></pre>
+<pre><code>## [1] 4200  999</code></pre>
 <pre class="r"><code>class(input.mx)</code></pre>
 <pre><code>## [1] &quot;matrix&quot;</code></pre>
 <pre class="r"><code>input.mx[1:5,1:5]</code></pre>
-<pre><code>##               EGAR00001237542_1520_A02 EGAR00001237543_1520_A03
-## rs201219564_4 NA                       NA                      
-## 1_69453_7     &quot;1/1&quot;                    NA                      
-## rs75062661_9  &quot;1/1&quot;                    NA                      
-## rs75062661_10 &quot;0/0&quot;                    NA                      
-## rs55874132_11 &quot;0/0&quot;                    NA                      
-##               EGAR00001237544_1520_A04 EGAR00001237545_1520_A08
-## rs201219564_4 NA                       NA                      
-## 1_69453_7     NA                       &quot;0/0&quot;                   
-## rs75062661_9  &quot;1/1&quot;                    &quot;1/1&quot;                   
-## rs75062661_10 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs55874132_11 &quot;1/1&quot;                    &quot;0/0&quot;                   
-##               EGAR00001237546_1520_A09
-## rs201219564_4 NA                      
-## 1_69453_7     NA                      
-## rs75062661_9  NA                      
-## rs75062661_10 NA                      
-## rs55874132_11 NA</code></pre>
+<pre><code>##                EGAR00001237542_1520_A02 EGAR00001237543_1520_A03
+## 1_69849_16                           NA                       NA
+## 1_69869_17                            0                        0
+## rs200676709_18                       NA                        0
+## 1_69932_20                            0                        0
+## 1_69996_23                            0                        0
+##                EGAR00001237544_1520_A04 EGAR00001237545_1520_A08
+## 1_69849_16                           NA                       NA
+## 1_69869_17                            0                        0
+## rs200676709_18                        0                       NA
+## 1_69932_20                            0                        0
+## 1_69996_23                            0                        0
+##                EGAR00001237546_1520_A09
+## 1_69849_16                           NA
+## 1_69869_17                           NA
+## rs200676709_18                       NA
+## 1_69932_20                           NA
+## 1_69996_23                           NA</code></pre>
 <pre class="r"><code># Check rowmnames are same 
 sum(rownames(input.mx) != rownames(input.df)) # should be 0</code></pre>
 <pre><code>## [1] 0</code></pre>
@@ -259,20 +259,21 @@ getwd()</code></pre>
 </div>
 <div id="af_filtering" class="section level1">
 <h1>af_filtering</h1>
-<p>Allele frequency filtering based on selection of rare variants (AF &lt;= 0.01) within data set</p>
+<p>Allele frequency filtering based on selection of rare variants (new_AF &lt;= 0.01) within data set</p>
 <pre class="r"><code># Filter AF &lt;= 0.01
 input.df &lt;- tibble::rownames_to_column(input.df, var = &quot;rowname&quot;)
 output.df &lt;- input.df %&gt;% 
-  filter(as.numeric(AF) &lt;= 0.01)
+  filter(as.numeric(new_AF) &lt;= 0.01)
 output.df &lt;- tibble::column_to_rownames(output.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 2632   92</code></pre>
+<pre><code>## [1] 2539   95</code></pre>
 <pre class="r"><code>class(output.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
 <pre><code>##                CHROM       POS          ID REF ALT     QUAL FILTER ABHet
+## 1_69849_16         1     69849        &lt;NA&gt;   G   A   452.10   &lt;NA&gt; 0.843
 ## 1_69869_17         1     69869        &lt;NA&gt;   T   A   339.65   &lt;NA&gt; 0.746
 ## 1_69996_23         1     69996        &lt;NA&gt;   T   C   352.23   &lt;NA&gt; 0.782
 ## 1_158368319_50     1 158368319        &lt;NA&gt;   A   T   597.17   &lt;NA&gt; 0.355
@@ -292,8 +293,8 @@ dim(output.df)</code></pre>
 ## rs143743518_74     1 158389757 rs143743518   A   T  1629.96   &lt;NA&gt; 0.479
 ## rs146025597_75     1 158389811 rs146025597   A   T 13601.30   &lt;NA&gt; 0.512
 ## rs138096568_76     1 158390056 rs138096568   T   A  1534.17   &lt;NA&gt; 0.416
-## 1_158390181_77     1 158390181        &lt;NA&gt;   A   T   415.17   &lt;NA&gt; 0.593
 ##                ABHom AC
+## 1_69849_16     0.992 25
 ## 1_69869_17     0.995  4
 ## 1_69996_23     0.991 10
 ## 1_158368319_50 0.999  1
@@ -312,13 +313,12 @@ dim(output.df)</code></pre>
 ## 1_158369238_69 0.998  1
 ## rs143743518_74 0.998  3
 ## rs146025597_75 0.998 13
-## rs138096568_76 0.999  1
-## 1_158390181_77 0.997  1</code></pre>
-<pre class="r"><code>output.df$AF[1:20]</code></pre>
-<pre><code>##  [1] &quot;0.002008&quot;  &quot;0.00501&quot;   &quot;0.0005005&quot; &quot;0.008008&quot;  &quot;0.0005005&quot;
-##  [6] &quot;0.001001&quot;  &quot;0.0005005&quot; &quot;0.001502&quot;  &quot;0.001001&quot;  &quot;0.001001&quot; 
-## [11] &quot;0.0005005&quot; &quot;0.003003&quot;  &quot;0.0005005&quot; &quot;0.001001&quot;  &quot;0.001001&quot; 
-## [16] &quot;0.0005005&quot; &quot;0.001502&quot;  &quot;0.006507&quot;  &quot;0.0005005&quot; &quot;0.0005005&quot;</code></pre>
+## rs138096568_76 0.999  1</code></pre>
+<pre class="r"><code>output.df$new_AF[1:20]</code></pre>
+<pre><code>##  [1] 0.0088131610 0.0010729614 0.0037313433 0.0005005005 0.0080080080
+##  [6] 0.0005005005 0.0010010010 0.0005005005 0.0015015015 0.0010020040
+## [11] 0.0010010010 0.0005005005 0.0030030030 0.0005005005 0.0010010010
+## [16] 0.0010010010 0.0005005005 0.0015015015 0.0065065065 0.0005005005</code></pre>
 </div>
 <div id="syncronise_filtered_variants_and_genotype_data" class="section level1">
 <h1>syncronise_filtered_variants_and_genotype_data</h1>
@@ -328,6 +328,7 @@ output.mx &lt;- input.mx[rownames(output.df),]
 # Compare filtered fixed column dataframe and genotype matrix
 output.df[1:20,1:5]</code></pre>
 <pre><code>##                CHROM       POS          ID REF ALT
+## 1_69849_16         1     69849        &lt;NA&gt;   G   A
 ## 1_69869_17         1     69869        &lt;NA&gt;   T   A
 ## 1_69996_23         1     69996        &lt;NA&gt;   T   C
 ## 1_158368319_50     1 158368319        &lt;NA&gt;   A   T
@@ -346,36 +347,35 @@ output.df[1:20,1:5]</code></pre>
 ## 1_158369238_69     1 158369238        &lt;NA&gt;   T   C
 ## rs143743518_74     1 158389757 rs143743518   A   T
 ## rs146025597_75     1 158389811 rs146025597   A   T
-## rs138096568_76     1 158390056 rs138096568   T   A
-## 1_158390181_77     1 158390181        &lt;NA&gt;   A   T</code></pre>
+## rs138096568_76     1 158390056 rs138096568   T   A</code></pre>
 <pre class="r"><code>output.mx[1:20,1:2]</code></pre>
 <pre><code>##                EGAR00001237542_1520_A02 EGAR00001237543_1520_A03
-## 1_69869_17     &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_69996_23     &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_158368319_50 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs115782542_51 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs369275036_53 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs140067092_55 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_158368883_57 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs139821511_58 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs139130604_61 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_158369048_62 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs376671715_64 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs143978392_65 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_158369136_66 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs200413591_67 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs142462334_68 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_158369238_69 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs143743518_74 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs146025597_75 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs138096568_76 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_158390181_77 &quot;0/0&quot;                    &quot;0/0&quot;</code></pre>
+## 1_69849_16                           NA                       NA
+## 1_69869_17                            0                        0
+## 1_69996_23                            0                        0
+## 1_158368319_50                        0                        0
+## rs115782542_51                        0                        0
+## rs369275036_53                        0                        0
+## rs140067092_55                        0                        0
+## 1_158368883_57                        0                        0
+## rs139821511_58                        0                        0
+## rs139130604_61                        0                        0
+## 1_158369048_62                        0                        0
+## rs376671715_64                        0                        0
+## rs143978392_65                        0                        0
+## 1_158369136_66                        0                        0
+## rs200413591_67                        0                        0
+## rs142462334_68                        0                        0
+## 1_158369238_69                        0                        0
+## rs143743518_74                        0                        0
+## rs146025597_75                        0                        0
+## rs138096568_76                        0                        0</code></pre>
 </div>
 <div id="update_dataframe_naming" class="section level1">
 <h1>update_dataframe_naming</h1>
 <pre class="r"><code># Reset of output dataframe names
 fixed_af_filt_icr1000_or.df &lt;- output.df
-gt_af_filt_icr1000_or.mx &lt;- output.mx
+gt_add_af_filt_icr1000_or.mx &lt;- output.mx
 
 # Clean-up
 rm(input.df, output.df, input.mx, output.mx)</code></pre>
@@ -387,9 +387,9 @@ rm(input.df, output.df, input.mx, output.mx)</code></pre>
 <div id="final_section" class="section level1">
 <h1>final_section</h1>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>## [1] &quot;base_folder&quot;                 &quot;fixed_af_filt_icr1000_or.df&quot;
-## [3] &quot;gt_af_filt_icr1000_or.mx&quot;    &quot;input_folder&quot;               
-## [5] &quot;meta.df&quot;                     &quot;output_folder&quot;</code></pre>
+<pre><code>## [1] &quot;base_folder&quot;                  &quot;fixed_af_filt_icr1000_or.df&quot; 
+## [3] &quot;gt_add_af_filt_icr1000_or.mx&quot; &quot;input_folder&quot;                
+## [5] &quot;meta.df&quot;                      &quot;output_folder&quot;</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.4.1 (2017-06-30)
 ## Platform: x86_64-redhat-linux-gnu (64-bit)
@@ -410,17 +410,17 @@ rm(input.df, output.df, input.mx, output.mx)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] bindrcpp_0.2 knitr_1.20   dplyr_0.7.4 
+## [1] bindrcpp_0.2.2 knitr_1.20     dplyr_0.7.4   
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.16     digest_0.6.15    rprojroot_1.3-2  assertthat_0.2.0
 ##  [5] R6_2.2.2         backports_1.1.2  magrittr_1.5     evaluate_0.10.1 
-##  [9] pillar_1.2.1     rlang_0.2.0      stringi_1.1.7    rmarkdown_1.9   
-## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.18     
+##  [9] pillar_1.2.2     rlang_0.2.0      stringi_1.2.2    rmarkdown_1.9   
+## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.19     
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-04 14:39:19 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 16:24:45 UTC&quot;</code></pre>
 </div>
 
 

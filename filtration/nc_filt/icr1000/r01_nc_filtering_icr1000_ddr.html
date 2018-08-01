@@ -123,19 +123,19 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 7 May 2018</p>
+Updated: David Gilfoyle 16 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of AF filtered dataset to select non-coding (Consequence), high confidence (HC) non-coding (FATHMM_MKL_NC &gt; 0.5 and CADD_PHRED &gt; 15) and HC non-coding variants in genes with pLI &gt;= 0.9<br />
+<p>Variant filtering of AF filtered dataset to select non-coding (Consequence) and high confidence (HC) non-coding (FATHMM_MKL_NC &gt; 0.5 and CADD_PHRED &gt; 20)<br />
 Dataset: ICR1000<br />
 Gene Selection: DNA Repair Genes<br />
-Input Variants: 6,442</p>
+Input Variants: 6,152</p>
 </div>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-07 08:50:24 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 19:45:31 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -162,12 +162,12 @@ load(paste(input_folder, &quot;r01_icr1000_ddr_af_filtered.RData&quot;, sep=&quo
 # Setup script input dataframe naming
 input.df &lt;- fixed_af_filt_icr1000_ddr.df
 rm(fixed_af_filt_icr1000_ddr.df)
-input.mx &lt;- gt_af_filt_icr1000_ddr.mx
-rm(gt_af_filt_icr1000_ddr.mx)
+input.mx &lt;- gt_add_af_filt_icr1000_ddr.mx
+rm(gt_add_af_filt_icr1000_ddr.mx)
 
 # Check input dataframe
 dim(input.df)</code></pre>
-<pre><code>## [1] 6442   92</code></pre>
+<pre><code>## [1] 6152   95</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>input.df[1:20,1:10]</code></pre>
@@ -185,10 +185,10 @@ dim(input.df)</code></pre>
 ## rs111474129_27     1  2121751 rs111474129    G   A   581.87   &lt;NA&gt; 0.612
 ## 1_2121926_29       1  2121926        &lt;NA&gt;    G   A   408.45   &lt;NA&gt; 0.559
 ## 1_2122080_30       1  2122080        &lt;NA&gt;    C   T   433.17   &lt;NA&gt; 0.583
+## 1_2124345_32       1  2124345        &lt;NA&gt; TTTG   T 14687.90   &lt;NA&gt;    NA
 ## 1_2124416_33       1  2124416        &lt;NA&gt;    T   C   793.17   &lt;NA&gt; 0.556
 ## rs147283443_42     1  2125440 rs147283443    T   C   670.98   &lt;NA&gt; 0.552
 ## rs146607591_44     1  2125543 rs146607591    A   G  1040.01   &lt;NA&gt; 0.478
-## 1_10490723_51      1 10490723        &lt;NA&gt;    C   T   289.16   &lt;NA&gt; 0.286
 ## 1_10491355_52      1 10491355        &lt;NA&gt;    C   A   835.17   &lt;NA&gt; 0.533
 ## 1_10491358_53      1 10491358        &lt;NA&gt;    A   G   608.17   &lt;NA&gt; 0.532
 ## 1_10491417_54      1 10491417        &lt;NA&gt; CTTT   C  1976.10   &lt;NA&gt;    NA
@@ -206,10 +206,10 @@ dim(input.df)</code></pre>
 ## rs111474129_27 0.999  3
 ## 1_2121926_29   0.998  1
 ## 1_2122080_30   0.999  1
+## 1_2124345_32      NA 55
 ## 1_2124416_33   0.999  1
 ## rs147283443_42 0.997  3
 ## rs146607591_44 0.998  4
-## 1_10490723_51  1.000  5
 ## 1_10491355_52  0.996  1
 ## 1_10491358_53  0.997  1
 ## 1_10491417_54     NA  1</code></pre>
@@ -223,49 +223,49 @@ dim(input.df)</code></pre>
 ##  [9] &quot;downstream_gene_variant&quot; &quot;intron_variant&quot;         
 ## [11] &quot;intron_variant&quot;          &quot;intron_variant&quot;         
 ## [13] &quot;intron_variant&quot;          &quot;intron_variant&quot;         
-## [15] &quot;synonymous_variant&quot;      &quot;missense_variant&quot;       
-## [17] &quot;intron_variant&quot;          &quot;intron_variant&quot;         
+## [15] &quot;intron_variant&quot;          &quot;synonymous_variant&quot;     
+## [17] &quot;missense_variant&quot;        &quot;intron_variant&quot;         
 ## [19] &quot;intron_variant&quot;          &quot;intron_variant&quot;</code></pre>
 <pre class="r"><code>class(input.df$FATHMM_MKL_NC)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>input.df$FATHMM_MKL_NC[1:20]</code></pre>
 <pre><code>##  [1] &quot;0.16637&quot; &quot;0.36117&quot; &quot;0.15347&quot; &quot;0.96315&quot; &quot;0.23334&quot; &quot;0.21795&quot; &quot;0.97622&quot;
-##  [8] &quot;0.96661&quot; &quot;0.93857&quot; &quot;0.19946&quot; &quot;0.43896&quot; &quot;0.19034&quot; &quot;0.20332&quot; &quot;0.08207&quot;
-## [15] &quot;0.32608&quot; &quot;0.15068&quot; &quot;0.44501&quot; &quot;0.07326&quot; &quot;0.06275&quot; NA</code></pre>
+##  [8] &quot;0.96661&quot; &quot;0.93857&quot; &quot;0.19946&quot; &quot;0.43896&quot; &quot;0.19034&quot; &quot;0.20332&quot; NA       
+## [15] &quot;0.08207&quot; &quot;0.32608&quot; &quot;0.15068&quot; &quot;0.07326&quot; &quot;0.06275&quot; NA</code></pre>
 <pre class="r"><code>class(input.df$CADD_PHRED)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>input.df$CADD_PHRED[1:20]</code></pre>
 <pre><code>##  [1] &quot;1.515&quot; &quot;16.83&quot; &quot;3.949&quot; &quot;7.949&quot; &quot;6.472&quot; &quot;6.287&quot; &quot;11.80&quot; &quot;8.635&quot;
-##  [9] &quot;5.199&quot; &quot;3.582&quot; &quot;1.530&quot; &quot;12.43&quot; &quot;6.411&quot; &quot;2.605&quot; &quot;0.079&quot; &quot;12.78&quot;
-## [17] &quot;8.679&quot; &quot;6.554&quot; &quot;3.119&quot; NA</code></pre>
+##  [9] &quot;5.199&quot; &quot;3.582&quot; &quot;1.530&quot; &quot;12.43&quot; &quot;6.411&quot; NA      &quot;2.605&quot; &quot;0.079&quot;
+## [17] &quot;12.78&quot; &quot;6.554&quot; &quot;3.119&quot; NA</code></pre>
 <pre class="r"><code>class(input.df$ExACpLI)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>input.df$ExACpLI[1:20]</code></pre>
 <pre><code>##  [1] &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot;
-## [11] &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.01&quot; &quot;0.01&quot; &quot;0.01&quot; &quot;0.01&quot;</code></pre>
+## [11] &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.79&quot; &quot;0.01&quot; &quot;0.01&quot; &quot;0.01&quot;</code></pre>
 <pre class="r"><code>dim(input.mx)</code></pre>
-<pre><code>## [1] 6442  999</code></pre>
+<pre><code>## [1] 6152  999</code></pre>
 <pre class="r"><code>class(input.mx)</code></pre>
 <pre><code>## [1] &quot;matrix&quot;</code></pre>
 <pre class="r"><code>input.mx[1:5,1:5]</code></pre>
 <pre><code>##               EGAR00001237542_1520_A02 EGAR00001237543_1520_A03
-## 1_2115989_1   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs56402864_2  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs185563823_3 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs11553733_6  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2116628_7   &quot;0/0&quot;                    &quot;0/0&quot;                   
+## 1_2115989_1                          0                        0
+## rs56402864_2                         0                        0
+## rs185563823_3                        0                        0
+## rs11553733_6                         0                        0
+## 1_2116628_7                         NA                       NA
 ##               EGAR00001237544_1520_A04 EGAR00001237545_1520_A08
-## 1_2115989_1   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs56402864_2  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs185563823_3 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs11553733_6  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2116628_7   &quot;0/0&quot;                    &quot;0/0&quot;                   
+## 1_2115989_1                          0                        0
+## rs56402864_2                         0                        0
+## rs185563823_3                        0                        0
+## rs11553733_6                         0                        0
+## 1_2116628_7                         NA                        0
 ##               EGAR00001237546_1520_A09
-## 1_2115989_1   &quot;0/0&quot;                   
-## rs56402864_2  &quot;0/0&quot;                   
-## rs185563823_3 &quot;0/0&quot;                   
-## rs11553733_6  &quot;0/0&quot;                   
-## 1_2116628_7   &quot;0/0&quot;</code></pre>
+## 1_2115989_1                          0
+## rs56402864_2                         0
+## rs185563823_3                        0
+## rs11553733_6                         0
+## 1_2116628_7                          0</code></pre>
 <pre class="r"><code># Check rowmnames are same 
 sum(rownames(input.mx) != rownames(input.df)) # should be 0</code></pre>
 <pre><code>## [1] 0</code></pre>
@@ -297,7 +297,7 @@ removed_variant.df &lt;- input.df %&gt;%
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 6018   92</code></pre>
+<pre><code>## [1] 5746   95</code></pre>
 <pre class="r"><code>class(output.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
@@ -315,10 +315,10 @@ dim(output.df)</code></pre>
 ## rs111474129_27     1  2121751 rs111474129    G   A   581.87   &lt;NA&gt; 0.612
 ## 1_2121926_29       1  2121926        &lt;NA&gt;    G   A   408.45   &lt;NA&gt; 0.559
 ## 1_2122080_30       1  2122080        &lt;NA&gt;    C   T   433.17   &lt;NA&gt; 0.583
+## 1_2124345_32       1  2124345        &lt;NA&gt; TTTG   T 14687.90   &lt;NA&gt;    NA
 ## 1_2124416_33       1  2124416        &lt;NA&gt;    T   C   793.17   &lt;NA&gt; 0.556
 ## rs147283443_42     1  2125440 rs147283443    T   C   670.98   &lt;NA&gt; 0.552
 ## rs146607591_44     1  2125543 rs146607591    A   G  1040.01   &lt;NA&gt; 0.478
-## 1_10490723_51      1 10490723        &lt;NA&gt;    C   T   289.16   &lt;NA&gt; 0.286
 ## 1_10491355_52      1 10491355        &lt;NA&gt;    C   A   835.17   &lt;NA&gt; 0.533
 ## 1_10491358_53      1 10491358        &lt;NA&gt;    A   G   608.17   &lt;NA&gt; 0.532
 ## 1_10491417_54      1 10491417        &lt;NA&gt; CTTT   C  1976.10   &lt;NA&gt;    NA
@@ -336,10 +336,10 @@ dim(output.df)</code></pre>
 ## rs111474129_27 0.999  3
 ## 1_2121926_29   0.998  1
 ## 1_2122080_30   0.999  1
+## 1_2124345_32      NA 55
 ## 1_2124416_33   0.999  1
 ## rs147283443_42 0.997  3
 ## rs146607591_44 0.998  4
-## 1_10490723_51  1.000  5
 ## 1_10491355_52  0.996  1
 ## 1_10491358_53  0.997  1
 ## 1_10491417_54     NA  1</code></pre>
@@ -358,39 +358,38 @@ dim(output.df)</code></pre>
 ##  [46] &quot;TOPBP1&quot;      &quot;ATR&quot;         &quot;HLTF&quot;        &quot;RFC4&quot;        &quot;HES1&quot;       
 ##  [51] &quot;RNF168&quot;      &quot;UVSSA&quot;       &quot;POLN&quot;        &quot;HAUS3&quot;       &quot;RNF4&quot;       
 ##  [56] &quot;RFC1&quot;        &quot;HELQ&quot;        &quot;FAM175A&quot;     &quot;NEIL3&quot;       &quot;RAD1&quot;       
-##  [61] &quot;BRIX1&quot;       &quot;ERCC8&quot;       &quot;CDK7&quot;        &quot;RAD17&quot;       &quot;GTF2H2&quot;     
-##  [66] &quot;COL4A3BP&quot;    &quot;POLK&quot;        &quot;MSH3&quot;        &quot;XRCC4&quot;       &quot;RASA1&quot;      
-##  [71] &quot;CCNH&quot;        &quot;RAD50&quot;       &quot;UBE2B&quot;       &quot;UIMC1&quot;       &quot;TDP2&quot;       
-##  [76] &quot;MDC1&quot;        &quot;FANCE&quot;       &quot;RNF8&quot;        &quot;POLH&quot;        &quot;REV3L&quot;      
-##  [81] &quot;SHPRH&quot;       &quot;GTF2H5&quot;      &quot;NUDT1&quot;       &quot;PMS2&quot;        &quot;RPA3&quot;       
-##  [86] &quot;MPLKIP&quot;      &quot;POLM&quot;        &quot;HUS1&quot;        &quot;RFC2&quot;        &quot;PMS2P3&quot;     
-##  [91] &quot;SHFM1&quot;       &quot;XRCC2&quot;       &quot;NEIL2&quot;       &quot;WRN&quot;         &quot;POLB&quot;       
-##  [96] &quot;PRKDC&quot;       &quot;MCM4&quot;        &quot;UBE2V2&quot;      &quot;NBN&quot;         &quot;RAD54B&quot;     
-## [101] &quot;RRM2B&quot;       &quot;LRRC14&quot;      &quot;APTX&quot;        &quot;FANCG&quot;       &quot;RMI1&quot;       
-## [106] &quot;FANCC&quot;       &quot;XPA&quot;         &quot;RAD23B&quot;      &quot;DCLRE1C&quot;     &quot;ERCC6&quot;      
-## [111] &quot;DNTT&quot;        &quot;MMS19&quot;       &quot;POLL&quot;        &quot;DCLRE1A&quot;     &quot;MGMT&quot;       
-## [116] &quot;GTF2H1&quot;      &quot;FANCF&quot;       &quot;ALKBH3&quot;      &quot;DDB2&quot;        &quot;PRPF19&quot;     
-## [121] &quot;DDB1&quot;        &quot;DAK&quot;         &quot;FEN1&quot;        &quot;MUS81&quot;       &quot;RAD9A&quot;      
-## [126] &quot;MRE11A&quot;      &quot;ATM&quot;         &quot;HMBS&quot;        &quot;H2AFX&quot;       &quot;CHEK1&quot;      
-## [131] &quot;RAD52&quot;       &quot;RECQL&quot;       &quot;SMUG1&quot;       &quot;NABP2&quot;       &quot;UBE2N&quot;      
-## [136] &quot;SYCP3&quot;       &quot;TDG&quot;         &quot;GLT8D2&quot;      &quot;ALKBH2&quot;      &quot;UNG&quot;        
-## [141] &quot;RFC5&quot;        &quot;GTF2H3&quot;      &quot;POLE&quot;        &quot;HMGB1&quot;       &quot;BRCA2&quot;      
-## [146] &quot;RFC3&quot;        &quot;ERCC5&quot;       &quot;LIG4&quot;        &quot;CUL4A&quot;       &quot;PARP2&quot;      
-## [151] &quot;APEX1&quot;       &quot;FANCM&quot;       &quot;MNAT1&quot;       &quot;RAD51B&quot;      &quot;MLH3&quot;       
-## [156] &quot;TDP1&quot;        &quot;XRCC3&quot;       &quot;FAN1&quot;        &quot;RAD51&quot;       &quot;TP53BP1&quot;    
-## [161] &quot;DUT&quot;         &quot;NEIL1&quot;       &quot;MAN2C1&quot;      &quot;FANCI&quot;       &quot;POLG&quot;       
-## [166] &quot;BLM&quot;         &quot;MPG&quot;         &quot;EME2&quot;        &quot;MRPS34&quot;      &quot;SPSB3&quot;      
-## [171] &quot;NTHL1&quot;       &quot;SLX4&quot;        &quot;RMI2&quot;        &quot;ERCC4&quot;       &quot;PALB2&quot;      
-## [176] &quot;FANCA&quot;       &quot;RPA1&quot;        &quot;TP53&quot;        &quot;PER1&quot;        &quot;TOP3A&quot;      
-## [181] &quot;LIG3&quot;        &quot;RAD51D&quot;      &quot;RDM1&quot;        &quot;BRCA1&quot;       &quot;EME1&quot;       
-## [186] &quot;TEX14&quot;       &quot;RAD51C&quot;      &quot;BRIP1&quot;       &quot;RECQL5&quot;      &quot;SAP30BP&quot;    
-## [191] &quot;ENDOV&quot;       &quot;C17orf70&quot;    &quot;RBBP8&quot;       &quot;POLI&quot;        &quot;CHAF1A&quot;     
-## [196] &quot;XAB2&quot;        &quot;RAD23A&quot;      &quot;BABAM1&quot;      &quot;C19orf40&quot;    &quot;XRCC1&quot;      
-## [201] &quot;ERCC2&quot;       &quot;ERCC1&quot;       &quot;LIG1&quot;        &quot;PTOV1&quot;       &quot;PNKP&quot;       
-## [206] &quot;POLD1&quot;       &quot;PCNA&quot;        &quot;SPO11&quot;       &quot;CHEK2&quot;       &quot;HSCB&quot;       
-## [211] &quot;DMC1&quot;        &quot;RBX1&quot;        &quot;XRCC6&quot;       &quot;FANCB&quot;       &quot;APEX2&quot;      
-## [216] &quot;ALAS2&quot;       &quot;RPA4&quot;        &quot;UBE2A&quot;       &quot;CUL4B&quot;       &quot;CETN2&quot;      
-## [221] &quot;TREX2&quot;       &quot;HAUS7&quot;       &quot;BRCC3&quot;</code></pre>
+##  [61] &quot;BRIX1&quot;       &quot;ERCC8&quot;       &quot;CDK7&quot;        &quot;RAD17&quot;       &quot;COL4A3BP&quot;   
+##  [66] &quot;POLK&quot;        &quot;MSH3&quot;        &quot;XRCC4&quot;       &quot;RASA1&quot;       &quot;CCNH&quot;       
+##  [71] &quot;RAD50&quot;       &quot;UBE2B&quot;       &quot;UIMC1&quot;       &quot;TDP2&quot;        &quot;FANCE&quot;      
+##  [76] &quot;RNF8&quot;        &quot;POLH&quot;        &quot;REV3L&quot;       &quot;SHPRH&quot;       &quot;GTF2H5&quot;     
+##  [81] &quot;NUDT1&quot;       &quot;PMS2&quot;        &quot;RPA3&quot;        &quot;MPLKIP&quot;      &quot;POLM&quot;       
+##  [86] &quot;HUS1&quot;        &quot;RFC2&quot;        &quot;PMS2P3&quot;      &quot;SHFM1&quot;       &quot;XRCC2&quot;      
+##  [91] &quot;NEIL2&quot;       &quot;WRN&quot;         &quot;POLB&quot;        &quot;PRKDC&quot;       &quot;MCM4&quot;       
+##  [96] &quot;UBE2V2&quot;      &quot;NBN&quot;         &quot;RAD54B&quot;      &quot;RRM2B&quot;       &quot;LRRC14&quot;     
+## [101] &quot;APTX&quot;        &quot;FANCG&quot;       &quot;RMI1&quot;        &quot;FANCC&quot;       &quot;XPA&quot;        
+## [106] &quot;RAD23B&quot;      &quot;DCLRE1C&quot;     &quot;ERCC6&quot;       &quot;DNTT&quot;        &quot;MMS19&quot;      
+## [111] &quot;POLL&quot;        &quot;DCLRE1A&quot;     &quot;MGMT&quot;        &quot;GTF2H1&quot;      &quot;FANCF&quot;      
+## [116] &quot;ALKBH3&quot;      &quot;DDB2&quot;        &quot;PRPF19&quot;      &quot;DDB1&quot;        &quot;DAK&quot;        
+## [121] &quot;FEN1&quot;        &quot;MUS81&quot;       &quot;RAD9A&quot;       &quot;MRE11A&quot;      &quot;ATM&quot;        
+## [126] &quot;HMBS&quot;        &quot;H2AFX&quot;       &quot;CHEK1&quot;       &quot;RAD52&quot;       &quot;RECQL&quot;      
+## [131] &quot;SMUG1&quot;       &quot;NABP2&quot;       &quot;UBE2N&quot;       &quot;SYCP3&quot;       &quot;TDG&quot;        
+## [136] &quot;GLT8D2&quot;      &quot;ALKBH2&quot;      &quot;UNG&quot;         &quot;RFC5&quot;        &quot;GTF2H3&quot;     
+## [141] &quot;POLE&quot;        &quot;HMGB1&quot;       &quot;BRCA2&quot;       &quot;RFC3&quot;        &quot;ERCC5&quot;      
+## [146] &quot;LIG4&quot;        &quot;CUL4A&quot;       &quot;PARP2&quot;       &quot;APEX1&quot;       &quot;FANCM&quot;      
+## [151] &quot;MNAT1&quot;       &quot;RAD51B&quot;      &quot;MLH3&quot;        &quot;TDP1&quot;        &quot;XRCC3&quot;      
+## [156] &quot;FAN1&quot;        &quot;RAD51&quot;       &quot;TP53BP1&quot;     &quot;DUT&quot;         &quot;NEIL1&quot;      
+## [161] &quot;MAN2C1&quot;      &quot;FANCI&quot;       &quot;POLG&quot;        &quot;BLM&quot;         &quot;MPG&quot;        
+## [166] &quot;EME2&quot;        &quot;SPSB3&quot;       &quot;NTHL1&quot;       &quot;SLX4&quot;        &quot;RMI2&quot;       
+## [171] &quot;ERCC4&quot;       &quot;PALB2&quot;       &quot;FANCA&quot;       &quot;RPA1&quot;        &quot;TP53&quot;       
+## [176] &quot;PER1&quot;        &quot;TOP3A&quot;       &quot;LIG3&quot;        &quot;RAD51D&quot;      &quot;RDM1&quot;       
+## [181] &quot;BRCA1&quot;       &quot;EME1&quot;        &quot;TEX14&quot;       &quot;RAD51C&quot;      &quot;BRIP1&quot;      
+## [186] &quot;RECQL5&quot;      &quot;SAP30BP&quot;     &quot;ENDOV&quot;       &quot;C17orf70&quot;    &quot;RBBP8&quot;      
+## [191] &quot;POLI&quot;        &quot;CHAF1A&quot;      &quot;XAB2&quot;        &quot;RAD23A&quot;      &quot;BABAM1&quot;     
+## [196] &quot;C19orf40&quot;    &quot;XRCC1&quot;       &quot;ERCC2&quot;       &quot;ERCC1&quot;       &quot;LIG1&quot;       
+## [201] &quot;PTOV1&quot;       &quot;PNKP&quot;        &quot;POLD1&quot;       &quot;PCNA&quot;        &quot;SPO11&quot;      
+## [206] &quot;CHEK2&quot;       &quot;DMC1&quot;        &quot;RBX1&quot;        &quot;XRCC6&quot;       &quot;FANCB&quot;      
+## [211] &quot;APEX2&quot;       &quot;ALAS2&quot;       &quot;UBE2A&quot;       &quot;CUL4B&quot;       &quot;CETN2&quot;      
+## [216] &quot;TREX2&quot;       &quot;HAUS7&quot;       &quot;BRCC3&quot;</code></pre>
 <pre class="r"><code>unique(removed_variant.df$SYMBOL)</code></pre>
 <pre><code>##   [1] &quot;C1orf86&quot;     &quot;APITD1-CORT&quot; &quot;CORT&quot;        &quot;FBXO6&quot;       &quot;RPA2&quot;       
 ##   [6] &quot;HPDL&quot;        &quot;MUTYH&quot;       &quot;TOE1&quot;        &quot;RAD54L&quot;      &quot;LRRC41&quot;     
@@ -428,8 +427,8 @@ dim(output.df)</code></pre>
 ## [166] &quot;RAD23A&quot;      &quot;GADD45GIP1&quot;  &quot;BABAM1&quot;      &quot;CEP89&quot;       &quot;XRCC1&quot;      
 ## [171] &quot;KLC3&quot;        &quot;ERCC2&quot;       &quot;CD3EAP&quot;      &quot;ERCC1&quot;       &quot;FOSB&quot;       
 ## [176] &quot;LIG1&quot;        &quot;PTOV1&quot;       &quot;POLD1&quot;       &quot;PCNA&quot;        &quot;SPO11&quot;      
-## [181] &quot;CHEK2&quot;       &quot;HSCB&quot;        &quot;DMC1&quot;        &quot;XRCC6&quot;       &quot;FANCB&quot;      
-## [186] &quot;MOSPD2&quot;      &quot;ALAS2&quot;       &quot;HAUS7&quot;       &quot;BRCC3&quot;</code></pre>
+## [181] &quot;CHEK2&quot;       &quot;DMC1&quot;        &quot;XRCC6&quot;       &quot;MOSPD2&quot;      &quot;ALAS2&quot;      
+## [186] &quot;HAUS7&quot;       &quot;BRCC3&quot;</code></pre>
 </div>
 <div id="nc_filtering" class="section level1">
 <h1>nc_filtering</h1>
@@ -453,7 +452,7 @@ output.df &lt;- tibble::column_to_rownames(output.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 460  92</code></pre>
+<pre><code>## [1] 427  95</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
 <pre><code>##                 CHROM      POS          ID REF ALT     QUAL FILTER ABHet
 ## 1_2115989_1         1  2115989        &lt;NA&gt;   C   G   488.17   &lt;NA&gt; 0.537
@@ -471,11 +470,11 @@ dim(output.df)</code></pre>
 ## rs41544619_138      1 28241179  rs41544619   A   G  2985.88   &lt;NA&gt; 0.529
 ## rs41562718_139      1 28241183  rs41562718   C   A  2968.99   &lt;NA&gt; 0.536
 ## 1_28241202_140      1 28241202        &lt;NA&gt;   T   A   487.17   &lt;NA&gt; 0.419
-## rs372487707_187     1 45805534 rs372487707   T   C   346.30   &lt;NA&gt; 0.537
-## 1_45805677_192      1 45805677        &lt;NA&gt;   C   G  1385.12   &lt;NA&gt;    NA
-## 1_45805677_193      1 45805677        &lt;NA&gt;   C   T  1385.12   &lt;NA&gt;    NA
 ## 1_45805788_194      1 45805788        &lt;NA&gt;   C   T   664.51   &lt;NA&gt; 0.440
 ## rs3219467_195       1 45805816   rs3219467   G   C   623.18   &lt;NA&gt; 0.618
+## rs373902321_197     1 45806007 rs373902321   G   T   553.17   &lt;NA&gt; 0.638
+## 1_45806015_198      1 45806015        &lt;NA&gt;   G   A   594.17   &lt;NA&gt; 0.488
+## rs202082128_208     1 46714074 rs202082128   C   G  6911.79   &lt;NA&gt; 0.525
 ##                 ABHom AC
 ## 1_2115989_1     0.996  1
 ## rs56402864_2    0.999  3
@@ -492,11 +491,11 @@ dim(output.df)</code></pre>
 ## rs41544619_138  0.999  9
 ## rs41562718_139  0.997 10
 ## 1_28241202_140  0.999  1
-## rs372487707_187 0.998  5
-## 1_45805677_192     NA 10
-## 1_45805677_193     NA  3
 ## 1_45805788_194  0.998  4
-## rs3219467_195   0.997  4</code></pre>
+## rs3219467_195   0.997  4
+## rs373902321_197 0.997  1
+## 1_45806015_198  0.999  1
+## rs202082128_208 0.999  6</code></pre>
 <pre class="r"><code>output.df$Consequence[1:20]</code></pre>
 <pre><code>##  [1] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
 ##  [3] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
@@ -511,11 +510,11 @@ dim(output.df)</code></pre>
 <pre class="r"><code>output.df$FATHMM_MKL_NC[1:20]</code></pre>
 <pre><code>##  [1] &quot;0.16637&quot; &quot;0.36117&quot; &quot;0.15347&quot; &quot;0.96315&quot; &quot;0.23334&quot; &quot;0.21795&quot; &quot;0.97622&quot;
 ##  [8] &quot;0.96661&quot; &quot;0.93857&quot; &quot;0.23865&quot; &quot;0.03902&quot; &quot;0.15682&quot; &quot;0.18271&quot; &quot;0.13777&quot;
-## [15] &quot;0.10974&quot; &quot;0.34739&quot; &quot;0.37013&quot; &quot;0.38491&quot; &quot;0.41604&quot; &quot;0.44424&quot;</code></pre>
+## [15] &quot;0.10974&quot; &quot;0.41604&quot; &quot;0.44424&quot; &quot;0.39677&quot; &quot;0.41060&quot; &quot;0.82329&quot;</code></pre>
 <pre class="r"><code>output.df$CADD_PHRED[1:20]</code></pre>
 <pre><code>##  [1] &quot;1.515&quot; &quot;16.83&quot; &quot;3.949&quot; &quot;7.949&quot; &quot;6.472&quot; &quot;6.287&quot; &quot;11.80&quot; &quot;8.635&quot;
-##  [9] &quot;5.199&quot; &quot;9.161&quot; &quot;5.124&quot; &quot;13.33&quot; &quot;4.517&quot; &quot;10.59&quot; &quot;7.848&quot; &quot;6.545&quot;
-## [17] &quot;3.783&quot; &quot;6.155&quot; &quot;10.28&quot; &quot;5.795&quot;</code></pre>
+##  [9] &quot;5.199&quot; &quot;9.161&quot; &quot;5.124&quot; &quot;13.33&quot; &quot;4.517&quot; &quot;10.59&quot; &quot;7.848&quot; &quot;10.28&quot;
+## [17] &quot;5.795&quot; &quot;5.233&quot; &quot;7.390&quot; &quot;11.34&quot;</code></pre>
 </div>
 <div id="syncronise_filtered_variants_and_genotype_data_reg" class="section level1">
 <h1>syncronise_filtered_variants_and_genotype_data_reg</h1>
@@ -540,62 +539,62 @@ output.df[1:20,1:5]</code></pre>
 ## rs41544619_138      1 28241179  rs41544619   A   G
 ## rs41562718_139      1 28241183  rs41562718   C   A
 ## 1_28241202_140      1 28241202        &lt;NA&gt;   T   A
-## rs372487707_187     1 45805534 rs372487707   T   C
-## 1_45805677_192      1 45805677        &lt;NA&gt;   C   G
-## 1_45805677_193      1 45805677        &lt;NA&gt;   C   T
 ## 1_45805788_194      1 45805788        &lt;NA&gt;   C   T
-## rs3219467_195       1 45805816   rs3219467   G   C</code></pre>
+## rs3219467_195       1 45805816   rs3219467   G   C
+## rs373902321_197     1 45806007 rs373902321   G   T
+## 1_45806015_198      1 45806015        &lt;NA&gt;   G   A
+## rs202082128_208     1 46714074 rs202082128   C   G</code></pre>
 <pre class="r"><code>output.mx[1:20,1:2]</code></pre>
 <pre><code>##                 EGAR00001237542_1520_A02 EGAR00001237543_1520_A03
-## 1_2115989_1     &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs56402864_2    &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs185563823_3   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs11553733_6    &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2116628_7     &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs202100130_8   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2116737_9     &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2116747_10    &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2116794_11    &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs41544618_119  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_28241086_136  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_28241113_137  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs41544619_138  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs41562718_139  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_28241202_140  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs372487707_187 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_45805677_192  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_45805677_193  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_45805788_194  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs3219467_195   &quot;0/0&quot;                    &quot;0/0&quot;</code></pre>
+## 1_2115989_1                            0                        0
+## rs56402864_2                           0                        0
+## rs185563823_3                          0                        0
+## rs11553733_6                           0                        0
+## 1_2116628_7                           NA                       NA
+## rs202100130_8                          0                        0
+## 1_2116737_9                            0                        0
+## 1_2116747_10                           0                        0
+## 1_2116794_11                           0                        0
+## rs41544618_119                         0                        0
+## 1_28241086_136                         0                        0
+## 1_28241113_137                         0                        0
+## rs41544619_138                         0                        0
+## rs41562718_139                         0                        0
+## 1_28241202_140                         0                        0
+## 1_45805788_194                        NA                       NA
+## rs3219467_195                          0                        0
+## rs373902321_197                        0                        0
+## 1_45806015_198                         0                        0
+## rs202082128_208                        0                        0</code></pre>
 </div>
 <div id="additional_filtering" class="section level1">
 <h1>additional_filtering</h1>
 <p>Output assessed based on further filtering with:<br />
 1) FATHMM_MKL_NC &gt; 0.5 - assessment indicates that some entries are NA - these appear to be insertion, deletion and substitution variants and they will be retained. However, removal of variants with FATHMM_MKL_NC &gt; 0.5 is considered appropriate to enrich dataset for potentially deleterious variants<br />
-2) CADD_PHRED &gt; 15 - assessment indicates that some entries are NA - these appear to be mainly insertion, deletion and substitution variants and they will be retained. However, removal of variants with CADD_PHRED &lt;= 15 is considered appropriate to enrich dataset for potentially deleterious variants</p>
+2) CADD_PHRED &gt; 20 - assessment indicates that some entries are NA - these appear to be mainly insertion, deletion and substitution variants and they will be retained. However, removal of variants with CADD_PHRED &lt;= 20 is considered appropriate to enrich dataset for potentially deleterious variants</p>
 <pre class="r"><code># Assessment of filtering FATHMM_MKL_NC &gt; 0.5
 class(output.df$FATHMM_MKL_NC)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>sum(is.na(output.df$FATHMM_MKL_NC))</code></pre>
-<pre><code>## [1] 47</code></pre>
+<pre><code>## [1] 43</code></pre>
 <pre class="r"><code>sum(as.numeric(output.df$FATHMM_MKL_NC) == 0.5, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
 <pre class="r"><code>sum(as.numeric(output.df$FATHMM_MKL_NC) &lt; 0.5, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 305</code></pre>
+<pre><code>## [1] 283</code></pre>
 <pre class="r"><code>sum(as.numeric(output.df$FATHMM_MKL_NC) &gt; 0.5, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 108</code></pre>
+<pre><code>## [1] 101</code></pre>
 <pre class="r"><code># output_fathmm_na.df &lt;- output.df %&gt;% 
 #   filter(is.na(FATHMM_MKL_NC))
 
-# Assessment of filtering CADD_PHREDD &gt; 15
+# Assessment of filtering CADD_PHREDD &gt; 20
 sum(is.na(output.df$CADD_PHRED))</code></pre>
-<pre><code>## [1] 47</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 2</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 370</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 41</code></pre>
+<pre><code>## [1] 43</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 366</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 18</code></pre>
 <pre class="r"><code># output_cadd_na.df &lt;- output.df %&gt;% 
 #  filter(is.na(CADD_PHRED))
 
@@ -604,20 +603,18 @@ output.df &lt;- tibble::rownames_to_column(output.df, var = &quot;rowname&quot;)
 output_hc.df &lt;- output.df %&gt;% 
   filter((as.numeric(FATHMM_MKL_NC) &gt; 0.5) |
            (is.na(FATHMM_MKL_NC))) %&gt;%
-  filter((as.numeric(CADD_PHRED) &gt; 15) |
+  filter((as.numeric(CADD_PHRED) &gt; 20) |
            (is.na(CADD_PHRED)))
 output_hc.df &lt;- tibble::column_to_rownames(output_hc.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output_hc.df)</code></pre>
-<pre><code>## [1] 80 92</code></pre>
+<pre><code>## [1] 59 95</code></pre>
 <pre class="r"><code>output_hc.df[1:20,1:10]</code></pre>
 <pre><code>##                  CHROM       POS          ID   REF     ALT    QUAL FILTER
 ## 1_62916677_288       1  62916677        &lt;NA&gt; ATATT       A  991.10   &lt;NA&gt;
 ## 1_155232977_416      1 155232977        &lt;NA&gt;   TAA       T 1039.10   &lt;NA&gt;
-## rs148908482_417      1 155233007 rs148908482     C       T 1038.17   &lt;NA&gt;
 ## 1_226549022_461      1 226549022        &lt;NA&gt;    GT       G  858.12   &lt;NA&gt;
-## rs116114067_862      2  28561426 rs116114067     T       C  392.17   &lt;NA&gt;
 ## 2_28561476_863       2  28561476        &lt;NA&gt;     A ACGGCAG  496.10   &lt;NA&gt;
 ## 2_48034074_1116      2  48034074        &lt;NA&gt;     C      CT  435.10   &lt;NA&gt;
 ## 2_48035188_1118      2  48035188        &lt;NA&gt;  ATCT       A 2643.12   &lt;NA&gt;
@@ -626,19 +623,19 @@ dim(output_hc.df)</code></pre>
 ## 2_48036417_1130      2  48036417        &lt;NA&gt;     G      GA 1219.12   &lt;NA&gt;
 ## 2_58386449_1133      2  58386449        &lt;NA&gt; TAACA       T 1179.10   &lt;NA&gt;
 ## 2_100017623_1257     2 100017623        &lt;NA&gt;     C       A  536.17   &lt;NA&gt;
-## 2_152266446_1419     2 152266446        &lt;NA&gt;     C       T  310.17   &lt;NA&gt;
-## 2_152266918_1422     2 152266918        &lt;NA&gt;     C       T  595.27   &lt;NA&gt;
 ## 2_152331684_1584     2 152331684        &lt;NA&gt;   CTT       C 1133.10   &lt;NA&gt;
 ## rs146619172_1979     3   9005160 rs146619172    AG       A 2177.93   &lt;NA&gt;
 ## 3_14187021_2293      3  14187021        &lt;NA&gt;    TG       T 3631.90   &lt;NA&gt;
 ## 3_14220271_2371      3  14220271        &lt;NA&gt;    AT       A 1121.10   &lt;NA&gt;
-## 3_39136326_2543      3  39136326        &lt;NA&gt;     C       G 2517.17   &lt;NA&gt;
+## 3_186507708_3238     3 186507708        &lt;NA&gt;     T TTTATTA 1513.10   &lt;NA&gt;
+## rs41549216_3273      3 186522504  rs41549216     G       A 2155.00   &lt;NA&gt;
+## 3_196230115_3332     3 196230115        &lt;NA&gt;   CAG       C 1300.10   &lt;NA&gt;
+## 4_39367945_3670      4  39367945        &lt;NA&gt;  CCAA       C  391.11   &lt;NA&gt;
+## 5_133726149_4475     5 133726149        &lt;NA&gt;    GA       G 2704.20   &lt;NA&gt;
 ##                  ABHet ABHom AC
 ## 1_62916677_288      NA    NA  1
 ## 1_155232977_416     NA    NA  1
-## rs148908482_417  0.557 0.999  1
 ## 1_226549022_461     NA    NA  2
-## rs116114067_862  0.556 0.999  1
 ## 2_28561476_863      NA    NA  1
 ## 2_48034074_1116     NA    NA  1
 ## 2_48035188_1118     NA    NA  2
@@ -647,40 +644,37 @@ dim(output_hc.df)</code></pre>
 ## 2_48036417_1130     NA    NA  2
 ## 2_58386449_1133     NA    NA  1
 ## 2_100017623_1257 0.523 0.999  1
-## 2_152266446_1419 0.278 0.999  1
-## 2_152266918_1422 0.578 0.998  3
 ## 2_152331684_1584    NA    NA  1
 ## rs146619172_1979    NA    NA  4
 ## 3_14187021_2293     NA    NA  3
 ## 3_14220271_2371     NA    NA  1
-## 3_39136326_2543  0.505 0.999  1</code></pre>
+## 3_186507708_3238    NA    NA  1
+## rs41549216_3273  0.432 0.999  4
+## 3_196230115_3332    NA    NA  1
+## 4_39367945_3670     NA    NA  1
+## 5_133726149_4475    NA    NA  7</code></pre>
 <pre class="r"><code>output_hc.df$Consequence[1:20]</code></pre>
-<pre><code>##  [1] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-##  [3] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-##  [5] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-##  [7] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-##  [9] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-## [11] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-## [13] &quot;3_prime_UTR_variant&quot;   &quot;upstream_gene_variant&quot;
-## [15] &quot;5_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-## [17] &quot;5_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-## [19] &quot;5_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;</code></pre>
+<pre><code>##  [1] &quot;3_prime_UTR_variant&quot; &quot;3_prime_UTR_variant&quot; &quot;3_prime_UTR_variant&quot;
+##  [4] &quot;3_prime_UTR_variant&quot; &quot;3_prime_UTR_variant&quot; &quot;3_prime_UTR_variant&quot;
+##  [7] &quot;3_prime_UTR_variant&quot; &quot;3_prime_UTR_variant&quot; &quot;3_prime_UTR_variant&quot;
+## [10] &quot;3_prime_UTR_variant&quot; &quot;3_prime_UTR_variant&quot; &quot;3_prime_UTR_variant&quot;
+## [13] &quot;5_prime_UTR_variant&quot; &quot;3_prime_UTR_variant&quot; &quot;5_prime_UTR_variant&quot;
+## [16] &quot;3_prime_UTR_variant&quot; &quot;5_prime_UTR_variant&quot; &quot;5_prime_UTR_variant&quot;
+## [19] &quot;5_prime_UTR_variant&quot; &quot;3_prime_UTR_variant&quot;</code></pre>
 <pre class="r"><code>output_hc.df$FATHMM_MKL_NC[1:20]</code></pre>
-<pre><code>##  [1] NA        NA        &quot;0.90441&quot; NA        &quot;0.90871&quot; NA        NA       
-##  [8] NA        NA        NA        NA        NA        &quot;0.94256&quot; &quot;0.87420&quot;
-## [15] &quot;0.65624&quot; NA        NA        NA        NA        &quot;0.98575&quot;</code></pre>
+<pre><code>##  [1] NA        NA        NA        NA        NA        NA        NA       
+##  [8] NA        NA        NA        &quot;0.94256&quot; NA        NA        NA       
+## [15] NA        NA        &quot;0.98387&quot; NA        NA        NA</code></pre>
 <pre class="r"><code>output_hc.df$CADD_PHRED[1:20]</code></pre>
-<pre><code>##  [1] NA      NA      &quot;18.43&quot; NA      &quot;15.01&quot; NA      NA      NA     
-##  [9] NA      NA      NA      NA      &quot;20.8&quot;  &quot;17.72&quot; &quot;19.08&quot; NA     
-## [17] NA      NA      NA      &quot;17.14&quot;</code></pre>
+<pre><code>##  [1] NA     NA     NA     NA     NA     NA     NA     NA     NA     NA    
+## [11] &quot;20.8&quot; NA     NA     NA     NA     NA     &quot;21.5&quot; NA     NA     NA</code></pre>
 <pre class="r"><code>unique(output_hc.df$SYMBOL)</code></pre>
-<pre><code>##  [1] &quot;USP1&quot;    &quot;CLK2&quot;    &quot;PARP1&quot;   &quot;BRE&quot;     &quot;MSH6&quot;    &quot;FANCL&quot;   &quot;REV1&quot;   
-##  [8] &quot;RIF1&quot;    &quot;RAD18&quot;   &quot;XPC&quot;     &quot;WDR48&quot;   &quot;RFC4&quot;    &quot;RNF168&quot;  &quot;RFC1&quot;   
-## [15] &quot;FAM175A&quot; &quot;RAD50&quot;   &quot;UBE2B&quot;   &quot;FANCE&quot;   &quot;RPA3&quot;    &quot;MCM4&quot;    &quot;LRRC14&quot; 
-## [22] &quot;XPA&quot;     &quot;DDB2&quot;    &quot;PRPF19&quot;  &quot;RAD9A&quot;   &quot;MRE11A&quot;  &quot;SMUG1&quot;   &quot;SYCP3&quot;  
-## [29] &quot;RFC5&quot;    &quot;ERCC5&quot;   &quot;LIG4&quot;    &quot;CUL4A&quot;   &quot;FANCM&quot;   &quot;TDP1&quot;    &quot;TP53BP1&quot;
-## [36] &quot;POLG&quot;    &quot;MPG&quot;     &quot;SPSB3&quot;   &quot;FANCA&quot;   &quot;RAD51D&quot;  &quot;RECQL5&quot;  &quot;POLI&quot;   
-## [43] &quot;BABAM1&quot;  &quot;XRCC1&quot;   &quot;ERCC1&quot;   &quot;SPO11&quot;   &quot;FANCB&quot;   &quot;CUL4B&quot;</code></pre>
+<pre><code>##  [1] &quot;USP1&quot;   &quot;CLK2&quot;   &quot;PARP1&quot;  &quot;BRE&quot;    &quot;MSH6&quot;   &quot;FANCL&quot;  &quot;REV1&quot;  
+##  [8] &quot;RIF1&quot;   &quot;RAD18&quot;  &quot;XPC&quot;    &quot;RFC4&quot;   &quot;RNF168&quot; &quot;RFC1&quot;   &quot;UBE2B&quot; 
+## [15] &quot;FANCE&quot;  &quot;RPA3&quot;   &quot;LRRC14&quot; &quot;XPA&quot;    &quot;PRPF19&quot; &quot;MRE11A&quot; &quot;SMUG1&quot; 
+## [22] &quot;SYCP3&quot;  &quot;RFC5&quot;   &quot;ERCC5&quot;  &quot;LIG4&quot;   &quot;CUL4A&quot;  &quot;FANCM&quot;  &quot;TDP1&quot;  
+## [29] &quot;POLG&quot;   &quot;MPG&quot;    &quot;SPSB3&quot;  &quot;FANCA&quot;  &quot;RAD51D&quot; &quot;RECQL5&quot; &quot;POLI&quot;  
+## [36] &quot;ERCC1&quot;  &quot;SPO11&quot;  &quot;CUL4B&quot;</code></pre>
 </div>
 <div id="syncronise_filtered_variants_and_genotype_data_fathmm_mkl_nc_cadd_phred" class="section level1">
 <h1>syncronise_filtered_variants_and_genotype_data_fathmm_mkl_nc_cadd_phred</h1>
@@ -692,9 +686,7 @@ output_hc.df[1:20,1:5]</code></pre>
 <pre><code>##                  CHROM       POS          ID   REF     ALT
 ## 1_62916677_288       1  62916677        &lt;NA&gt; ATATT       A
 ## 1_155232977_416      1 155232977        &lt;NA&gt;   TAA       T
-## rs148908482_417      1 155233007 rs148908482     C       T
 ## 1_226549022_461      1 226549022        &lt;NA&gt;    GT       G
-## rs116114067_862      2  28561426 rs116114067     T       C
 ## 2_28561476_863       2  28561476        &lt;NA&gt;     A ACGGCAG
 ## 2_48034074_1116      2  48034074        &lt;NA&gt;     C      CT
 ## 2_48035188_1118      2  48035188        &lt;NA&gt;  ATCT       A
@@ -703,177 +695,48 @@ output_hc.df[1:20,1:5]</code></pre>
 ## 2_48036417_1130      2  48036417        &lt;NA&gt;     G      GA
 ## 2_58386449_1133      2  58386449        &lt;NA&gt; TAACA       T
 ## 2_100017623_1257     2 100017623        &lt;NA&gt;     C       A
-## 2_152266446_1419     2 152266446        &lt;NA&gt;     C       T
-## 2_152266918_1422     2 152266918        &lt;NA&gt;     C       T
 ## 2_152331684_1584     2 152331684        &lt;NA&gt;   CTT       C
 ## rs146619172_1979     3   9005160 rs146619172    AG       A
 ## 3_14187021_2293      3  14187021        &lt;NA&gt;    TG       T
 ## 3_14220271_2371      3  14220271        &lt;NA&gt;    AT       A
-## 3_39136326_2543      3  39136326        &lt;NA&gt;     C       G</code></pre>
+## 3_186507708_3238     3 186507708        &lt;NA&gt;     T TTTATTA
+## rs41549216_3273      3 186522504  rs41549216     G       A
+## 3_196230115_3332     3 196230115        &lt;NA&gt;   CAG       C
+## 4_39367945_3670      4  39367945        &lt;NA&gt;  CCAA       C
+## 5_133726149_4475     5 133726149        &lt;NA&gt;    GA       G</code></pre>
 <pre class="r"><code>output_hc.mx[1:20,1:2]</code></pre>
 <pre><code>##                  EGAR00001237542_1520_A02 EGAR00001237543_1520_A03
-## 1_62916677_288   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_155232977_416  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs148908482_417  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_226549022_461  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs116114067_862  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_28561476_863   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_48034074_1116  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_48035188_1118  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_48035641_1123  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_48036413_1129  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_48036417_1130  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_58386449_1133  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_100017623_1257 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_152266446_1419 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_152266918_1422 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_152331684_1584 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs146619172_1979 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 3_14187021_2293  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 3_14220271_2371  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 3_39136326_2543  &quot;0/0&quot;                    &quot;0/0&quot;</code></pre>
-</div>
-<div id="additional_filtering_exac_pli" class="section level1">
-<h1>additional_filtering_exac_pli</h1>
-<p>Deleterious non-clinical variants in a single allele are expected to have a greater impact in loss intolerant genes (ExAC pLI &gt;= 0.9)</p>
-<pre class="r"><code># Assessment of impact of filtering ExAC pLI &gt;= 0.9
-sum(is.na(output_hc.df$ExACpLI))</code></pre>
-<pre><code>## [1] 5</code></pre>
-<pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &lt; 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 60</code></pre>
-<pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &gt;= 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 15</code></pre>
-<pre class="r"><code># Additional filtration based on ExAC pLI &gt;= 0.9
-output_hc.df &lt;- tibble::rownames_to_column(output_hc.df, var = &quot;rowname&quot;)
-output_hc_pli.df &lt;- output_hc.df %&gt;% 
-  filter(as.numeric(ExACpLI) &gt;= 0.9)
-output_hc_pli.df &lt;- tibble::column_to_rownames(output_hc_pli.df, var = &quot;rowname&quot;)
-
-# Check output dataframe
-dim(output_hc_pli.df)</code></pre>
-<pre><code>## [1] 15 92</code></pre>
-<pre class="r"><code>output_hc_pli.df[1:20,1:10]</code></pre>
-<pre><code>##                   CHROM       POS          ID   REF  ALT    QUAL FILTER
-## 1_62916677_288        1  62916677        &lt;NA&gt; ATATT    A  991.10   &lt;NA&gt;
-## 1_155232977_416       1 155232977        &lt;NA&gt;   TAA    T 1039.10   &lt;NA&gt;
-## rs148908482_417       1 155233007 rs148908482     C    T 1038.17   &lt;NA&gt;
-## 2_100017623_1257      2 100017623        &lt;NA&gt;     C    A  536.17   &lt;NA&gt;
-## 2_152266446_1419      2 152266446        &lt;NA&gt;     C    T  310.17   &lt;NA&gt;
-## 2_152266918_1422      2 152266918        &lt;NA&gt;     C    T  595.27   &lt;NA&gt;
-## 2_152331684_1584      2 152331684        &lt;NA&gt;   CTT    C 1133.10   &lt;NA&gt;
-## 3_39136326_2543       3  39136326        &lt;NA&gt;     C    G 2517.17   &lt;NA&gt;
-## 11_60658381_7341     11  60658381        &lt;NA&gt;    TG    T 1397.12   &lt;NA&gt;
-## rs201687311_9107     13 113917979 rs201687311 CTGAT    C  716.10   &lt;NA&gt;
-## rs370609293_9755     15  43699537 rs370609293     A    G  977.17   &lt;NA&gt;
-## rs374968939_9756     15  43699541 rs374968939     C    A 1066.17   &lt;NA&gt;
-## rs201906661_9854     15  43785248 rs201906661     G    A  651.19   &lt;NA&gt;
-## X_14891518_13710      X  14891518        &lt;NA&gt;     T    G  306.16   &lt;NA&gt;
-## X_119660603_13756     X 119660603        &lt;NA&gt;     C   CA  961.10   &lt;NA&gt;
-## NA                 &lt;NA&gt;        NA        &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;      NA   &lt;NA&gt;
-## NA.1               &lt;NA&gt;        NA        &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;      NA   &lt;NA&gt;
-## NA.2               &lt;NA&gt;        NA        &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;      NA   &lt;NA&gt;
-## NA.3               &lt;NA&gt;        NA        &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;      NA   &lt;NA&gt;
-## NA.4               &lt;NA&gt;        NA        &lt;NA&gt;  &lt;NA&gt; &lt;NA&gt;      NA   &lt;NA&gt;
-##                   ABHet ABHom   AC
-## 1_62916677_288       NA    NA    1
-## 1_155232977_416      NA    NA    1
-## rs148908482_417   0.557 0.999    1
-## 2_100017623_1257  0.523 0.999    1
-## 2_152266446_1419  0.278 0.999    1
-## 2_152266918_1422  0.578 0.998    3
-## 2_152331684_1584     NA    NA    1
-## 3_39136326_2543   0.505 0.999    1
-## 11_60658381_7341     NA    NA    2
-## rs201687311_9107     NA    NA    1
-## rs370609293_9755  0.606 0.999    1
-## rs374968939_9756  0.511 0.998    1
-## rs201906661_9854  0.435 0.999    2
-## X_14891518_13710     NA 0.979    2
-## X_119660603_13756    NA    NA    1
-## NA                   NA    NA &lt;NA&gt;
-## NA.1                 NA    NA &lt;NA&gt;
-## NA.2                 NA    NA &lt;NA&gt;
-## NA.3                 NA    NA &lt;NA&gt;
-## NA.4                 NA    NA &lt;NA&gt;</code></pre>
-<pre class="r"><code>output_hc_pli.df$Consequence[1:20]</code></pre>
-<pre><code>##  [1] &quot;3_prime_UTR_variant&quot;     &quot;3_prime_UTR_variant&quot;    
-##  [3] &quot;3_prime_UTR_variant&quot;     &quot;3_prime_UTR_variant&quot;    
-##  [5] &quot;upstream_gene_variant&quot;   &quot;5_prime_UTR_variant&quot;    
-##  [7] &quot;3_prime_UTR_variant&quot;     &quot;3_prime_UTR_variant&quot;    
-##  [9] &quot;3_prime_UTR_variant&quot;     &quot;downstream_gene_variant&quot;
-## [11] &quot;3_prime_UTR_variant&quot;     &quot;3_prime_UTR_variant&quot;    
-## [13] &quot;5_prime_UTR_variant&quot;     &quot;upstream_gene_variant&quot;  
-## [15] &quot;3_prime_UTR_variant&quot;     NA                       
-## [17] NA                        NA                       
-## [19] NA                        NA</code></pre>
-<pre class="r"><code>output_hc_pli.df$FATHMM_MKL_NC[1:20]</code></pre>
-<pre><code>##  [1] NA        NA        &quot;0.90441&quot; &quot;0.94256&quot; &quot;0.87420&quot; &quot;0.65624&quot; NA       
-##  [8] &quot;0.98575&quot; NA        NA        &quot;0.90421&quot; &quot;0.90554&quot; &quot;0.96582&quot; &quot;0.94337&quot;
-## [15] NA        NA        NA        NA        NA        NA</code></pre>
-<pre class="r"><code>output_hc_pli.df$CADD_PHRED[1:20]</code></pre>
-<pre><code>##  [1] NA      NA      &quot;18.43&quot; &quot;20.8&quot;  &quot;17.72&quot; &quot;19.08&quot; NA      &quot;17.14&quot;
-##  [9] NA      NA      &quot;18.12&quot; &quot;17.98&quot; &quot;18.21&quot; &quot;20.2&quot;  NA      NA     
-## [17] NA      NA      NA      NA</code></pre>
-<pre class="r"><code>output_hc_pli.df$ExACpLI[1:20]</code></pre>
-<pre><code>##  [1] &quot;0.99&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot;
-## [11] &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;0.99&quot; &quot;1.00&quot; NA     NA     NA     NA     NA</code></pre>
-<pre class="r"><code>unique(output_hc_pli.df$SYMBOL)</code></pre>
-<pre><code>##  [1] &quot;USP1&quot;    &quot;CLK2&quot;    &quot;REV1&quot;    &quot;RIF1&quot;    &quot;WDR48&quot;   &quot;PRPF19&quot;  &quot;CUL4A&quot;  
-##  [8] &quot;TP53BP1&quot; &quot;FANCB&quot;   &quot;CUL4B&quot;</code></pre>
-</div>
-<div id="syncronise_filtered_variants_and_genotype_data_exac_pli" class="section level1">
-<h1>syncronise_filtered_variants_and_genotype_data_exac_pli</h1>
-<pre class="r"><code># Isolate relavent rows from genotype matrix
-output_hc_pli.mx &lt;- output_hc.mx[rownames(output_hc_pli.df),]
-
-# Compare filtered fixed column dataframe and genotype matrix
-output_hc_pli.df[1:15,1:5]</code></pre>
-<pre><code>##                   CHROM       POS          ID   REF ALT
-## 1_62916677_288        1  62916677        &lt;NA&gt; ATATT   A
-## 1_155232977_416       1 155232977        &lt;NA&gt;   TAA   T
-## rs148908482_417       1 155233007 rs148908482     C   T
-## 2_100017623_1257      2 100017623        &lt;NA&gt;     C   A
-## 2_152266446_1419      2 152266446        &lt;NA&gt;     C   T
-## 2_152266918_1422      2 152266918        &lt;NA&gt;     C   T
-## 2_152331684_1584      2 152331684        &lt;NA&gt;   CTT   C
-## 3_39136326_2543       3  39136326        &lt;NA&gt;     C   G
-## 11_60658381_7341     11  60658381        &lt;NA&gt;    TG   T
-## rs201687311_9107     13 113917979 rs201687311 CTGAT   C
-## rs370609293_9755     15  43699537 rs370609293     A   G
-## rs374968939_9756     15  43699541 rs374968939     C   A
-## rs201906661_9854     15  43785248 rs201906661     G   A
-## X_14891518_13710      X  14891518        &lt;NA&gt;     T   G
-## X_119660603_13756     X 119660603        &lt;NA&gt;     C  CA</code></pre>
-<pre class="r"><code>output_hc_pli.mx[1:15,1:2]</code></pre>
-<pre><code>##                   EGAR00001237542_1520_A02 EGAR00001237543_1520_A03
-## 1_62916677_288    &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_155232977_416   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs148908482_417   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_100017623_1257  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_152266446_1419  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_152266918_1422  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 2_152331684_1584  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 3_39136326_2543   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 11_60658381_7341  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs201687311_9107  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs370609293_9755  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs374968939_9756  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs201906661_9854  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## X_14891518_13710  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## X_119660603_13756 &quot;0/0&quot;                    &quot;0/0&quot;</code></pre>
+## 1_62916677_288                          0                        0
+## 1_155232977_416                         0                        0
+## 1_226549022_461                         0                        0
+## 2_28561476_863                          0                        0
+## 2_48034074_1116                         0                        0
+## 2_48035188_1118                         0                        0
+## 2_48035641_1123                         0                        0
+## 2_48036413_1129                         0                        0
+## 2_48036417_1130                         0                        0
+## 2_58386449_1133                         0                        0
+## 2_100017623_1257                        0                        0
+## 2_152331684_1584                        0                        0
+## rs146619172_1979                        0                        0
+## 3_14187021_2293                         0                        0
+## 3_14220271_2371                         0                        0
+## 3_186507708_3238                        0                        0
+## rs41549216_3273                         0                        0
+## 3_196230115_3332                        0                        0
+## 4_39367945_3670                         0                        0
+## 5_133726149_4475                        0                        0</code></pre>
 </div>
 <div id="update_dataframe_naming" class="section level1">
 <h1>update_dataframe_naming</h1>
 <pre class="r"><code># Reset of output dataframe names
 fixed_nc_filt_icr1000_ddr.df &lt;- output.df
 fixed_nc_hc_filt_icr1000_ddr.df &lt;- output_hc.df
-fixed_nc_hc_pli_filt_icr1000_ddr.df &lt;- output_hc_pli.df
-gt_nc_filt_icr1000_ddr.mx &lt;- output.mx
-gt_nc_hc_filt_icr1000_ddr.mx &lt;- output_hc.mx
-gt_nc_hc_pli_filt_icr1000_ddr.mx &lt;- output_hc_pli.mx
+gt_add_nc_filt_icr1000_ddr.mx &lt;- output.mx
+gt_add_nc_hc_filt_icr1000_ddr.mx &lt;- output_hc.mx
 
 # Clean-up
-rm(input.df, output.df, output_hc.df, output_hc_pli.df, input.mx, output.mx, output_hc.mx, output_hc_pli.mx, ddr_genes, removed_variant.df)</code></pre>
+rm(input.df, output.df, output_hc.df, input.mx, output.mx, output_hc.mx, ddr_genes, removed_variant.df)</code></pre>
 </div>
 <div id="save_results" class="section level1">
 <h1>save_results</h1>
@@ -882,16 +745,10 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, input.mx, output.mx, out
 <div id="final_section" class="section level1">
 <h1>final_section</h1>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>##  [1] &quot;base_folder&quot;                        
-##  [2] &quot;fixed_nc_filt_icr1000_ddr.df&quot;       
-##  [3] &quot;fixed_nc_hc_filt_icr1000_ddr.df&quot;    
-##  [4] &quot;fixed_nc_hc_pli_filt_icr1000_ddr.df&quot;
-##  [5] &quot;gt_nc_filt_icr1000_ddr.mx&quot;          
-##  [6] &quot;gt_nc_hc_filt_icr1000_ddr.mx&quot;       
-##  [7] &quot;gt_nc_hc_pli_filt_icr1000_ddr.mx&quot;   
-##  [8] &quot;input_folder&quot;                       
-##  [9] &quot;meta.df&quot;                            
-## [10] &quot;output_folder&quot;</code></pre>
+<pre><code>## [1] &quot;base_folder&quot;                      &quot;fixed_nc_filt_icr1000_ddr.df&quot;    
+## [3] &quot;fixed_nc_hc_filt_icr1000_ddr.df&quot;  &quot;gt_add_nc_filt_icr1000_ddr.mx&quot;   
+## [5] &quot;gt_add_nc_hc_filt_icr1000_ddr.mx&quot; &quot;input_folder&quot;                    
+## [7] &quot;meta.df&quot;                          &quot;output_folder&quot;</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.4.1 (2017-06-30)
 ## Platform: x86_64-redhat-linux-gnu (64-bit)
@@ -912,17 +769,17 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, input.mx, output.mx, out
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] bindrcpp_0.2 knitr_1.20   dplyr_0.7.4 
+## [1] bindrcpp_0.2.2 knitr_1.20     dplyr_0.7.4   
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.16     digest_0.6.15    rprojroot_1.3-2  assertthat_0.2.0
 ##  [5] R6_2.2.2         backports_1.1.2  magrittr_1.5     evaluate_0.10.1 
-##  [9] pillar_1.2.1     rlang_0.2.0      stringi_1.1.7    rmarkdown_1.9   
-## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.18     
+##  [9] pillar_1.2.2     rlang_0.2.0      stringi_1.2.2    rmarkdown_1.9   
+## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.19     
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-07 08:50:27 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 19:45:32 UTC&quot;</code></pre>
 </div>
 
 

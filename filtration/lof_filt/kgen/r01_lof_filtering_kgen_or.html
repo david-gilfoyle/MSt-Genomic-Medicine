@@ -123,20 +123,19 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 7 May 2018</p>
+Updated: David Gilfoyle 17 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC)<br />
-and HC LoF variants in genes with pLI &gt;= 0.9<br />
+<p>Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC) and HC LoF variants in genes with pLI &gt;= 0.9<br />
 Dataset: 1000 Genome Project<br />
 Gene Selection: Olfactory Receptor Genes<br />
-Input Variants: 47,624</p>
+Input Variants: 47,482</p>
 </div>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-07 20:25:22 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 10:10:10 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -168,7 +167,7 @@ rm(gt_af_filt_kgen_or.mx)
 
 # Check input dataframe
 dim(input.df)</code></pre>
-<pre><code>## [1] 47624    94</code></pre>
+<pre><code>## [1] 47482    94</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>input.df[1:20,1:10]</code></pre>
@@ -243,7 +242,7 @@ dim(input.df)</code></pre>
 <pre><code>##  [1] &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot;
 ## [11] &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot;</code></pre>
 <pre class="r"><code>dim(input.mx)</code></pre>
-<pre><code>## [1] 47624  2504</code></pre>
+<pre><code>## [1] 47482  2504</code></pre>
 <pre class="r"><code>class(input.mx)</code></pre>
 <pre><code>## [1] &quot;matrix&quot;</code></pre>
 <pre class="r"><code>input.mx[1:5,1:5]</code></pre>
@@ -283,7 +282,7 @@ removed_variant.df &lt;- input.df %&gt;%
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 42594    94</code></pre>
+<pre><code>## [1] 42467    94</code></pre>
 <pre class="r"><code>class(output.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
@@ -413,7 +412,7 @@ output.df &lt;- tibble::column_to_rownames(output.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 437  94</code></pre>
+<pre><code>## [1] 436  94</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
 <pre><code>##                  CHROM       POS          ID   REF ALT QUAL FILTER
 ## rs548049170_26       1     69869 rs548049170     T   A  100   PASS
@@ -527,7 +526,7 @@ output.df[1:20,1:5]</code></pre>
 <h1>additional_filtering_loftee_hc</h1>
 <p>Output assessed based on further filtering with:<br />
 1) LOFTEE high confidence - assessment indicates that some entries are NA - these appear to be mainly start_lost and stop_lost and they will be retained. However, removal of low confidence variants (LC) is considered appropriate to enrich dataset for potentially deleterious variants<br />
-2) CADD_PHRED &gt; 15 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED &lt;= 15 is considered appropriate to enrich dataset for potentially deleterious variants</p>
+2) CADD_PHRED &gt; 20 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED &lt;= 20 is considered appropriate to enrich dataset for potentially deleterious variants</p>
 <pre class="r"><code># Assessment of impact of filtering LoF (LOFTEE) = High Confidence (HC)
 sum(is.na(output.df$LoF))</code></pre>
 <pre><code>## [1] 58</code></pre>
@@ -536,36 +535,36 @@ sum(is.na(output.df$LoF))</code></pre>
 <pre class="r"><code>sum(output.df$Consequence == &quot;stop_lost&quot;)</code></pre>
 <pre><code>## [1] 17</code></pre>
 <pre class="r"><code>sum(output.df$LoF == &quot;HC&quot;, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 352</code></pre>
+<pre><code>## [1] 351</code></pre>
 <pre class="r"><code>sum(output.df$LoF == &quot;LC&quot;, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 27</code></pre>
 <pre class="r"><code># output_lof_na.df &lt;- output.df %&gt;% 
 #   filter(is.na(LoF))
 
-# Assessment of filtering CADD_PHREDD &gt; 15
+# Assessment of filtering CADD_PHREDD &gt; 20
 sum(is.na(output.df$CADD_PHRED))</code></pre>
 <pre><code>## [1] 117</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 20, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 36</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 284</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 43</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 276</code></pre>
 <pre class="r"><code># output_cadd_na.df &lt;- output.df %&gt;% 
 #  filter(is.na(CADD_PHRED))
 
-# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED &gt; 15
+# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED &gt; 20
 output.df &lt;- tibble::rownames_to_column(output.df, var = &quot;rowname&quot;)
 output_hc.df &lt;- output.df %&gt;% 
   filter((LoF == &quot;HC&quot;) |
            (is.na(LoF))) %&gt;%
-  filter((as.numeric(CADD_PHRED) &gt; 15) |
+  filter((as.numeric(CADD_PHRED) &gt; 20) |
            (is.na(CADD_PHRED)))
 output_hc.df &lt;- tibble::column_to_rownames(output_hc.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output_hc.df)</code></pre>
-<pre><code>## [1] 375  94</code></pre>
+<pre><code>## [1] 367  94</code></pre>
 <pre class="r"><code>output_hc.df[1:20,1:10]</code></pre>
 <pre><code>##                  CHROM       POS          ID REF ALT QUAL FILTER
 ## rs548049170_26       1     69869 rs548049170   T   A  100   PASS
@@ -620,41 +619,40 @@ dim(output_hc.df)</code></pre>
 <pre class="r"><code>output_hc.df$CADD_PHRED[1:20]</code></pre>
 <pre><code>##  [1] &quot;33&quot;   &quot;35&quot;   &quot;36&quot;   &quot;35&quot;   NA     NA     NA     &quot;35&quot;   &quot;38&quot;   &quot;37&quot;  
 ## [11] &quot;35&quot;   &quot;36&quot;   &quot;32&quot;   &quot;24.1&quot; &quot;38&quot;   &quot;27.6&quot; NA     &quot;35&quot;   NA     &quot;28.8&quot;</code></pre>
-<pre class="r"><code>output_hc.df$LoF[100:120] # range updated to show presence of NA</code></pre>
-<pre><code>##  [1] &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; NA   &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot;
-## [15] &quot;HC&quot; NA   &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot;</code></pre>
+<pre class="r"><code>output_hc.df$LoF[100:120]</code></pre>
+<pre><code>##  [1] &quot;HC&quot; &quot;HC&quot; NA   &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; NA   &quot;HC&quot; &quot;HC&quot; &quot;HC&quot;
+## [15] &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot;</code></pre>
 <pre class="r"><code>unique(output_hc.df$SYMBOL)</code></pre>
 <pre><code>##   [1] &quot;OR4F5&quot;   &quot;OR10K1&quot;  &quot;OR6Y1&quot;   &quot;OR6P1&quot;   &quot;OR6K2&quot;   &quot;OR6N1&quot;   &quot;OR6N2&quot;  
 ##   [8] &quot;OR10J3&quot;  &quot;OR10J1&quot;  &quot;OR10J5&quot;  &quot;OR2B11&quot;  &quot;OR2G3&quot;   &quot;OR13G1&quot;  &quot;OR6F1&quot;  
-##  [15] &quot;OR14K1&quot;  &quot;OR2W3&quot;   &quot;OR2T8&quot;   &quot;OR2AK2&quot;  &quot;OR2L2&quot;   &quot;OR2L3&quot;   &quot;OR2M2&quot;  
-##  [22] &quot;OR2M4&quot;   &quot;OR2T33&quot;  &quot;OR2T12&quot;  &quot;OR2T1&quot;   &quot;OR2T7&quot;   &quot;OR2T3&quot;   &quot;OR2T5&quot;  
-##  [29] &quot;OR2G6&quot;   &quot;OR2T34&quot;  &quot;OR2T35&quot;  &quot;OR2T27&quot;  &quot;OR14I1&quot;  &quot;OR6B2&quot;   &quot;OR5AC2&quot; 
-##  [36] &quot;OR5H1&quot;   &quot;OR5H14&quot;  &quot;OR5H15&quot;  &quot;OR5K3&quot;   &quot;OR5K2&quot;   &quot;OR2Y1&quot;   &quot;OR2V2&quot;  
-##  [43] &quot;OR2B6&quot;   &quot;OR2W1&quot;   &quot;OR2J2&quot;   &quot;OR5V1&quot;   &quot;OR12D3&quot;  &quot;OR2H1&quot;   &quot;OR2H2&quot;  
-##  [50] &quot;OR2A4&quot;   &quot;OR9A4&quot;   &quot;OR2F2&quot;   &quot;OR2A5&quot;   &quot;OR2A12&quot;  &quot;OR2A2&quot;   &quot;OR2A14&quot; 
-##  [57] &quot;OR2A1&quot;   &quot;OR4F21&quot;  &quot;OR13J1&quot;  &quot;OR13C4&quot;  &quot;OR13C3&quot;  &quot;OR13C5&quot;  &quot;OR13C2&quot; 
-##  [64] &quot;OR13C9&quot;  &quot;OR13D1&quot;  &quot;OR2K2&quot;   &quot;OR1J1&quot;   &quot;OR1J2&quot;   &quot;OR1N1&quot;   &quot;OR1L8&quot;  
-##  [71] &quot;OR1Q1&quot;   &quot;OR1L1&quot;   &quot;OR1L3&quot;   &quot;OR5C1&quot;   &quot;OR1K1&quot;   &quot;OR13A1&quot;  &quot;OR52K2&quot; 
-##  [78] &quot;OR52K1&quot;  &quot;OR52M1&quot;  &quot;OR52I2&quot;  &quot;OR52I1&quot;  &quot;OR51E1&quot;  &quot;OR51E2&quot;  &quot;OR51F2&quot; 
-##  [85] &quot;OR51S1&quot;  &quot;OR51T1&quot;  &quot;OR51A7&quot;  &quot;OR51A4&quot;  &quot;OR52E2&quot;  &quot;OR52A5&quot;  &quot;OR52A1&quot; 
-##  [92] &quot;OR51V1&quot;  &quot;OR51B4&quot;  &quot;OR51B5&quot;  &quot;OR51M1&quot;  &quot;OR51I2&quot;  &quot;OR52D1&quot;  &quot;OR52H1&quot; 
-##  [99] &quot;OR52B6&quot;  &quot;OR56B1&quot;  &quot;OR52N5&quot;  &quot;OR52N1&quot;  &quot;OR52N2&quot;  &quot;OR52E6&quot;  &quot;OR56A3&quot; 
-## [106] &quot;OR52L1&quot;  &quot;OR56B4&quot;  &quot;OR52B2&quot;  &quot;OR6A2&quot;   &quot;OR10A5&quot;  &quot;OR10A4&quot;  &quot;OR5P2&quot;  
-## [113] &quot;OR5P3&quot;   &quot;OR10A3&quot;  &quot;OR4B1&quot;   &quot;OR4C3&quot;   &quot;OR4A47&quot;  &quot;OR4C13&quot;  &quot;OR4A5&quot;  
-## [120] &quot;OR4A16&quot;  &quot;OR4A15&quot;  &quot;OR4C15&quot;  &quot;OR4C11&quot;  &quot;OR4P4&quot;   &quot;OR4S2&quot;   &quot;OR4C6&quot;  
-## [127] &quot;OR5L2&quot;   &quot;OR5D16&quot;  &quot;OR5I1&quot;   &quot;OR10AG1&quot; &quot;OR5F1&quot;   &quot;OR5AS1&quot;  &quot;OR8K5&quot;  
-## [134] &quot;OR5J2&quot;   &quot;OR5T2&quot;   &quot;OR5T3&quot;   &quot;OR5T1&quot;   &quot;OR8H1&quot;   &quot;OR8J1&quot;   &quot;OR5M9&quot;  
-## [141] &quot;OR5M3&quot;   &quot;OR5M11&quot;  &quot;OR9G4&quot;   &quot;OR5AK2&quot;  &quot;OR1S2&quot;   &quot;OR10Q1&quot;  &quot;OR10W1&quot; 
-## [148] &quot;OR5B17&quot;  &quot;OR5B3&quot;   &quot;OR5B12&quot;  &quot;OR5B21&quot;  &quot;OR5A2&quot;   &quot;OR5A1&quot;   &quot;OR4D6&quot;  
-## [155] &quot;OR4D11&quot;  &quot;OR6X1&quot;   &quot;OR6M1&quot;   &quot;OR4D5&quot;   &quot;OR6T1&quot;   &quot;OR10S1&quot;  &quot;OR10G4&quot; 
-## [162] &quot;OR10G8&quot;  &quot;OR10G7&quot;  &quot;OR8B8&quot;   &quot;OR10AD1&quot; &quot;OR10A7&quot;  &quot;OR6C6&quot;   &quot;OR6C3&quot;  
-## [169] &quot;OR6C65&quot;  &quot;OR6C76&quot;  &quot;OR6C70&quot;  &quot;OR6C68&quot;  &quot;OR6C4&quot;   &quot;OR2AP1&quot;  &quot;OR11H12&quot;
-## [176] &quot;OR4Q3&quot;   &quot;OR4M1&quot;   &quot;OR4K5&quot;   &quot;OR4K1&quot;   &quot;OR4K13&quot;  &quot;OR4L1&quot;   &quot;OR4N5&quot;  
-## [183] &quot;OR11G2&quot;  &quot;OR11H6&quot;  &quot;OR11H4&quot;  &quot;OR5AU1&quot;  &quot;OR10G3&quot;  &quot;OR4E2&quot;   &quot;OR4M2&quot;  
-## [190] &quot;OR4N4&quot;   &quot;OR4F15&quot;  &quot;OR1F1&quot;   &quot;OR1D5&quot;   &quot;OR1G1&quot;   &quot;OR1A1&quot;   &quot;OR3A2&quot;  
-## [197] &quot;OR3A1&quot;   &quot;OR1E1&quot;   &quot;OR1E2&quot;   &quot;OR4F17&quot;  &quot;OR2Z1&quot;   &quot;OR1M1&quot;   &quot;OR7D2&quot;  
-## [204] &quot;OR7D4&quot;   &quot;OR7A5&quot;   &quot;OR7A10&quot;  &quot;OR7A17&quot;  &quot;OR7C2&quot;   &quot;OR1I1&quot;   &quot;OR10H2&quot; 
-## [211] &quot;OR10H3&quot;  &quot;OR10H4&quot;  &quot;OR11H1&quot;  &quot;OR13H1&quot;</code></pre>
+##  [15] &quot;OR14K1&quot;  &quot;OR2W3&quot;   &quot;OR2AK2&quot;  &quot;OR2L2&quot;   &quot;OR2L3&quot;   &quot;OR2M2&quot;   &quot;OR2M4&quot;  
+##  [22] &quot;OR2T33&quot;  &quot;OR2T12&quot;  &quot;OR2T1&quot;   &quot;OR2T7&quot;   &quot;OR2T3&quot;   &quot;OR2T5&quot;   &quot;OR2G6&quot;  
+##  [29] &quot;OR2T34&quot;  &quot;OR2T35&quot;  &quot;OR2T27&quot;  &quot;OR14I1&quot;  &quot;OR6B2&quot;   &quot;OR5AC2&quot;  &quot;OR5H14&quot; 
+##  [36] &quot;OR5H15&quot;  &quot;OR5K3&quot;   &quot;OR5K2&quot;   &quot;OR2V2&quot;   &quot;OR2B6&quot;   &quot;OR2W1&quot;   &quot;OR2J2&quot;  
+##  [43] &quot;OR5V1&quot;   &quot;OR12D3&quot;  &quot;OR2H1&quot;   &quot;OR2H2&quot;   &quot;OR2A4&quot;   &quot;OR9A4&quot;   &quot;OR2A5&quot;  
+##  [50] &quot;OR2A12&quot;  &quot;OR2A2&quot;   &quot;OR2A14&quot;  &quot;OR2A1&quot;   &quot;OR4F21&quot;  &quot;OR13J1&quot;  &quot;OR13C4&quot; 
+##  [57] &quot;OR13C3&quot;  &quot;OR13C5&quot;  &quot;OR13C2&quot;  &quot;OR13C9&quot;  &quot;OR13D1&quot;  &quot;OR2K2&quot;   &quot;OR1J1&quot;  
+##  [64] &quot;OR1J2&quot;   &quot;OR1N1&quot;   &quot;OR1L8&quot;   &quot;OR1Q1&quot;   &quot;OR1L1&quot;   &quot;OR1L3&quot;   &quot;OR5C1&quot;  
+##  [71] &quot;OR1K1&quot;   &quot;OR13A1&quot;  &quot;OR52K2&quot;  &quot;OR52K1&quot;  &quot;OR52M1&quot;  &quot;OR52I2&quot;  &quot;OR52I1&quot; 
+##  [78] &quot;OR51E1&quot;  &quot;OR51E2&quot;  &quot;OR51F2&quot;  &quot;OR51S1&quot;  &quot;OR51T1&quot;  &quot;OR51A7&quot;  &quot;OR51A4&quot; 
+##  [85] &quot;OR52E2&quot;  &quot;OR52A5&quot;  &quot;OR52A1&quot;  &quot;OR51V1&quot;  &quot;OR51B4&quot;  &quot;OR51B5&quot;  &quot;OR51M1&quot; 
+##  [92] &quot;OR51I2&quot;  &quot;OR52D1&quot;  &quot;OR52H1&quot;  &quot;OR52B6&quot;  &quot;OR56B1&quot;  &quot;OR52N5&quot;  &quot;OR52N1&quot; 
+##  [99] &quot;OR52N2&quot;  &quot;OR52E6&quot;  &quot;OR56A3&quot;  &quot;OR52L1&quot;  &quot;OR56B4&quot;  &quot;OR52B2&quot;  &quot;OR6A2&quot;  
+## [106] &quot;OR10A5&quot;  &quot;OR10A4&quot;  &quot;OR5P2&quot;   &quot;OR5P3&quot;   &quot;OR10A3&quot;  &quot;OR4B1&quot;   &quot;OR4C3&quot;  
+## [113] &quot;OR4A47&quot;  &quot;OR4C13&quot;  &quot;OR4A5&quot;   &quot;OR4A16&quot;  &quot;OR4A15&quot;  &quot;OR4C15&quot;  &quot;OR4C11&quot; 
+## [120] &quot;OR4P4&quot;   &quot;OR4S2&quot;   &quot;OR4C6&quot;   &quot;OR5L2&quot;   &quot;OR5D16&quot;  &quot;OR5I1&quot;   &quot;OR10AG1&quot;
+## [127] &quot;OR5F1&quot;   &quot;OR5AS1&quot;  &quot;OR8K5&quot;   &quot;OR5J2&quot;   &quot;OR5T2&quot;   &quot;OR5T3&quot;   &quot;OR5T1&quot;  
+## [134] &quot;OR8H1&quot;   &quot;OR8J1&quot;   &quot;OR5M9&quot;   &quot;OR5M3&quot;   &quot;OR5M11&quot;  &quot;OR9G4&quot;   &quot;OR5AK2&quot; 
+## [141] &quot;OR1S2&quot;   &quot;OR10Q1&quot;  &quot;OR10W1&quot;  &quot;OR5B17&quot;  &quot;OR5B3&quot;   &quot;OR5B12&quot;  &quot;OR5B21&quot; 
+## [148] &quot;OR5A2&quot;   &quot;OR5A1&quot;   &quot;OR4D6&quot;   &quot;OR4D11&quot;  &quot;OR6X1&quot;   &quot;OR6M1&quot;   &quot;OR4D5&quot;  
+## [155] &quot;OR6T1&quot;   &quot;OR10S1&quot;  &quot;OR10G4&quot;  &quot;OR10G8&quot;  &quot;OR10G7&quot;  &quot;OR8B8&quot;   &quot;OR10AD1&quot;
+## [162] &quot;OR10A7&quot;  &quot;OR6C6&quot;   &quot;OR6C3&quot;   &quot;OR6C65&quot;  &quot;OR6C76&quot;  &quot;OR6C70&quot;  &quot;OR6C68&quot; 
+## [169] &quot;OR6C4&quot;   &quot;OR2AP1&quot;  &quot;OR11H12&quot; &quot;OR4Q3&quot;   &quot;OR4M1&quot;   &quot;OR4K5&quot;   &quot;OR4K1&quot;  
+## [176] &quot;OR4K13&quot;  &quot;OR4L1&quot;   &quot;OR4N5&quot;   &quot;OR11G2&quot;  &quot;OR11H6&quot;  &quot;OR11H4&quot;  &quot;OR5AU1&quot; 
+## [183] &quot;OR10G3&quot;  &quot;OR4E2&quot;   &quot;OR4M2&quot;   &quot;OR4N4&quot;   &quot;OR4F15&quot;  &quot;OR1F1&quot;   &quot;OR1D5&quot;  
+## [190] &quot;OR1G1&quot;   &quot;OR1A1&quot;   &quot;OR3A2&quot;   &quot;OR3A1&quot;   &quot;OR1E1&quot;   &quot;OR1E2&quot;   &quot;OR4F17&quot; 
+## [197] &quot;OR2Z1&quot;   &quot;OR1M1&quot;   &quot;OR7D2&quot;   &quot;OR7D4&quot;   &quot;OR7A5&quot;   &quot;OR7A10&quot;  &quot;OR7C2&quot;  
+## [204] &quot;OR1I1&quot;   &quot;OR10H2&quot;  &quot;OR10H3&quot;  &quot;OR10H4&quot;  &quot;OR11H1&quot;  &quot;OR13H1&quot;</code></pre>
 </div>
 <div id="syncronise_filtered_variants_and_genotype_data_loftee_hc" class="section level1">
 <h1>syncronise_filtered_variants_and_genotype_data_loftee_hc</h1>
@@ -714,7 +712,7 @@ output_hc.df[1:20,1:5]</code></pre>
 sum(is.na(output_hc.df$ExACpLI))</code></pre>
 <pre><code>## [1] 15</code></pre>
 <pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &lt; 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 360</code></pre>
+<pre><code>## [1] 352</code></pre>
 <pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &gt;= 0.9, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
 <pre class="r"><code># Additional filtration based on ExAC pLI &gt;= 0.9
@@ -827,7 +825,7 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, input.mx, output.mx, out
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-07 20:25:51 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 10:10:39 UTC&quot;</code></pre>
 </div>
 
 

@@ -1,0 +1,164 @@
+---
+title: "r01_ac_filtering_kgen_ddr"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 17 May 2018  
+Updated: David Gilfoyle 17 May 2018
+
+---
+
+# Summary
+
+Variant filtering of QUAL filtered dataset based on AC = 0  
+Dataset: 1000 Genome Project  
+Gene Selection: Olfactory Receptor Genes  
+Input Variants: 59,404
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/qual_filt/kgen"
+
+# Load RData file - contains dataframe containing all variants
+load(paste(input_folder, "r01_kgen_or_updated_rownames.RData", sep="/"))
+
+# Setup script input dataframe naming
+input.df <- fixed_kgen_or.df
+rm(fixed_kgen_or.df)
+input.mx <- gt_kgen_or.mx
+rm(gt_kgen_or.mx)
+
+# Check input dataframe and matrix
+dim(input.df)
+class(input.df)
+input.df[80:100,1:10]
+class(input.df$AC)
+input.df$AC[80:100]
+
+dim(input.mx)
+class(input.mx)
+input.mx[1:5,1:5]
+
+# Check rowmnames are same 
+sum(rownames(input.mx) != rownames(input.df)) # should be 0
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/filtration/ac_filt/kgen"
+output_folder="/home/ec2-user/results/filtered/ac_filt/kgen"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# ac_filtering
+
+Allele count filtering based on selection of variants with AC = 0 which are present in the source data set and have not been filtered out to date. 
+
+```{r af_filtering}
+
+# Check input dataframe for variants with AC and/or AF = 0
+sum(input.df$AC == 0)
+sum(input.df$AF == 0)
+sum(input.df$AC == 0 & input.df$AF == 0)
+
+# Isolate fixed columns of variants with AC = 0
+AC_zero.df <- input.df %>% 
+  filter(as.numeric(AC) == 0)
+dim(AC_zero.df)
+
+# Check variant class column in AC = 0 dataframe
+varc_annotations.vector <- AC_zero.df$VARIANT_CLASS
+varc_counts.named.vector <- sort(table(varc_annotations.vector), decreasing = T)
+varc_counts.named.vector
+
+# Check consequences column in AC = 0 dataframe
+csq_annotations.list <- strsplit(as.vector(AC_zero.df$Consequence),"&")
+csq_annotations.vector <- as.vector(unlist(csq_annotations.list))
+csq_counts.named.vector <- sort(table(csq_annotations.vector), decreasing = T)
+csq_counts.named.vector
+
+# Remove variants with AC = 0 from input dataframe
+input.df <- tibble::rownames_to_column(input.df, var = "rowname")
+output.df <- input.df %>% 
+  filter(!as.numeric(AC) == 0)
+output.df <- tibble::column_to_rownames(output.df, var = "rowname")
+
+# Check output dataframe
+dim(output.df)
+class(output.df)
+output.df[80:100,1:10]
+output.df$AC[80:100]
+
+# Check output dataframe has removed variants with AC and/or AF = 0
+sum(output.df$AC == 0) # should be 0
+sum(output.df$AF == 0) # should be 0
+sum(output.df$AC == 0 & output.df$AF == 0) # should be 0
+
+```
+
+# syncronise_filtered_variants_and_genotype_data 
+
+```{r syncronise_qual_filtered_variants_and_genotype_data}
+
+# Isolate relavent rows from genotype matrix
+output.mx <- input.mx[rownames(output.df),]
+
+# Compare filtered fixed column dataframe and genotype matrix
+output.df[80:100,1:5]
+output.mx[80:100,1:2]
+
+```
+
+# update_dataframe_naming
+
+```{r update_dataframe_naming}
+
+# Reset of output dataframe names
+fixed_ac_filt_kgen_or.df <- output.df
+gt_ac_filt_kgen_or.mx <- output.mx
+
+# Clean-up
+rm(input.df, output.df, input.mx, output.mx, AC_zero.df, csq_annotations.list, csq_annotations.vector, csq_counts.named.vector, varc_annotations.vector, varc_counts.named.vector)
+
+```
+
+# save_results
+
+```{r save_results}
+
+save.image(paste(output_folder, "r01_kgen_or_ac_filtered.RData", sep="/"))
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```

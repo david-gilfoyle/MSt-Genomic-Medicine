@@ -1,0 +1,216 @@
+---
+title: "r01_gq_filtering_icr1000_or"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 15 May 2018  
+Updated: David Gilfoyle 16 May 2018
+
+---
+
+# Summary
+
+GQ Filtering Phred < 20  
+Dataset: ICR1000 
+Gene Selection: Olfactory Receptor Genes  
+Input Variants: 5,189
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Make sure all the libraries installed 
+#install.packages("vcfR")
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/qual_filt/icr1000"
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Load RData file - contains dataframe containing all variants
+load(paste(input_folder, "r01_icr1000_or_qual_filt.RData", sep="/"))
+
+# Check input fixed column dataframe
+dim(fixed_qfilt_icr1000_or.df)
+class(fixed_qfilt_icr1000_or.df)
+fixed_qfilt_icr1000_or.df[1:20,1:10]
+
+# Check input genotype matrix
+dim(gt_qfilt_icr1000_or.mx)
+class(gt_qfilt_icr1000_or.mx)
+gt_qfilt_icr1000_or.mx[1:5,1:5]
+
+# Check input GQ matrix
+dim(gq_qfilt_icr1000_or.mx)
+class(gq_qfilt_icr1000_or.mx)
+gq_qfilt_icr1000_or.mx[1:5,1:5]
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/filtration/gq_filt/icr1000"
+output_folder="/home/ec2-user/results/filtered/gq_filt/icr1000"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# gq_filtering
+
+```{r gq_filtering}
+
+# Check input
+gt_qfilt_icr1000_or.mx[1:10,1:4]
+gq_qfilt_icr1000_or.mx[1:10,1:4]
+
+# Filter GT (placing NA in appropriate cells) when GQ > 20
+NA -> gt_qfilt_icr1000_or.mx[ gq_qfilt_icr1000_or.mx < 20 ]
+
+# Check output
+gt_qfilt_icr1000_or.mx[1:10,1:4]
+gq_qfilt_icr1000_or.mx[1:10,1:4]
+
+# Clean up
+rm(gq_qfilt_icr1000_or.mx)
+
+```
+
+# recode_gt_to_additive  
+Genotypes which remain following filtering are presented as 0/0, 0/1, 1/1 etc. This section sets up an empty matrix of equivalent dimensions to the genotype matrix, then evaulates each genotype and calculates additive genotype values (0, 1 or 2)  
+
+```{r recode_gt_to_additive}
+
+# Set up empty matrix with 'NA' in cells, add row and column names from genotype matrix
+gt_add_qfilt_icr1000_or.mx <- matrix(NA, 
+                                           ncol=ncol(gt_qfilt_icr1000_or.mx),
+                                           nrow=nrow(gt_qfilt_icr1000_or.mx))
+colnames(gt_add_qfilt_icr1000_or.mx) <- colnames(gt_qfilt_icr1000_or.mx)
+rownames(gt_add_qfilt_icr1000_or.mx) <- rownames(gt_qfilt_icr1000_or.mx)
+
+# Check genotype additive matrix
+gt_add_qfilt_icr1000_or.mx[65:70,1:4]
+
+# Check genotype coding present in original genotype matrix
+table(gt_qfilt_icr1000_or.mx) # 0/0, 0/1, 1/0 and 1/1 all present
+summary(as.factor(gt_qfilt_icr1000_or.mx)) # as.factor allows assessment on NA values present
+
+# Replace genotypes in original genotype matrix with additive values into the additive genotype matrix
+0 -> gt_add_qfilt_icr1000_or.mx[ gt_qfilt_icr1000_or.mx == "0/0" ]
+1 -> gt_add_qfilt_icr1000_or.mx[ gt_qfilt_icr1000_or.mx == "0/1" ]
+1 -> gt_add_qfilt_icr1000_or.mx[ gt_qfilt_icr1000_or.mx == "1/0" ]
+2 -> gt_add_qfilt_icr1000_or.mx[ gt_qfilt_icr1000_or.mx == "1/1" ]
+
+# Check updated additive genotype matrix
+gt_add_qfilt_icr1000_or.mx[65:70,1:4]
+
+# Clean up
+rm(gt_qfilt_icr1000_or.mx)
+
+```
+
+# filter_by_call_rate
+Following GQ filtering, genotypes associated with variants may not have a high call rate (number of times a genotype is called relative to the number of subjects). Variants with call rates < 0.8 will be filtered out as they are not considered reliable calls   
+
+```{r filter_by_call_rate}
+
+# Set up call rate user defined function
+call_rate.udf <- function(vector_of_genotypes){
+  result <- sum(!is.na(vector_of_genotypes)) / length(vector_of_genotypes)
+  return(result)
+}
+
+# Calculate the number of genotype calls for each variant and plot a histogram
+call_rate <- apply(gt_add_qfilt_icr1000_or.mx, 1, call_rate.udf)
+hist(call_rate, xlim=c(0,1))
+
+# Filter call rate >= 0.8
+call_rate_pass <- call_rate >= 0.8
+sum(call_rate_pass)
+
+# Create an additive call rate filtered genotype matrix
+gt_add_crfilt_icr1000_or.mx <- gt_add_qfilt_icr1000_or.mx[call_rate_pass,]
+
+# Syncronise fixed column dataframe with variants remaining call rate filtered additive genotype matrix
+fixed_crfilt_icr1000_or.df <- fixed_qfilt_icr1000_or.df[call_rate_pass,]
+
+# Check output matricies
+dim(gt_add_crfilt_icr1000_or.mx)
+dim(fixed_crfilt_icr1000_or.df)
+
+# Calculate the number of genotype calls in the output matrix for each variant and plot a histogram 
+call_rate <- apply(gt_add_crfilt_icr1000_or.mx, 1, call_rate.udf)
+hist(call_rate, xlim=c(0,1))
+
+# Clean up
+rm(gt_add_qfilt_icr1000_or.mx, fixed_qfilt_icr1000_or.df, call_rate.udf, call_rate, call_rate_pass)
+
+```
+
+# recalculate_af
+Following GQ filtering step the AC (allele count; counts for each alternate allele [het = 1; hom = 2 etc.] by variant) and AN (allele number; total number of diploid allele counts across population) are recalculated. This allows the AF (allele frequency; AC divided by AN) to be calculated. The fixed column dataframe is then updated with this information to allow subsequent AF filtering to occur based on updated (new_AF) values  
+
+```{r recalculate_af}
+
+# Calculate updated AC
+new_AC <- apply(gt_add_crfilt_icr1000_or.mx, 1, sum, na.rm=T)
+new_AC[1:5]
+
+# Set up allele number user defined function
+get_AN.udf <- function(vector_of_additive_genotypes){
+  result <- 2*sum(!is.na(vector_of_additive_genotypes))
+  return(result)
+}
+
+# Calculate updated AN
+new_AN <- apply(gt_add_crfilt_icr1000_or.mx, 1, get_AN.udf)
+
+# Check updated AN values, plot histogram and ensure no variants have AN = 0
+new_AN[1:5]
+hist(new_AN)
+sum(new_AN==0)
+
+# Calculate updated AF values and plot a histogram
+new_AF <- new_AC / new_AN
+hist(new_AF)
+
+# Introduce updated AC, AN and AF values into fixed column dataframe
+fixed_crfilt_icr1000_or.df <- cbind(fixed_crfilt_icr1000_or.df, new_AC, new_AN, new_AF)
+
+# Clean up
+rm(get_AN.udf, new_AC, new_AN, new_AF)
+
+```
+
+# save_results
+
+```{r save_results}
+
+save.image(paste(output_folder, "r01_icr1000_or_gq_filt.RData", sep="/"))
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```

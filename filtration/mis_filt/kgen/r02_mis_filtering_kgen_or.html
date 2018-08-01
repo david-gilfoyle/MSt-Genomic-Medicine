@@ -123,19 +123,19 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 13 May 2018</p>
+Updated: David Gilfoyle 17 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of AF filtered dataset to select missense (Consequence, SIFT [deleterious] and PolyPhen [likely_damaging]), high confidence (HC) missense (missense variants with FATHMM &lt; -1.5 and CADD_PHRED &gt; 15) and HC missense variants in genes with pLI &gt;= 0.9<br />
+<p>Variant filtering of AF filtered dataset to select missense (Consequence, SIFT [deleterious] and PolyPhen [likely_damaging]), high confidence (HC) missense (missense variants with FATHMM &lt; -1.5 and CADD_PHRED &gt; 20) and HC missense variants in genes with pLI &gt;= 0.9<br />
 Dataset: 1000 Genome Project<br />
 Gene Selection: Olfactory Receptor Genes (removing OR10G6, OR11H2, OR14A2, OR14K1, OR1F12, OR2AJ1, OR2T7, OR8U9 and OR9G9)<br />
-Input Variants: 47,624</p>
+Input Variants: 47,482</p>
 </div>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-13 09:48:28 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 10:39:32 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -167,7 +167,7 @@ rm(gt_af_filt_kgen_or.mx)
 
 # Check input dataframe
 dim(input.df)</code></pre>
-<pre><code>## [1] 47624    94</code></pre>
+<pre><code>## [1] 47482    94</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>input.df[1:20,1:10]</code></pre>
@@ -234,23 +234,23 @@ dim(input.df)</code></pre>
 ##  [7] NA                   NA                   NA                  
 ## [10] NA                   NA                   NA                  
 ## [13] NA                   NA                   NA                  
-## [16] NA                   NA                   NA                  
-## [19] NA                   &quot;6.66(741)&quot;          &quot;6.72(741)&quot;         
-## [22] &quot;6.71(741)&quot;          NA                   NA                  
-## [25] &quot;1.22(0037432)&quot;      &quot;0.97(0037432)&quot;      NA                  
-## [28] &quot;8.70(7tm_4)&quot;        &quot;8.33(7tm_4)&quot;        &quot;8.57(7tm_4)&quot;       
-## [31] &quot;1.25(0037432)&quot;      &quot;1.21(0037432)&quot;      NA                  
-## [34] &quot;7.86(7tm_4)&quot;        NA                   &quot;8.70(7tm_4)&quot;       
-## [37] NA                   NA                   NA                  
-## [40] &quot;8.72(7tm_4)&quot;        NA                   &quot;8.10(7tm_4)&quot;       
-## [43] &quot;8.53(7tm_4)&quot;        &quot;8.58(7tm_4)&quot;        NA                  
-## [46] &quot;6.66(741)&quot;          &quot;8.82(7tm_4)&quot;        &quot;8.67(7tm_4)&quot;       
-## [49] &quot;8.69(7tm_4)&quot;        &quot;8.70(7tm_4)&quot;        NA                  
-## [52] &quot;7.60(Pfam-B_6419)&quot;  &quot;7.57(Pfam-B_6419)&quot;  &quot;7.53(Pfam-B_6419)&quot; 
-## [55] &quot;7.50(Pfam-B_6419)&quot;  &quot;7.59(Pfam-B_6419)&quot;  &quot;5.49(Pfam-B_10654)&quot;
-## [58] NA                   &quot;4.16(Pfam-B_19263)&quot; &quot;4.15(Pfam-B_19263)&quot;
-## [61] &quot;4.06(Pfam-B_3717)&quot;  &quot;7.44(Pfam-B_6010)&quot;  NA                  
-## [64] &quot;1.22(0037432)&quot;      NA                   NA                  
+## [16] &quot;6.66(741)&quot;          &quot;6.72(741)&quot;          &quot;6.71(741)&quot;         
+## [19] NA                   NA                   &quot;1.22(0037432)&quot;     
+## [22] &quot;0.97(0037432)&quot;      NA                   &quot;8.70(7tm_4)&quot;       
+## [25] &quot;8.33(7tm_4)&quot;        &quot;8.57(7tm_4)&quot;        &quot;1.25(0037432)&quot;     
+## [28] &quot;1.21(0037432)&quot;      NA                   &quot;7.86(7tm_4)&quot;       
+## [31] NA                   &quot;8.70(7tm_4)&quot;        NA                  
+## [34] NA                   NA                   &quot;8.72(7tm_4)&quot;       
+## [37] NA                   &quot;8.10(7tm_4)&quot;        &quot;8.53(7tm_4)&quot;       
+## [40] &quot;8.58(7tm_4)&quot;        NA                   &quot;6.66(741)&quot;         
+## [43] &quot;8.82(7tm_4)&quot;        &quot;8.67(7tm_4)&quot;        &quot;8.69(7tm_4)&quot;       
+## [46] &quot;8.70(7tm_4)&quot;        NA                   &quot;7.60(Pfam-B_6419)&quot; 
+## [49] &quot;7.57(Pfam-B_6419)&quot;  &quot;7.53(Pfam-B_6419)&quot;  &quot;7.50(Pfam-B_6419)&quot; 
+## [52] &quot;7.59(Pfam-B_6419)&quot;  &quot;5.49(Pfam-B_10654)&quot; NA                  
+## [55] &quot;4.16(Pfam-B_19263)&quot; &quot;4.15(Pfam-B_19263)&quot; &quot;4.06(Pfam-B_3717)&quot; 
+## [58] &quot;7.44(Pfam-B_6010)&quot;  NA                   &quot;1.22(0037432)&quot;     
+## [61] NA                   NA                   NA                  
+## [64] NA                   NA                   NA                  
 ## [67] NA                   NA                   NA                  
 ## [70] NA                   NA</code></pre>
 <pre class="r"><code>class(input.df$CADD_PHRED)</code></pre>
@@ -265,7 +265,7 @@ dim(input.df)</code></pre>
 <pre><code>##  [1] &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot;
 ## [11] &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot;</code></pre>
 <pre class="r"><code>dim(input.mx)</code></pre>
-<pre><code>## [1] 47624  2504</code></pre>
+<pre><code>## [1] 47482  2504</code></pre>
 <pre class="r"><code>class(input.mx)</code></pre>
 <pre><code>## [1] &quot;matrix&quot;</code></pre>
 <pre class="r"><code>input.mx[1:5,1:5]</code></pre>
@@ -305,7 +305,7 @@ removed_variant.df &lt;- input.df %&gt;%
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 42130    94</code></pre>
+<pre><code>## [1] 42006    94</code></pre>
 <pre class="r"><code>class(output.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
@@ -423,9 +423,9 @@ dim(output.df)</code></pre>
 3) PolyPhen - probably_damaging</p>
 <pre class="r"><code># Assessment of SIFT and PolyPhen
 sum(is.na(input.df$SIFT))</code></pre>
-<pre><code>## [1] 39416</code></pre>
+<pre><code>## [1] 39300</code></pre>
 <pre class="r"><code>sum(is.na(input.df$PolyPhen))</code></pre>
-<pre><code>## [1] 39413</code></pre>
+<pre><code>## [1] 39297</code></pre>
 <pre class="r"><code># Filtration based on consequence, SIFT and PolyPhen scores
 output.df &lt;- tibble::rownames_to_column(output.df, var = &quot;rowname&quot;)
 output.df &lt;- output.df %&gt;% 
@@ -437,7 +437,7 @@ output.df &lt;- tibble::column_to_rownames(output.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 1653   94</code></pre>
+<pre><code>## [1] 1645   94</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
 <pre><code>##                 CHROM       POS          ID REF ALT QUAL FILTER   AA AC
 ## rs568964432_7       1     69224 rs568964432   A   T  100   PASS .|||  2
@@ -576,16 +576,16 @@ output.df[1:20,1:5]</code></pre>
 <h1>additional_filtering_fathmm_cadd</h1>
 <p>Output assessed based on further filtering with:<br />
 1) FATHMM &lt; -1.5 - FATHMM contains score and information - needs to be split prior to filtering. A relatively low number of FATHMM entries are “Prediction(Available)” - status of these variants is unknown, but there is no obvious reason for the lack of score. However, in order to enrich the dataset for deleterious missense variants, these variants have been removed (appear as NA in seperated FATHMM_SCORE column)<br />
-2) CADD_PHRED &gt; 15 - assessment indicates that some entries are NA - these appear to be indels (substitution variants) and will be retained. However, removal of variants with CADD_PHRED &lt;= 15 is considered appropriate to enrich dataset for potentially pathogenic variants</p>
+2) CADD_PHRED &gt; 20 - assessment indicates that some entries are NA - these appear to be indels (substitution variants) and will be retained. However, removal of variants with CADD_PHRED &lt;= 20 is considered appropriate to enrich dataset for potentially pathogenic variants</p>
 <pre class="r"><code># Assessment of FATHMM column in output dataframe
 sum(is.na(output.df$FATHMM))</code></pre>
-<pre><code>## [1] 908</code></pre>
+<pre><code>## [1] 904</code></pre>
 <pre class="r"><code>sum(output.df$FATHMM == &quot;Prediction(Available)&quot;, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
 <pre class="r"><code>sum(output.df$FATHMM == -1.5, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
 <pre class="r"><code>sum(output.df$FATHMM &gt; -1.5, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 700</code></pre>
+<pre><code>## [1] 696</code></pre>
 <pre class="r"><code>sum(output.df$FATHMM &lt; -1.5, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 45</code></pre>
 <pre class="r"><code># output_fathmm_pa.df &lt;- output.df %&gt;% 
@@ -608,22 +608,22 @@ class(output_cor.df$FATHMM_SCORE)</code></pre>
 <pre class="r"><code>class(output_cor.df$FATHMM_INFO)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>sum(is.na(output_cor.df$FATHMM_SCORE))</code></pre>
-<pre><code>## [1] 908</code></pre>
+<pre><code>## [1] 904</code></pre>
 <pre class="r"><code>sum(output_cor.df$FATHMM_SCORE == -1.5, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
 <pre class="r"><code>sum(output_cor.df$FATHMM_SCORE &gt; -1.5, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 742</code></pre>
+<pre><code>## [1] 738</code></pre>
 <pre class="r"><code>sum(output_cor.df$FATHMM_SCORE &lt; -1.5, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 3</code></pre>
-<pre class="r"><code># Assessment of impact of filtering CADD_PHREDD &gt; 15 in seperated dataframe
+<pre class="r"><code># Assessment of impact of filtering CADD_PHREDD &gt; 20 in seperated dataframe
 sum(is.na(output_cor.df$CADD_PHRED))</code></pre>
 <pre><code>## [1] 0</code></pre>
-<pre class="r"><code>sum(output_cor.df$CADD_PHRED == 15, na.rm = TRUE)</code></pre>
+<pre class="r"><code>sum(output_cor.df$CADD_PHRED == 20, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
-<pre class="r"><code>sum(output_cor.df$CADD_PHRED &lt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 39</code></pre>
-<pre class="r"><code>sum(output_cor.df$CADD_PHRED &gt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 1614</code></pre>
+<pre class="r"><code>sum(output_cor.df$CADD_PHRED &lt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 119</code></pre>
+<pre class="r"><code>sum(output_cor.df$CADD_PHRED &gt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 1526</code></pre>
 <pre class="r"><code># output_cadd_na.df &lt;- output.df %&gt;% 
 #  filter(is.na(CADD_PHRED))
 
@@ -631,7 +631,7 @@ sum(is.na(output_cor.df$CADD_PHRED))</code></pre>
 output_cor.df &lt;- tibble::rownames_to_column(output_cor.df, var = &quot;rowname&quot;)
 output_hc.df &lt;- output_cor.df %&gt;% 
   filter(FATHMM_SCORE &lt; -1.5) %&gt;%
-  filter((as.numeric(CADD_PHRED) &gt; 15) |
+  filter((as.numeric(CADD_PHRED) &gt; 20) |
            (is.na(CADD_PHRED)))
 output_hc.df &lt;- tibble::column_to_rownames(output_hc.df, var = &quot;rowname&quot;)
 
@@ -717,7 +717,7 @@ output_hc.df[1:3,1:5]</code></pre>
 </div>
 <div id="additional_filtering_exac_pli" class="section level1">
 <h1>additional_filtering_exac_pli</h1>
-<p>Deleterious missense variants in a single allele are expected to have a greater impact in loss intolerant genes (ExAC pLI &gt;= 0.9)</p>
+<p>Confirm HC missense variants in loss intolerant genes (ExAC pLI &gt;= 0.9)</p>
 <pre class="r"><code># Assessment of impact of filtering ExAC pLI &gt;= 0.9
 sum(is.na(output_hc.df$ExACpLI))</code></pre>
 <pre><code>## [1] 0</code></pre>
@@ -834,7 +834,7 @@ rm(input.df, output.df, output_cor.df, output_hc.df, output_hc_pli.df, input.mx,
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-13 09:48:57 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 10:40:01 UTC&quot;</code></pre>
 </div>
 
 

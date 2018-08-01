@@ -6,7 +6,7 @@ editor_options:
 ---
 
 Started: David Gilfoyle 3 May 2018  
-Updated: David Gilfoyle 4 May 2018
+Updated: David Gilfoyle 16 May 2018
 
 ---
 
@@ -48,9 +48,9 @@ rm(fixed_qfilt_exac_nontcga_ddr.df)
 # Check input dataframe
 dim(input.df)
 class(input.df)
-input.df[1:20,1:10]
+input.df[60:80,1:10]
 class(input.df$AF)
-input.df$AF[1:20]
+input.df$AF[60:80]
 
 # Setup base and output folders
 base_folder="/home/ec2-user/scripts/filtration/af_filt/exac_v1"
@@ -77,8 +77,8 @@ output.df <- input.df %>%
 # Check output dataframe
 dim(output.df)
 class(output.df)
-output.df[1:20,1:10]
-output.df$AF[1:20]
+output.df[60:80,1:10]
+output.df$AF[60:80]
 
 ```
 

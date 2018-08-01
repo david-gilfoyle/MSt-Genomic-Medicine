@@ -1,0 +1,529 @@
+---
+title: "r01_variant_filt_analysis_exac_nontcga_ddr"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 2 May 2018  
+Updated: David Gilfoyle 8 June 2018
+
+---
+
+# Summary
+
+Data Analysis Based on QUAL Filtered Dataset 
+Dataset: ExAC (Non-TCGA)  
+Gene Selection: DNA Repair Genes  
+Input Variants: 94,255
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/qual_filt/exac_v1"
+
+# Load RData file - contains dataframe containing all variants
+load(paste(input_folder, "r01_exac_nontcga_ddr_qual_filt.RData", sep="/"))
+
+# Set data frame variable
+fixed.df <- fixed_qfilt_exac_nontcga_ddr.df
+
+# Remove imported dataset
+rm (fixed_qfilt_exac_nontcga_ddr.df)
+
+# Check input dataframe
+dim(fixed.df)
+class(fixed.df)
+str(fixed.df)
+fixed.df[1:20,1:10]
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/data_analysis/variant_analysis/exac_v1/ddr"
+output_folder="/home/ec2-user/results/data_analysis/variant_analysis/exac_v1/ddr"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# variant_class_analysis
+
+```{r variant_class_analysis}
+
+# Check for missed data
+sum(is.na(fixed.df$VARIANT_CLASS)) # should be 0 (no missed data)
+
+# Isoltate variant class column
+varc_annotations.vector <- fixed.df$VARIANT_CLASS
+
+# Determine different variant classes present
+unique(varc_annotations.vector)
+
+# Variant class counts
+varc_counts.named.vector <- sort(table(varc_annotations.vector), decreasing = T)
+varc_counts.named.vector
+
+# make a dataframe for plotting
+varc_counts.df <- data.frame(
+  variant_type=names(varc_counts.named.vector),
+  variant_count=as.numeric(varc_counts.named.vector))
+varc_counts.df
+
+# Compile file name
+file_name <- paste(output_folder,"variant_class_counts_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(varc_counts.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Order of levels defines the order of bars on the plot
+levels(varc_counts.df$variant_type)
+varc_counts.df$variant_type <- factor(varc_counts.df$variant_type, 
+  levels=c("SNV", "insertion", "deletion", "indel", "substitution"))
+levels(varc_counts.df$variant_type)
+
+# Pie chart of variant class data
+pie <- ggplot(varc_counts.df, aes(x = "", y = variant_count, fill = factor(variant_type))) +
+  geom_bar(width = 1, stat = "identity") +
+  theme(axis.line = element_blank(), plot.title = element_text(hjust=0.5)) +
+  labs(fill = "Variant Class", x = NULL, y = NULL) +
+  ggtitle("ExAC (Non-TCGA Dataset) - Number of Variants by Class")
+pie + coord_polar(theta = "y", start = 0)
+
+ggsave("variant_class_counts_plot.pdf", output_folder, plot = last_plot(), device = "pdf", width = 297, height = 210, units = "mm", dpi = 300)
+
+# Clean-up
+rm(pie, varc_counts.df, file_name, varc_annotations.vector, varc_counts.named.vector)
+
+```
+
+# consequence_analysis
+
+```{r consequence_analysis}
+
+# Check for missed data (is.na produces a logical vector)
+sum(is.na(fixed.df$Consequence)) # should be 0 (no missed data)
+
+# Split multiple consequences
+csq_annotations.list <- strsplit(as.vector(fixed.df$Consequence),"&")
+
+# Flatten list of string vectors to a string vector
+csq_annotations.vector <- as.vector(unlist(csq_annotations.list))
+
+# What different consequences were observed?
+unique(csq_annotations.vector)
+
+# Variant class counts
+csq_counts.named.vector <- sort(table(csq_annotations.vector), decreasing = T)
+csq_counts.named.vector
+
+# make a dataframe for plotting
+csq_counts.df <- data.frame(
+  csq_type=names(csq_counts.named.vector),
+  csq_count=as.numeric(csq_counts.named.vector))
+csq_counts.df
+
+# Compile file name
+file_name <- paste(output_folder,"consequence_counts_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(csq_counts.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Order of levels defines the order of bars on the plot
+levels(csq_counts.df$csq_type)
+csq_counts.df$csq_type <- factor(csq_counts.df$csq_type, 
+  levels=as.vector(csq_counts.df$csq_type))
+levels(csq_counts.df$csq_type)
+
+# Bar graph of consequence data
+ggplot(csq_counts.df, aes(csq_type, csq_count)) +
+       geom_bar(stat="identity", fill="blue", alpha=0.5) + 
+       geom_text(aes(label=format(csq_count, big.mark=","), vjust=-1)) +
+       theme(axis.text.x = element_text(hjust=1, size=12, angle=75)) +
+       ylim(0,42000) + 
+       labs(x = "", y = "Number of Variants") + 
+       ggtitle("ExAC (Non-TCGA Dataset) - Number of Variants by Consequence")
+
+ggsave("consequence_counts_plot.pdf", output_folder, plot = last_plot(), device = "pdf", width = 297, height = 210, units = "mm", dpi = 300)
+
+# Clean-up
+rm(csq_counts.df, file_name, csq_annotations.list, csq_annotations.vector, csq_counts.named.vector)
+
+```
+
+# sift_consequence_analysis
+
+```{r sift_consequence_analysis}
+
+# Count number of NA values
+sum(is.na(fixed.df$SIFT))
+
+# Isolate SIFT type and score column
+sift_annotations.df <- data.frame(SIFT=c(fixed.df$SIFT))
+
+# Seperate SIFT type and score into two seperare columns
+sift_annotations.df <- 
+  sift_annotations.df %>% 
+  mutate(sift_type=sub("\\(.*\\)","",SIFT)) %>% 
+  mutate(sift_score=as.numeric(
+    sub(".*\\(","", sub("\\)","",SIFT)))) %>% 
+  select(-SIFT)
+
+# SIFT consequence counts
+sift_counts <- sort(table(sift_annotations.df$sift_type), decreasing = T)
+
+# Make a dataframe for table
+sift_type_counts.df <- data.frame(
+  sift_type=names(sift_counts),
+  sift_count=as.numeric(sift_counts))
+sift_type_counts.df
+
+# Compile file name
+file_name <- paste(output_folder,"sift_counts_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(sift_type_counts.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(sift_annotations.df, sift_type_counts.df, sift_counts, file_name)
+
+```
+
+# polyphen_consequence_analysis
+
+```{r polyphen_consequence_analysis}
+
+# Count number of NA values
+sum(is.na(fixed.df$PolyPhen))
+
+# Isolate PolyPhen type and score column
+poly_annotations.df <- data.frame(poly=c(fixed.df$PolyPhen))
+
+# Seperate PolyPhen type and score into two seperare columns
+poly_annotations.df <- 
+  poly_annotations.df %>% 
+  mutate(polyphen_type=sub("\\(.*\\)","",poly)) %>% 
+  mutate(polyphen_score=as.numeric(
+    sub(".*\\(","", sub("\\)","",poly)))) %>% 
+  select(-poly)
+
+# PolyPhen consequence counts
+poly_counts <- sort(table(poly_annotations.df$polyphen_type), decreasing = T)
+
+# Make a dataframe for table
+poly_type_counts.df <- data.frame(
+  polyphen_type=names(poly_counts),
+  polyphen_count=as.numeric(poly_counts))
+poly_type_counts.df
+
+# Compile file name
+file_name <- paste(output_folder,"polyphen_counts_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(poly_type_counts.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(poly_annotations.df, poly_type_counts.df, poly_counts, file_name)
+
+```
+
+# allele_frequency_distribution_analysis
+
+```{r allele_frequency_distribution_analysis}
+
+# Check for missed data (is.na produces a logical vector)
+sum(is.na(fixed.df$AF)) # should be 0 (no missed data)
+
+# Isolate allele frequency column
+af.vector <- as.numeric(fixed.df$AF)
+
+# Sum of extreamly rare variants with AF <= 0.0001
+af_ex_rare <- sum(af.vector <= 0.0001)
+
+# Sum of very rare variants with AF <= 0.001
+af_v_rare <- sum(af.vector <= 0.001)
+
+# Sum of rare variants with AF <= 0.01
+af_rare <- sum(af.vector <= 0.01)
+
+# Sum of low frequency variants with AF > 0.01 and < 0.05
+af_low <- sum(af.vector > 0.01 & af.vector < 0.05)
+
+# Sum of common variants with AF >= 0.05
+af_common <- sum(af.vector >= 0.05)
+
+# Prepare AF dataframe
+af_dist.df <- data.frame(af_range=c("AF >= 0.05","AF > 0.01 & < 0.05","AF <= 0.01","AF <= 0.001","AF <= 0.0001"),
+                         af_count=c(af_common, af_low, af_rare, af_v_rare, af_ex_rare))
+af_dist.df
+
+# Compile file name
+file_name <- paste(output_folder,"af_range_counts_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(af_dist.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(af.vector, af_dist.df, af_common, af_low, af_rare, af_v_rare, af_ex_rare, file_name)
+
+```
+
+# singletons
+
+```{r singletons}
+
+# Check for missed data (is.na produces a logical vector)
+sum(is.na(fixed.df$AC)) # should be 0 (no missed data)
+
+# Isolate dataset singleton allele count column
+ac.vector <- as.numeric(fixed.df$AC)
+
+# Sum of allele counts = 1 (singletons)
+ac_sing <- sum(ac.vector == 1)
+
+# Prepare AC dataframe
+ac_sing.df <- data.frame(af_type=c("Singletons"),
+                         af_count=c(ac_sing))
+ac_sing.df
+
+# Compile file name
+file_name <- paste(output_folder,"ac_sing_counts_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(ac_sing.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(ac_sing.df, ac_sing, ac.vector, file_name)
+
+```
+
+# variants_by_all_genes
+
+```{r variants_by_all_genes}
+
+# Isolate SYMBOL column
+gene_variants.df <- data.frame(SYMBOL=c(fixed.df$SYMBOL))
+
+# Calculate numbers of variants associated with each gene
+variant_counts <- sort(table(gene_variants.df$SYMBOL), decreasing = T)
+
+# Make a dataframe for table
+gene_variant_counts.df <- data.frame(
+  gene=names(variant_counts),
+  variant_count=as.numeric(variant_counts))
+gene_variant_counts.df
+
+# Compile file name
+file_name <- paste(output_folder,"all_gene_variant_counts_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(gene_variant_counts.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(gene_variants.df, variant_counts, gene_variant_counts.df, file_name)
+
+```
+
+# variants_associated_with_ddr_genes
+
+```{r variants_associated_with_ddr_genes}
+
+# Set of DDR genes supporting variant filtration
+ddr_genes <- c("UNG", "SMUG1", "MBD4", "TDG", "OGG1", "MUTYH", "NTHL1", "MPG", "NEIL1", "NEIL2", "NEIL3", "HMGB1", "APEX1", "APEX2", "LIG3", "XRCC1", "PNKP", "APLF", "PARP1", "PARP2", "PARP3", "MGMT", "ALKBH2", "ALKBH3", "TDP1", "TDP2", "MSH2", "MSH3", "MSH6", "MLH1", "PMS2", "MSH4", "MSH5", "MLH3", "PMS1", "PMS2P3", "XPC", "RAD23B", "CETN2", "RAD23A", "XPA", "DDB1", "DDB2", "RPA1", "RPA2", "RPA3", "ERCC3", "ERCC2", "GTF2H1", "GTF2H2", "GTF2H3", "GTF2H4", "GTF2H5", "CDK7", "CCNH", "MNAT1", "ERCC5", "ERCC1", "ERCC4", "LIG1", "RBX1", "CUL4A", "CUL4B", "ERCC8", "ERCC6", "UVSSA", "XAB2", "MMS19", "RAD51", "RAD51B", "RAD51D", "DMC1", "XRCC2", "XRCC3", "RAD52", "RAD54L", "RAD54B", "BRCA1", "SHFM1", "RAD50", "MRE11A", "NBN", "RBBP8", "MUS81", "EME1", "EME2", "SLX1A", "SLX1B", "GEN1", "BARD1", "BABAM1", "FAM175A", "BRE", "UIMC1", "BRCC3", "SYCP3", "FANCA", "FANCB", "FANCC", "BRCA2", "FANCD2", "FANCE", "FANCF", "FANCG", "FANCI", "BRIP1", "FANCL", "FANCM", "PALB2", "RAD51C", "SLX4", "C1orf86", "C19orf40", "APITD1", "WDR48", "USP1", "C17orf70", "HES1", "RMI1", "RMI2", "TOP3A", "UBE2T", "XRCC6", "XRCC5", "PRKDC", "LIG4", "XRCC4", "DCLRE1C", "NHEJ1", "DNTT", "NUDT1", "DUT", "RRM2B", "POLB", "POLG", "POLD1", "POLE", "PCNA", "REV3L", "MAD2L2", "REV1", "POLH", "POLI", "POLQ", "POLK", "POLL", "POLM", "POLN", "FEN1", "FAN1", "TREX1", "TREX2", "EXO1", "APTX", "SPO11", "ENDOV", "UBE2A", "UBE2B", "RAD18", "SHPRH", "HLTF", "RNF168", "SPRTN", "RNF8", "RNF4", "UBE2V2", "UBE2N", "H2AFX", "CHAF1A", "SETMAR", "BLM", "WRN", "RECQL4", "ATM", "MPLKIP", "DCLRE1A", "DCLRE1B", "RPA4", "PRPF19", "RECQL", "RECQL5", "HELQ", "RDM1", "NABP2", "RFC1", "RFC2", "RFC3", "RFC4", "RFC5", "ATR", "ATRIP", "MDC1", "RAD1", "RAD9A", "HUS1", "RAD17", "CHEK1", "CHEK2", "TP53", "TP53BP1", "RIF1", "TOPBP1", "CLK2", "PER1")
+
+# Filtering of variants based on DDR genes using SYMBOL 
+ddr_fixed.df <- fixed.df %>%
+  filter(fixed.df$SYMBOL %in% ddr_genes)
+
+removed_variant.df <- fixed.df %>%
+  filter(!fixed.df$SYMBOL %in% ddr_genes)
+
+# Check output dataframes
+dim(ddr_fixed.df)
+unique(ddr_fixed.df$SYMBOL)
+unique(removed_variant.df$SYMBOL)
+
+```
+
+# variants_by_ddr_genes
+
+```{r variants_by_ddr_genes}
+
+# Isolate SYMBOL column
+gene_variants.df <- data.frame(SYMBOL=c(ddr_fixed.df$SYMBOL))
+
+# Calculate numbers of variants associated with each gene
+variant_counts <- sort(table(gene_variants.df$SYMBOL), decreasing = T)
+
+# Make a dataframe for table
+gene_variant_counts.df <- data.frame(
+  gene=names(variant_counts),
+  variant_count=as.numeric(variant_counts))
+gene_variant_counts.df
+
+# Compile file name
+file_name <- paste(output_folder,"ddr_gene_variant_counts_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(gene_variant_counts.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(ddr_genes, ddr_fixed.df, removed_variant.df, gene_variants.df, variant_counts, gene_variant_counts.df, file_name)
+
+```
+
+# dbSNP_variants
+
+```{r dbSNP_variants}
+
+# Count number of NA values
+sum(is.na(fixed.df$ID))
+
+# Count number of dbSNP IDs
+sum(!is.na(fixed.df$ID))
+sum(!fixed.df$Uploaded_variation == ".")
+sum(!is.na(fixed.df$Existing_variation))
+
+```
+
+# clinical_significance
+
+```{r clinical_significance}
+
+# Count number of NA values
+sum(is.na(fixed.df$CLIN_SIG))
+
+# Split multiple consequences
+clinsig_annotations.list <- strsplit(as.vector(fixed.df$CLIN_SIG),"&")
+clinsig_annotations.vector <- as.vector(unlist(clinsig_annotations.list))
+
+# Consequences summaries
+clin_sig.named.vector <- unique(clinsig_annotations.vector)
+
+# Clinical significance consequence counts
+clin_sig_counts <- sort(table(clinsig_annotations.vector), decreasing = T)
+
+# Make a dataframe for table
+clin_sig_counts.df <- data.frame(
+  clin_sig=names(clin_sig_counts),
+  clin_sig_count=as.numeric(clin_sig_counts))
+clin_sig_counts.df
+
+# Compile file name
+file_name <- paste(output_folder,"clin_sig_counts_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(clin_sig_counts.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(clin_sig_counts.df, clinsig_annotations.list, clin_sig_counts, clin_sig.named.vector, clinsig_annotations.vector, file_name)
+
+```
+
+# variants_by_chromosome
+
+```{r variants_by_chromosome}
+
+# Check for missed data (is.na produces a logical vector)
+sum(is.na(fixed.df$CHROM)) # should be 0 (no missed data)
+
+# Isolate chromosome column
+chromo.vector <- fixed.df$CHROM
+
+# Sum of Chromosome variants
+chromo_1 <- sum(chromo.vector == 1)
+chromo_2 <- sum(chromo.vector == 2)
+chromo_3 <- sum(chromo.vector == 3)
+chromo_4 <- sum(chromo.vector == 4)
+chromo_5 <- sum(chromo.vector == 5)
+chromo_6 <- sum(chromo.vector == 6)
+chromo_7 <- sum(chromo.vector == 7)
+chromo_8 <- sum(chromo.vector == 8)
+chromo_9 <- sum(chromo.vector == 9)
+chromo_10 <- sum(chromo.vector == 10)
+chromo_11 <- sum(chromo.vector == 11)
+chromo_12 <- sum(chromo.vector == 12)
+chromo_13 <- sum(chromo.vector == 13)
+chromo_14 <- sum(chromo.vector == 14)
+chromo_15 <- sum(chromo.vector == 15)
+chromo_16 <- sum(chromo.vector == 16)
+chromo_17 <- sum(chromo.vector == 17)
+chromo_18 <- sum(chromo.vector == 18)
+chromo_19 <- sum(chromo.vector == 19)
+chromo_20 <- sum(chromo.vector == 20)
+chromo_21 <- sum(chromo.vector == 21)
+chromo_22 <- sum(chromo.vector == 22)
+chromo_X <- sum(chromo.vector == "X")
+chromo_Y <- sum(chromo.vector == "Y")
+
+# Prepare AF dataframe
+chromo_dist.df <- data.frame(chrom_number=c("1","2","3","4","5","6","7","8","9","10",
+                                                 "11","12","13","14","15","16","17","18","19",
+                                                 "20","21","22","X","Y"),
+                         var_count=c(chromo_1, chromo_2, chromo_3, chromo_4, chromo_5, chromo_6, 
+                                    chromo_7, chromo_8, chromo_9, chromo_10, chromo_11, chromo_12,
+                                    chromo_13, chromo_14, chromo_15, chromo_16, chromo_17, chromo_18,
+                                    chromo_19, chromo_20, chromo_21, chromo_22, chromo_X, chromo_Y))
+chromo_dist.df
+
+# Compile file name
+file_name <- paste(output_folder,"chromo_counts_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(chromo_dist.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Order of levels defines the order of bars on the plot
+levels(chromo_dist.df$chrom_number)
+chromo_dist.df$chrom_number <- factor(chromo_dist.df$chrom_number, 
+  levels=c("1","2","3","4","5","6","7","8","9","10",
+           "11","12","13","14","15","16","17","18","19",
+           "20","21","22","X","Y"))
+levels(chromo_dist.df$chrom_number)
+
+# Bar graph of variants by chromosome data
+ggplot(chromo_dist.df, aes(chrom_number, var_count)) +
+       geom_bar(stat="identity", fill="blue", alpha=0.5) + 
+       geom_text(aes(label=format(var_count, big.mark=","), vjust=-1)) +
+       theme(axis.text.x = element_text(hjust=0.5, size=12, angle=0)) +
+       ylim(0,12000) + 
+       labs(x = "Chromosome", y = "Number of Variants") + 
+       ggtitle("ExAC (Non-TCGA Dataset) - Number of Variants by Chromosome")
+
+ggsave("chromo_counts_plot.pdf", output_folder, plot = last_plot(), device = "pdf", width = 297, height = 210, units = "mm", dpi = 300)
+
+# Clean-up
+rm(chromo_dist.df, chromo.vector, chromo_1, chromo_2, chromo_3, chromo_4, chromo_5, chromo_6, chromo_7,
+   chromo_8, chromo_9, chromo_10, chromo_11, chromo_12, chromo_13, chromo_14, chromo_15, chromo_16, chromo_17,
+   chromo_18, chromo_19, chromo_20, chromo_21, chromo_22, chromo_X, chromo_Y, file_name)
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```
+

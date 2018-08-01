@@ -1,0 +1,206 @@
+---
+title: "r01_mut_sig_discord_HG00351-HG02050"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: Alexey Larionov 2 Jul 2018  
+Updated: David Gilfoyle 4 Jul 2018
+
+---
+
+# Summary
+
+Assessment of mutational signatures based on discordant variants from individuals
+Dataset: 1000 Genomes Project  
+Individual: Present in HG00351 (FIN; DDR-) but not in HG02050 (KHV; DDR-)  
+
+# load_libraries
+
+```{r load_libraries}
+
+# Load libraries for data handling, mutational signatures and data presentation
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(vcfR)
+library(deconstructSigs)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+```
+
+# read_vcf
+
+echo=F to suppress long chunk output
+
+```{r read_vcf}
+
+# Set sample name
+sample_name <- c("HG00351-HG02050")
+
+# Set and load working VCF file
+vcf_file="~/results/data_analysis/gt_individuals/kgen/discordant/s01_HG00351-HG02050_discordant.vcf"
+vcf_file.vcfr <- read.vcfR(vcf_file)
+
+# Clean-up
+rm(vcf_file)
+
+```
+
+# check_vcf
+
+```{r check_vcf}
+
+class(vcf_file.vcfr)
+dim(vcf_file.vcfr)
+str(vcf_file.vcfr)
+summary(vcf_file.vcfr)
+
+```
+
+# extract_fixed_data
+
+```{r extract_fixed_data}
+
+# Get data from meta (header) and fixed columns
+meta_fix.ls <- vcfR2tidy(vcf_file.vcfr, info_only=T)
+class(meta_fix.ls)
+
+# Make dataframe with info from fixed columns
+all_fixed.df <- as.data.frame(meta_fix.ls$fix)
+all_fixed.df[1:5,1:5]
+
+# Clean-up
+rm(meta_fix.ls, vcf_file.vcfr)
+
+```
+
+# required_fixed_data
+
+```{r required_fixed_data}
+
+# Select required columns in dataframe
+required_fixed.df <- all_fixed.df[,c("CHROM", "POS", "REF", "ALT")]
+head(required_fixed.df)
+
+# Add sample column to the dataframe
+required_fixed.df <- required_fixed.df %>% mutate(sample = sample_name)
+head(required_fixed.df)
+
+# Move sample column to start
+required_fixed.df <- required_fixed.df[, c(5, 1:4)]
+head(required_fixed.df)
+
+# Check dataframe
+dim(required_fixed.df)   # 1,521,141 x 5
+
+# Clean-up
+rm(all_fixed.df)
+
+```
+
+# snv_fixed_data
+
+```{r snv_fixed_data}
+
+# Remove variants that are not single base pair substitutions
+required_fixed.df <- required_fixed.df %>% filter((REF == "A" | REF == "T" | REF == "G" | REF == "C") &
+                                    (ALT == "A" | ALT == "T" | ALT == "G" | ALT == "C"))
+
+# Check dataframe
+dim(required_fixed.df) # 1,343,506 x 5
+
+```
+
+# update_chrom_naming
+
+```{r update_chrom_naming}
+
+# Change chromosome names to the style used in UCSC build (required for deconstructSigs package)
+# Variants were not extracted from ChrM or ChrY
+required_fixed.df <- required_fixed.df %>% mutate(chr = "chr")
+required_fixed.df$CHROM <- paste(required_fixed.df$chr, required_fixed.df$CHROM, sep = "")
+# required_fixed.df$CHROM <- gsub("chrMT", "chrM", required_fixed.df$CHROM)
+required_fixed.df <- required_fixed.df[,-6]
+
+# Check dataframe
+head(required_fixed.df)
+
+# Summary of variants by chromosome
+table(required_fixed.df$CHROM)
+
+```
+
+# caluculate_mut_sig
+
+```{r calculated_mut_sig}
+
+# Calculate frequency of each mutation ("catalogue")
+sigs.input <- mut.to.sigs.input(mut.ref = required_fixed.df,
+                                sample.id = "sample",
+                                chr = "CHROM",
+                                pos = "POS",
+                                ref = "REF",
+                                alt = "ALT",
+                                bsg = BSgenome.Hsapiens.UCSC.hg19)
+
+# Check catalogue file
+class(sigs.input)
+dim(sigs.input)
+sigs.input
+
+# ------ Determine weights to assign to each signature ------ #
+
+# 2 signature matrices supplied (contain the fraction of times each of the 96 mutations is seen in the different signatures)
+signatures.nature2013[,1:5]   # 26 different signatures, taken from Alexandrov et al. (2013) Nature 500:415-21
+
+signatures.cosmic[,1:5]   # updated to include 30 signatures, taken from COSMIC (see https://cancer.sanger.ac.uk/cosmic/signatures)
+
+# "signatures.cosmic" will be used - more up-to-date
+
+# ?whichSignatures
+result.ls <- whichSignatures(tumor.ref = sigs.input,
+                             signatures.ref = signatures.cosmic,
+                             sample.id = sample_name,
+                             contexts.needed = TRUE,
+                             tri.counts.method = "default")
+
+class(result.ls)
+summary(result.ls)
+
+# View mutational signatures plots
+
+# Top panel: tumour mutational profile (the fraction of mutations found in each trinucleotide context)
+# Middle panel: the reconstructed mutational profile created by multiplying the calculated weights by the signatures
+# Bottom panel: the error between the tumor mutational profile and reconstructed mutational profile, with SSE annotated
+
+# ?plotSignatures
+plotSignatures(result.ls)
+
+# ?makePie
+makePie(result.ls)
+
+result.ls$weights
+sum(result.ls$weights)
+
+```
+
+# save_output
+
+```{r save_output}
+
+save.image("~/results/data_analysis/mut_sig/r01_mut_sig_discord_HG00351-HG02050.Rdata")
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```
+

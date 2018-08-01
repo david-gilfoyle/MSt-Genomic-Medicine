@@ -1,0 +1,30 @@
+Starting s01_batch_analysis_2_ddr_positive_kgen.sh
+Sun 27 May 16:41:35 UTC 2018
+
+Starting s01_select_NA19131_ddr_positive_kgen.sh
+Sun 27 May 16:41:35 UTC 2018
+
+Completed s01_select_NA19131_ddr_positive_kgen.sh
+Sun 27 May 23:12:28 UTC 2018
+
+Starting s01_select_HG01198_ddr_positive_kgen.sh
+Sun 27 May 23:12:28 UTC 2018
+
+Completed s01_select_HG01198_ddr_positive_kgen.sh
+Mon 28 May 05:35:17 UTC 2018
+
+Starting s01_select_HG02977_ddr_positive_kgen.sh
+Mon 28 May 05:35:17 UTC 2018
+
+Completed s01_select_HG02977_ddr_positive_kgen.sh
+Mon 28 May 11:59:45 UTC 2018
+
+Starting s01_select_HG03120_ddr_positive_kgen.sh
+Mon 28 May 11:59:45 UTC 2018
+
+Completed s01_select_HG03120_ddr_positive_kgen.sh
+Mon 28 May 18:25:24 UTC 2018
+
+Completed s01_batch_analysis_2_ddr_positive_kgen.sh
+Mon 28 May 18:25:24 UTC 2018
+

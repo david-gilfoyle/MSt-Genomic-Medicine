@@ -6,13 +6,13 @@ editor_options:
 ---
 
 Started: David Gilfoyle 3 May 2018  
-Updated: David Gilfoyle 7 May 2018
+Updated: David Gilfoyle 16 May 2018
 
 ---
 
 # Summary
 
-Variant filtering of AF filtered dataset to select non-coding (Consequence), high confidence (HC) non-coding (FATHMM_MKL_NC > 0.5 and CADD_PHRED > 15) and HC non-coding variants in genes with pLI >= 0.9  
+Variant filtering of AF filtered dataset to select non-coding (Consequence) and high confidence (HC) non-coding (FATHMM_MKL_NC > 0.5 and CADD_PHRED > 20)  
 Dataset: ExAC (full)  
 Gene Selection: DNA Repair Genes  
 Input Variants: 92,077
@@ -43,7 +43,7 @@ load(paste(input_folder, "r01_exac_nontcga_ddr_af_filtered.RData", sep="/"))
 
 # Setup script input dataframe naming
 input.df <- fixed_af_filt_exac_nontcga_ddr.df
-rm(fixed_af_filt_exac_tcga_ddr.df)
+rm(fixed_af_filt_exac_nontcga_ddr.df)
 
 # Check input dataframe
 dim(input.df)
@@ -129,7 +129,7 @@ output.df$CADD_PHRED[1:20]
 
 Output assessed based on further filtering with:  
 1) FATHMM_MKL_NC > 0.5 - assessment indicates that some entries are NA - these appear to be insertion, deletion and substitution variants and they will be retained. However, removal of variants with FATHMM_MKL_NC > 0.5 is considered appropriate to enrich dataset for potentially deleterious variants  
-2) CADD_PHRED > 15 - assessment indicates that some entries are NA - these appear to be mainly insertion, deletion and substitution variants and they will be retained. However, removal of variants with CADD_PHRED <= 15 is considered appropriate to enrich dataset for potentially deleterious variants
+2) CADD_PHRED > 20 - assessment indicates that some entries are NA - these appear to be mainly insertion, deletion and substitution variants and they will be retained. However, removal of variants with CADD_PHRED <= 20 is considered appropriate to enrich dataset for potentially deleterious variants
 
 
 ```{r additional_filtering}
@@ -144,11 +144,11 @@ sum(as.numeric(output.df$FATHMM_MKL_NC) > 0.5, na.rm = TRUE)
 # output_fathmm_na.df <- output.df %>% 
 #   filter(is.na(FATHMM_MKL_NC))
 
-# Assessment of filtering CADD_PHREDD > 15
+# Assessment of filtering CADD_PHREDD > 20
 sum(is.na(output.df$CADD_PHRED))
-sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)
-sum(as.numeric(output.df$CADD_PHRED) < 15, na.rm = TRUE)
-sum(as.numeric(output.df$CADD_PHRED) > 15, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) == 20, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) < 20, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) > 20, na.rm = TRUE)
 
 # output_cadd_na.df <- output.df %>% 
 #  filter(is.na(CADD_PHRED))
@@ -157,7 +157,7 @@ sum(as.numeric(output.df$CADD_PHRED) > 15, na.rm = TRUE)
 output_hc.df <- output.df %>% 
   filter((as.numeric(FATHMM_MKL_NC) > 0.5) |
            (is.na(FATHMM_MKL_NC))) %>%
-  filter((as.numeric(CADD_PHRED) > 15) |
+  filter((as.numeric(CADD_PHRED) > 20) |
            (is.na(CADD_PHRED)))
 
 # Check output dataframe
@@ -170,32 +170,6 @@ unique(output_hc.df$SYMBOL)
 
 ```
 
-# additional_filtering_exac_pli
-
-Deleterious non-coding variants in a single allele are expected to have a greater impact in loss intolerant genes (ExAC pLI >= 0.9) 
-
-```{r additional_filtering_exac_pli}
-
-# Assessment of impact of filtering ExAC pLI >= 0.9
-sum(is.na(output_hc.df$ExACpLI))
-sum(as.numeric(output_hc.df$ExACpLI) < 0.9, na.rm = TRUE)
-sum(as.numeric(output_hc.df$ExACpLI) >= 0.9, na.rm = TRUE)
-
-# Additional filtration based on ExAC pLI >= 0.9
-output_hc_pli.df <- output_hc.df %>% 
-  filter(as.numeric(ExACpLI) >= 0.9)
-
-# Check output dataframe
-dim(output_hc_pli.df)
-output_hc_pli.df[1:20,1:10]
-output_hc_pli.df$Consequence[1:20]
-output_hc_pli.df$FATHMM_MKL_NC[1:20]
-output_hc_pli.df$CADD_PHRED[1:20]
-output_hc_pli.df$ExACpLI[1:20]
-unique(output_hc_pli.df$SYMBOL)
-
-```
-
 # update_dataframe_naming
 
 ```{r update_dataframe_naming}
@@ -203,10 +177,9 @@ unique(output_hc_pli.df$SYMBOL)
 # Reset of output dataframe names
 fixed_nc_filt_exac_nontcga_ddr.df <- output.df
 fixed_nc_hc_filt_exac_nontcga_ddr.df <- output_hc.df
-fixed_nc_hc_pli_filt_exac_nontcga_ddr.df <- output_hc_pli.df
 
 # Clean-up
-rm(input.df, output.df, output_hc.df, output_hc_pli.df, ddr_genes, removed_variant.df)
+rm(input.df, output.df, output_hc.df, ddr_genes, removed_variant.df)
 
 ```
 

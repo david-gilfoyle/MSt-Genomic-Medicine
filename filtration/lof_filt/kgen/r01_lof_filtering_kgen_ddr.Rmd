@@ -6,17 +6,16 @@ editor_options:
 ---
 
 Started: David Gilfoyle 3 May 2018  
-Updated: David Gilfoyle 6 May 2018
+Updated: David Gilfoyle 17 May 2018
 
 ---
 
 # Summary
 
-Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC)  
-and HC LoF variants in genes with pLI >= 0.9  
+Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC) and HC LoF variants in genes with pLI >= 0.9  
 Dataset: 1000 Genome Project  
 Gene Selection: DNA Repair Genes  
-Input Variants: 313,889
+Input Variants: 312,863
 
 # start_section
 
@@ -155,7 +154,7 @@ output.mx[1:20,1:2]
 
 Output assessed based on further filtering with:  
 1) LOFTEE high confidence - assessment indicates that some entries are NA - these appear to be mainly start_lost and stop_lost and they will be retained. However, removal of low confidence variants (LC) is considered appropriate to enrich dataset for potentially deleterious variants  
-2) CADD_PHRED > 15 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED <= 15 is considered appropriate to enrich dataset for potentially deleterious variants
+2) CADD_PHRED > 20 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED <= 20 is considered appropriate to enrich dataset for potentially deleterious variants
 
 ```{r additional_filtering_loftee_hc}
 
@@ -169,21 +168,21 @@ sum(output.df$LoF == "LC", na.rm = TRUE)
 # output_lof_na.df <- output.df %>% 
 #   filter(is.na(LoF))
 
-# Assessment of filtering CADD_PHREDD > 15
+# Assessment of filtering CADD_PHREDD > 20
 sum(is.na(output.df$CADD_PHRED))
-sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)
-sum(as.numeric(output.df$CADD_PHRED) < 15, na.rm = TRUE)
-sum(as.numeric(output.df$CADD_PHRED) > 15, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) == 20, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) < 20, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) > 20, na.rm = TRUE)
 
 # output_cadd_na.df <- output.df %>% 
 #  filter(is.na(CADD_PHRED))
 
-# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED > 15
+# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED > 20
 output.df <- tibble::rownames_to_column(output.df, var = "rowname")
 output_hc.df <- output.df %>% 
   filter((LoF == "HC") |
            (is.na(LoF))) %>%
-  filter((as.numeric(CADD_PHRED) > 15) |
+  filter((as.numeric(CADD_PHRED) > 20) |
            (is.na(CADD_PHRED)))
 output_hc.df <- tibble::column_to_rownames(output_hc.df, var = "rowname")
 
@@ -192,7 +191,7 @@ dim(output_hc.df)
 output_hc.df[1:20,1:10]
 output_hc.df$Consequence[1:20]
 output_hc.df$CADD_PHRED[1:20]
-output_hc.df$LoF[100:120] # range updated to show presence of NA
+output_hc.df$LoF[100:120]
 unique(output_hc.df$SYMBOL)
 
 ```

@@ -123,19 +123,19 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 4 May 2018</p>
+Updated: David Gilfoyle 17 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of QUAL filtered dataset based on AF &lt;= 0.01<br />
+<p>Variant filtering of AC filtered dataset based on AF &lt;= 0.01<br />
 Dataset: 1000 Genome Project<br />
 Gene Selection: Olfactory Receptor Genes<br />
-Input Variants: 59,404</p>
+Input Variants: 59,262</p>
 </div>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-04 15:13:36 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 09:58:21 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -154,20 +154,20 @@ library(dplyr)</code></pre>
 <div id="load_rdata_file" class="section level1">
 <h1>load_rdata_file</h1>
 <pre class="r"><code># Setup input folder
-input_folder=&quot;/home/ec2-user/results/filtered/qual_filt/kgen&quot;
+input_folder=&quot;/home/ec2-user/results/filtered/ac_filt/kgen&quot;
 
 # Load RData file - contains dataframe containing all variants
-load(paste(input_folder, &quot;r01_kgen_or_updated_rownames.RData&quot;, sep=&quot;/&quot;))
+load(paste(input_folder, &quot;r01_kgen_or_ac_filtered.RData&quot;, sep=&quot;/&quot;))
 
 # Setup script input dataframe naming
-input.df &lt;- fixed_kgen_or.df
-rm(fixed_kgen_or.df)
-input.mx &lt;- gt_kgen_or.mx
-rm(gt_kgen_or.mx)
+input.df &lt;- fixed_ac_filt_kgen_or.df
+rm(fixed_ac_filt_kgen_or.df)
+input.mx &lt;- gt_ac_filt_kgen_or.mx
+rm(gt_ac_filt_kgen_or.mx)
 
 # Check input dataframe and matrix
 dim(input.df)</code></pre>
-<pre><code>## [1] 59404    94</code></pre>
+<pre><code>## [1] 59262    94</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>input.df[1:20,1:10]</code></pre>
@@ -221,7 +221,7 @@ dim(input.df)</code></pre>
 ## [11] &quot;0.000998403&quot; &quot;0.000399361&quot; &quot;0.000998403&quot; &quot;0.000199681&quot; &quot;0.000199681&quot;
 ## [16] &quot;0.000199681&quot; &quot;0.000798722&quot; &quot;0.00199681&quot;  &quot;0.00219649&quot;  &quot;0.000399361&quot;</code></pre>
 <pre class="r"><code>dim(input.mx)</code></pre>
-<pre><code>## [1] 59404  2504</code></pre>
+<pre><code>## [1] 59262  2504</code></pre>
 <pre class="r"><code>class(input.mx)</code></pre>
 <pre><code>## [1] &quot;matrix&quot;</code></pre>
 <pre class="r"><code>input.mx[1:5,1:5]</code></pre>
@@ -256,7 +256,7 @@ output.df &lt;- tibble::column_to_rownames(output.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 47624    94</code></pre>
+<pre><code>## [1] 47482    94</code></pre>
 <pre class="r"><code>class(output.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
@@ -398,17 +398,17 @@ rm(input.df, output.df, input.mx, output.mx)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] bindrcpp_0.2 knitr_1.20   dplyr_0.7.4 
+## [1] bindrcpp_0.2.2 knitr_1.20     dplyr_0.7.4   
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.16     digest_0.6.15    rprojroot_1.3-2  assertthat_0.2.0
 ##  [5] R6_2.2.2         backports_1.1.2  magrittr_1.5     evaluate_0.10.1 
-##  [9] pillar_1.2.1     rlang_0.2.0      stringi_1.1.7    rmarkdown_1.9   
-## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.18     
+##  [9] pillar_1.2.2     rlang_0.2.0      stringi_1.2.2    rmarkdown_1.9   
+## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.19     
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-04 15:15:03 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 09:59:40 UTC&quot;</code></pre>
 </div>
 
 

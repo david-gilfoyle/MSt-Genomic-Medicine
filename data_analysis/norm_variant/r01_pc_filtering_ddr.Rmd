@@ -6,7 +6,7 @@ editor_options:
 ---
 
 Started: David Gilfoyle 7 May 2018  
-Updated: David Gilfoyle 13 May 2018
+Updated: David Gilfoyle 17 May 2018
 
 ---
 
@@ -43,15 +43,15 @@ kgen_input_folder="/home/ec2-user/results/filtered/af_filt/kgen"
 load(paste(exac_input_folder, "r01_exac_full_ddr_af_filtered.RData", sep="/"))
 load(paste(exac_input_folder, "r01_exac_nontcga_ddr_af_filtered.RData", sep="/"))
 load(paste(icr1000_input_folder, "r01_icr1000_ddr_af_filtered.RData", sep="/"))
-rm(gt_af_filt_icr1000_ddr.mx)
+rm(gt_add_af_filt_icr1000_ddr.mx)
 load(paste(kgen_input_folder, "r01_kgen_ddr_af_filtered.RData", sep="/"))
 rm(gt_af_filt_kgen_ddr.mx)
 
 # Check input dataframe
 dim(fixed_af_filt_exac_full_ddr.df) # should be 99,236
 dim(fixed_af_filt_exac_nontcga_ddr.df) # should be 92,077
-dim(fixed_af_filt_icr1000_ddr.df) # should be 6,442
-dim(fixed_af_filt_kgen_ddr.df) # should be 313,889
+dim(fixed_af_filt_icr1000_ddr.df) # should be 6,152
+dim(fixed_af_filt_kgen_ddr.df) # should be 312,863
 
 # Setup base folder
 base_folder="/home/ec2-user/scripts/data_analysis/norm_variant"
@@ -87,8 +87,8 @@ kgen_ddr.df <- fixed_af_filt_kgen_ddr.df %>%
 # Check DDR gene filtered dataframes
 dim(exac_full_ddr.df) # should be 87,168
 dim(exac_nontcga_ddr.df) # should be 80,858
-dim(icr1000_ddr.df) # should be 5,651
-dim(kgen_ddr.df) # should be 266,765
+dim(icr1000_ddr.df) # should be 5,407
+dim(kgen_ddr.df) # should be 265,878
 
 # Clean-up
 rm(fixed_af_filt_exac_full_ddr.df, fixed_af_filt_exac_nontcga_ddr.df, fixed_af_filt_icr1000_ddr.df, fixed_af_filt_kgen_ddr.df)

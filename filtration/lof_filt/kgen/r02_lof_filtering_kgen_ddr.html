@@ -123,20 +123,19 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 13 May 2018</p>
+Updated: David Gilfoyle 17 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC)<br />
-and HC LoF variants in genes with pLI &gt;= 0.9<br />
+<p>Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC) and HC LoF variants in genes with pLI &gt;= 0.9<br />
 Dataset: 1000 Genome Project<br />
 Gene Selection: DNA Repair Genes (removing PMS2P3, PRKDC and RECQL4)<br />
-Input Variants: 313,889</p>
+Input Variants: 312,863</p>
 </div>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-13 09:14:18 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 10:13:30 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -168,7 +167,7 @@ rm(gt_af_filt_kgen_ddr.mx)
 
 # Check input dataframe
 dim(input.df)</code></pre>
-<pre><code>## [1] 313889     94</code></pre>
+<pre><code>## [1] 312863     94</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>input.df[1:20,1:10]</code></pre>
@@ -188,11 +187,11 @@ dim(input.df)</code></pre>
 ## rs183894763_13     1 2115313 rs183894763   A   C  100   PASS a||| 27
 ## rs556783871_14     1 2115314 rs556783871 CTG   C  100   PASS &lt;NA&gt;  8
 ## rs148624904_15     1 2115342 rs148624904   C   A  100   PASS c|||  9
-## rs547259071_16     1 2115398 rs547259071   C   T  100   PASS c|||  0
 ## rs566928140_17     1 2115401 rs566928140   G   C  100   PASS g|||  2
 ## rs539337032_18     1 2115408 rs539337032   G   A  100   PASS g|||  1
 ## rs569381728_19     1 2115411 rs569381728   G   C  100   PASS g|||  2
 ## rs188864364_20     1 2115432 rs188864364   G   A  100   PASS g||| 12
+## rs538334300_21     1 2115435 rs538334300   T   G  100   PASS t||| 18
 ##                         AF
 ## rs139644969_1  0.000199681
 ## rs575517464_2  0.000599042
@@ -209,11 +208,11 @@ dim(input.df)</code></pre>
 ## rs183894763_13  0.00539137
 ## rs556783871_14  0.00159744
 ## rs148624904_15  0.00179712
-## rs547259071_16           0
 ## rs566928140_17 0.000399361
 ## rs539337032_18 0.000199681
 ## rs569381728_19 0.000399361
-## rs188864364_20  0.00239617</code></pre>
+## rs188864364_20  0.00239617
+## rs538334300_21  0.00359425</code></pre>
 <pre class="r"><code>class(input.df$Consequence)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>input.df$Consequence[1:20]</code></pre>
@@ -245,14 +244,14 @@ dim(input.df)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>input.df$CADD_PHRED[1:20]</code></pre>
 <pre><code>##  [1] &quot;0.754&quot; &quot;1.484&quot; &quot;0.135&quot; &quot;2.670&quot; &quot;5.695&quot; &quot;4.476&quot; &quot;5.827&quot; &quot;5.639&quot;
-##  [9] &quot;0.612&quot; &quot;4.490&quot; &quot;2.607&quot; &quot;4.314&quot; &quot;0.123&quot; NA      &quot;2.653&quot; &quot;6.249&quot;
-## [17] &quot;0.716&quot; &quot;2.733&quot; &quot;0.816&quot; &quot;3.429&quot;</code></pre>
+##  [9] &quot;0.612&quot; &quot;4.490&quot; &quot;2.607&quot; &quot;4.314&quot; &quot;0.123&quot; NA      &quot;2.653&quot; &quot;0.716&quot;
+## [17] &quot;2.733&quot; &quot;0.816&quot; &quot;3.429&quot; &quot;3.254&quot;</code></pre>
 <pre class="r"><code>class(input.df$ExACpLI)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>input.df$ExACpLI[1:20]</code></pre>
 <pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
 <pre class="r"><code>dim(input.mx)</code></pre>
-<pre><code>## [1] 313889   2504</code></pre>
+<pre><code>## [1] 312863   2504</code></pre>
 <pre class="r"><code>class(input.mx)</code></pre>
 <pre><code>## [1] &quot;matrix&quot;</code></pre>
 <pre class="r"><code>input.mx[1:5,1:5]</code></pre>
@@ -292,7 +291,7 @@ removed_variant.df &lt;- input.df %&gt;%
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 266765     94</code></pre>
+<pre><code>## [1] 265878     94</code></pre>
 <pre class="r"><code>class(output.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
@@ -459,7 +458,7 @@ output.df &lt;- tibble::column_to_rownames(output.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 255  94</code></pre>
+<pre><code>## [1] 251  94</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
 <pre><code>##                               CHROM       POS                      ID
 ## rs529770362_1847                  1  11735232             rs529770362
@@ -650,45 +649,45 @@ output.df[1:20,1:5]</code></pre>
 <h1>additional_filtering_loftee_hc</h1>
 <p>Output assessed based on further filtering with:<br />
 1) LOFTEE high confidence - assessment indicates that some entries are NA - these appear to be mainly start_lost and stop_lost and they will be retained. However, removal of low confidence variants (LC) is considered appropriate to enrich dataset for potentially deleterious variants<br />
-2) CADD_PHRED &gt; 15 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED &lt;= 15 is considered appropriate to enrich dataset for potentially deleterious variants</p>
+2) CADD_PHRED &gt; 20 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED &lt;= 20 is considered appropriate to enrich dataset for potentially deleterious variants</p>
 <pre class="r"><code># Assessment of impact of filtering LoF (LOFTEE) = High Confidence (HC)
 sum(is.na(output.df$LoF))</code></pre>
-<pre><code>## [1] 17</code></pre>
-<pre class="r"><code>sum(output.df$Consequence == &quot;start_lost&quot;)</code></pre>
 <pre><code>## [1] 15</code></pre>
+<pre class="r"><code>sum(output.df$Consequence == &quot;start_lost&quot;)</code></pre>
+<pre><code>## [1] 13</code></pre>
 <pre class="r"><code>sum(output.df$Consequence == &quot;stop_lost&quot;)</code></pre>
 <pre><code>## [1] 2</code></pre>
 <pre class="r"><code>sum(output.df$LoF == &quot;HC&quot;, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 207</code></pre>
+<pre><code>## [1] 205</code></pre>
 <pre class="r"><code>sum(output.df$LoF == &quot;LC&quot;, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 31</code></pre>
 <pre class="r"><code># output_lof_na.df &lt;- output.df %&gt;% 
 #   filter(is.na(LoF))
 
-# Assessment of filtering CADD_PHREDD &gt; 15
+# Assessment of filtering CADD_PHREDD &gt; 20
 sum(is.na(output.df$CADD_PHRED))</code></pre>
 <pre><code>## [1] 19</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 20, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 8</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 228</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 16</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 216</code></pre>
 <pre class="r"><code># output_cadd_na.df &lt;- output.df %&gt;% 
 #  filter(is.na(CADD_PHRED))
 
-# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED &gt; 15
+# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED &gt; 20
 output.df &lt;- tibble::rownames_to_column(output.df, var = &quot;rowname&quot;)
 output_hc.df &lt;- output.df %&gt;% 
   filter((LoF == &quot;HC&quot;) |
            (is.na(LoF))) %&gt;%
-  filter((as.numeric(CADD_PHRED) &gt; 15) |
+  filter((as.numeric(CADD_PHRED) &gt; 20) |
            (is.na(CADD_PHRED)))
 output_hc.df &lt;- tibble::column_to_rownames(output_hc.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output_hc.df)</code></pre>
-<pre><code>## [1] 219  94</code></pre>
+<pre><code>## [1] 209  94</code></pre>
 <pre class="r"><code>output_hc.df[1:20,1:10]</code></pre>
 <pre><code>##                               CHROM       POS                      ID
 ## rs529770362_1847                  1  11735232             rs529770362
@@ -798,29 +797,28 @@ dim(output_hc.df)</code></pre>
 <pre class="r"><code>output_hc.df$CADD_PHRED[1:20]</code></pre>
 <pre><code>##  [1] &quot;26.1&quot; &quot;22.9&quot; &quot;38&quot;   &quot;39&quot;   &quot;35&quot;   &quot;38&quot;   NA     &quot;32&quot;   &quot;37&quot;   &quot;36&quot;  
 ## [11] &quot;24.2&quot; NA     &quot;25.1&quot; &quot;35&quot;   &quot;46&quot;   &quot;37&quot;   &quot;26.3&quot; &quot;34&quot;   &quot;24.5&quot; &quot;24.7&quot;</code></pre>
-<pre class="r"><code>output_hc.df$LoF[100:120] # range updated to show presence of NA</code></pre>
-<pre><code>##  [1] &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot;
-## [15] &quot;HC&quot; NA   &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot;</code></pre>
+<pre class="r"><code>output_hc.df$LoF[100:120]</code></pre>
+<pre><code>##  [1] &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; NA   &quot;HC&quot; &quot;HC&quot;
+## [15] &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot; &quot;HC&quot;</code></pre>
 <pre class="r"><code>unique(output_hc.df$SYMBOL)</code></pre>
 <pre><code>##   [1] &quot;MAD2L2&quot;   &quot;MUTYH&quot;    &quot;RAD54L&quot;   &quot;DCLRE1B&quot;  &quot;UBE2T&quot;    &quot;SPRTN&quot;   
 ##   [7] &quot;EXO1&quot;     &quot;MSH6&quot;     &quot;APLF&quot;     &quot;ERCC3&quot;    &quot;RIF1&quot;     &quot;BARD1&quot;   
-##  [13] &quot;XRCC5&quot;    &quot;RAD18&quot;    &quot;OGG1&quot;     &quot;FANCD2&quot;   &quot;XPC&quot;      &quot;MLH1&quot;    
-##  [19] &quot;ATRIP&quot;    &quot;PARP3&quot;    &quot;POLQ&quot;     &quot;MBD4&quot;     &quot;ATR&quot;      &quot;HLTF&quot;    
-##  [25] &quot;RNF168&quot;   &quot;UVSSA&quot;    &quot;POLN&quot;     &quot;RFC1&quot;     &quot;HELQ&quot;     &quot;FAM175A&quot; 
-##  [31] &quot;NEIL3&quot;    &quot;RAD1&quot;     &quot;ERCC8&quot;    &quot;CDK7&quot;     &quot;GTF2H2&quot;   &quot;POLK&quot;    
-##  [37] &quot;MSH3&quot;     &quot;CCNH&quot;     &quot;RAD50&quot;    &quot;UBE2B&quot;    &quot;UIMC1&quot;    &quot;TDP2&quot;    
-##  [43] &quot;MSH5&quot;     &quot;FANCE&quot;    &quot;POLH&quot;     &quot;SHPRH&quot;    &quot;NUDT1&quot;    &quot;RPA3&quot;    
-##  [49] &quot;POLM&quot;     &quot;HUS1&quot;     &quot;XRCC2&quot;    &quot;NEIL2&quot;    &quot;WRN&quot;      &quot;NBN&quot;     
-##  [55] &quot;RAD54B&quot;   &quot;APTX&quot;     &quot;RMI1&quot;     &quot;ERCC6&quot;    &quot;MMS19&quot;    &quot;POLL&quot;    
-##  [61] &quot;DCLRE1A&quot;  &quot;MGMT&quot;     &quot;ALKBH3&quot;   &quot;FEN1&quot;     &quot;MUS81&quot;    &quot;ATM&quot;     
-##  [67] &quot;RECQL&quot;    &quot;SMUG1&quot;    &quot;GTF2H3&quot;   &quot;POLE&quot;     &quot;BRCA2&quot;    &quot;RFC3&quot;    
-##  [73] &quot;ERCC5&quot;    &quot;LIG4&quot;     &quot;PARP2&quot;    &quot;APEX1&quot;    &quot;FANCM&quot;    &quot;MNAT1&quot;   
-##  [79] &quot;RAD51B&quot;   &quot;MLH3&quot;     &quot;TDP1&quot;     &quot;FAN1&quot;     &quot;NEIL1&quot;    &quot;FANCI&quot;   
-##  [85] &quot;POLG&quot;     &quot;MPG&quot;      &quot;EME2&quot;     &quot;NTHL1&quot;    &quot;SLX4&quot;     &quot;ERCC4&quot;   
-##  [91] &quot;PALB2&quot;    &quot;SLX1A&quot;    &quot;FANCA&quot;    &quot;TOP3A&quot;    &quot;RAD51D&quot;   &quot;RDM1&quot;    
-##  [97] &quot;BRCA1&quot;    &quot;EME1&quot;     &quot;BRIP1&quot;    &quot;RECQL5&quot;   &quot;ENDOV&quot;    &quot;C17orf70&quot;
-## [103] &quot;POLI&quot;     &quot;XRCC1&quot;    &quot;ERCC2&quot;    &quot;ERCC1&quot;    &quot;PNKP&quot;     &quot;SPO11&quot;   
-## [109] &quot;CHEK2&quot;    &quot;DMC1&quot;     &quot;TREX2&quot;    &quot;BRCC3&quot;</code></pre>
+##  [13] &quot;XRCC5&quot;    &quot;RAD18&quot;    &quot;FANCD2&quot;   &quot;XPC&quot;      &quot;MLH1&quot;     &quot;ATRIP&quot;   
+##  [19] &quot;PARP3&quot;    &quot;POLQ&quot;     &quot;MBD4&quot;     &quot;ATR&quot;      &quot;HLTF&quot;     &quot;RNF168&quot;  
+##  [25] &quot;UVSSA&quot;    &quot;POLN&quot;     &quot;RFC1&quot;     &quot;HELQ&quot;     &quot;FAM175A&quot;  &quot;NEIL3&quot;   
+##  [31] &quot;RAD1&quot;     &quot;ERCC8&quot;    &quot;CDK7&quot;     &quot;GTF2H2&quot;   &quot;POLK&quot;     &quot;MSH3&quot;    
+##  [37] &quot;CCNH&quot;     &quot;RAD50&quot;    &quot;UBE2B&quot;    &quot;UIMC1&quot;    &quot;TDP2&quot;     &quot;MSH5&quot;    
+##  [43] &quot;FANCE&quot;    &quot;POLH&quot;     &quot;SHPRH&quot;    &quot;NUDT1&quot;    &quot;POLM&quot;     &quot;HUS1&quot;    
+##  [49] &quot;XRCC2&quot;    &quot;NEIL2&quot;    &quot;WRN&quot;      &quot;NBN&quot;      &quot;RAD54B&quot;   &quot;APTX&quot;    
+##  [55] &quot;RMI1&quot;     &quot;ERCC6&quot;    &quot;MMS19&quot;    &quot;POLL&quot;     &quot;DCLRE1A&quot;  &quot;MGMT&quot;    
+##  [61] &quot;ALKBH3&quot;   &quot;FEN1&quot;     &quot;MUS81&quot;    &quot;ATM&quot;      &quot;RECQL&quot;    &quot;GTF2H3&quot;  
+##  [67] &quot;POLE&quot;     &quot;BRCA2&quot;    &quot;ERCC5&quot;    &quot;LIG4&quot;     &quot;PARP2&quot;    &quot;APEX1&quot;   
+##  [73] &quot;FANCM&quot;    &quot;MNAT1&quot;    &quot;RAD51B&quot;   &quot;MLH3&quot;     &quot;TDP1&quot;     &quot;FAN1&quot;    
+##  [79] &quot;NEIL1&quot;    &quot;FANCI&quot;    &quot;POLG&quot;     &quot;EME2&quot;     &quot;NTHL1&quot;    &quot;SLX4&quot;    
+##  [85] &quot;ERCC4&quot;    &quot;PALB2&quot;    &quot;SLX1A&quot;    &quot;FANCA&quot;    &quot;TOP3A&quot;    &quot;RAD51D&quot;  
+##  [91] &quot;RDM1&quot;     &quot;BRCA1&quot;    &quot;EME1&quot;     &quot;BRIP1&quot;    &quot;RECQL5&quot;   &quot;ENDOV&quot;   
+##  [97] &quot;C17orf70&quot; &quot;POLI&quot;     &quot;XRCC1&quot;    &quot;ERCC2&quot;    &quot;ERCC1&quot;    &quot;PNKP&quot;    
+## [103] &quot;SPO11&quot;    &quot;CHEK2&quot;    &quot;DMC1&quot;     &quot;TREX2&quot;    &quot;BRCC3&quot;</code></pre>
 </div>
 <div id="syncronise_filtered_variants_and_genotype_data_loftee_hc" class="section level1">
 <h1>syncronise_filtered_variants_and_genotype_data_loftee_hc</h1>
@@ -901,7 +899,7 @@ output_hc.df[1:20,1:5]</code></pre>
 sum(is.na(output_hc.df$ExACpLI))</code></pre>
 <pre><code>## [1] 1</code></pre>
 <pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &lt; 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 214</code></pre>
+<pre><code>## [1] 204</code></pre>
 <pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &gt;= 0.9, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 4</code></pre>
 <pre class="r"><code># Additional filtration based on ExAC pLI &gt;= 0.9
@@ -1006,7 +1004,7 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, input.mx, output.mx, out
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-13 09:17:27 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 10:16:25 UTC&quot;</code></pre>
 </div>
 
 

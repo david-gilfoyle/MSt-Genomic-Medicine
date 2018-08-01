@@ -1,0 +1,28 @@
+Starting Post Hard Filtering Quality Control (Olfactory Receptor Genes)
+Wed 13 Jun 13:17:55 UTC 2018
+
+QUAL Filtered ExAC (non-TCGA) VCF File: /home/ec2-user/results/r_export/exac_nontcga_or_qual_filt_header.vcf.gz
+[W::vcf_parse] INFO 'NA' is not defined in the header, assuming Type=String
+Parsing bcftools stats output: /home/ec2-user/results/r_export/vcf_stats/exac_v1/or/exac_nontcga_or_qual_filtered_vcfstats.txt
+Plotting graphs: python plot.py
+Creating PDF: pdflatex summary.tex >plot-vcfstats.log 2>&1
+Finished: /home/ec2-user/results/r_export/vcf_stats/exac_v1/or//summary.pdf
+
+GQ Filtered ICR1000 VCF File: /home/ec2-user/results/r_export/icr1000_or_gq_filt_header.vcf.gz
+[W::vcf_parse] FILTER 'NA' is not defined in the header
+[W::vcf_parse] INFO 'NA' is not defined in the header, assuming Type=String
+Parsing bcftools stats output: /home/ec2-user/results/r_export/vcf_stats/icr1000/or/icr1000_or_qual_filtered_vcfstats.txt
+Plotting graphs: python plot.py
+Creating PDF: pdflatex summary.tex >plot-vcfstats.log 2>&1
+Finished: /home/ec2-user/results/r_export/vcf_stats/icr1000/or//summary.pdf
+
+AC Filtered 1000 Genomes Project VCF File: /home/ec2-user/results/r_export/kgen_or_ac_filt_header.vcf.gz
+[W::vcf_parse] INFO 'NA' is not defined in the header, assuming Type=String
+Parsing bcftools stats output: /home/ec2-user/results/r_export/vcf_stats/kgen/or/kgen_or_qual_filtered_vcfstats.txt
+Plotting graphs: python plot.py
+Creating PDF: pdflatex summary.tex >plot-vcfstats.log 2>&1
+Finished: /home/ec2-user/results/r_export/vcf_stats/kgen/or//summary.pdf
+
+Finishing Post Hard Filtering Quality Control (Olfactory Receptor Genes)
+Wed 13 Jun 13:17:58 UTC 2018
+

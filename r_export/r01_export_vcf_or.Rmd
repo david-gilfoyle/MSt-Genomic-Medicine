@@ -1,0 +1,136 @@
+---
+title: "r01_export_vcf_or"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 13 Jun 2018  
+Updated: David Gilfoyle 13 Jun 2018
+
+---
+
+# Summary
+
+Export hard filtered VCF files to support VCFStats assessment  
+Dataset: All  
+Gene Selection: Olfactory Receptor Genes  
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Load required libraries
+library(knitr)
+
+# Set base folder
+base_folder="/home/ec2-user/scripts/r_export/"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# export_vcf_exac
+
+```{r export_vcf_exac}
+
+# Load r datafile
+load("/home/ec2-user/results/filtered/qual_filt/exac_v1/r01_exac_nontcga_or_qual_filt.RData")
+  
+# Check variant datafile
+dim(fixed_qfilt_exac_nontcga_or.df)
+class(fixed_qfilt_exac_nontcga_or.df)
+fixed_qfilt_exac_nontcga_or.df[1:10,1:5]
+
+# Extract columns
+extracted.df <- fixed_qfilt_exac_nontcga_or.df[,1:7]
+extracted.df$INFO <- NA
+
+# Compile file name
+file_name <- paste("/home/ec2-user/results/r_export/exac_nontcga_or_qual_filt.vcf", sep="/")
+
+# Write tab-separated text file
+write.table(extracted.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(fixed_qfilt_exac_nontcga_or.df, extracted.df, meta.df, file_name)
+
+```
+
+# export_vcf_icr1000
+
+```{r export_vcf_icr1000}
+
+# Load r datafile
+load("/home/ec2-user/results/filtered/gq_filt/icr1000/r01_icr1000_or_gq_filt.RData")
+
+# Remove genotype matrix
+rm (gt_add_crfilt_icr1000_or.mx)
+  
+# Check variant datafile
+dim(fixed_crfilt_icr1000_or.df)
+class(fixed_crfilt_icr1000_or.df)
+fixed_crfilt_icr1000_or.df[1:10,1:5]
+
+# Extract columns
+extracted.df <- fixed_crfilt_icr1000_or.df[,1:7]
+extracted.df$INFO <- NA
+
+# Compile file name
+file_name <- paste("/home/ec2-user/results/r_export/icr1000_or_gq_filt.vcf", sep="/")
+
+# Write tab-separated text file
+write.table(extracted.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(fixed_crfilt_icr1000_or.df, extarcted.df, meta.df, file_name)
+
+```
+
+# export_vcf_kgen
+
+```{r export_vcf_kgen}
+
+# Load r datafile
+load("/home/ec2-user/results/filtered/ac_filt/kgen/r01_kgen_or_ac_filtered.RData")
+
+# Remove genotype matrix
+rm (gt_ac_filt_kgen_or.mx)
+  
+# Check variant datafile
+dim(fixed_ac_filt_kgen_or.df)
+class(fixed_ac_filt_kgen_or.df)
+fixed_ac_filt_kgen_or.df[1:10,1:5]
+
+# Extract columns
+extracted.df <- fixed_ac_filt_kgen_or.df[,1:7]
+extracted.df$INFO <- NA
+
+# Compile file name
+file_name <- paste("/home/ec2-user/results/r_export/kgen_or_ac_filt.vcf", sep="/")
+
+# Write tab-separated text file
+write.table(extracted.df, file=file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(fixed_ac_filt_kgen_or.df, extracted.df, meta.df, file_name, base_folder, input_folder, output_folder)
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```

@@ -6,16 +6,16 @@ editor_options:
 ---
 
 Started: David Gilfoyle 15 May 2018  
-Updated: David Gilfoyle 15 May 2018
+Updated: David Gilfoyle 16 May 2018
 
 ---
 
 # Summary
 
-GQ Filtering Remove Phred < 20  
+GQ Filtering Phred < 20  
 Dataset: ICR1000 
 Gene Selection: DNA Repair Genes  
-Input Variants: 13,916
+Input Variants: 10,304
 
 # start_section
 
@@ -47,8 +47,6 @@ load(paste(input_folder, "r01_icr1000_ddr_qual_filt.RData", sep="/"))
 # Check input fixed column dataframe
 dim(fixed_qfilt_icr1000_ddr.df)
 class(fixed_qfilt_icr1000_ddr.df)
-str(fixed_qfilt_icr1000_ddr.df)
-colnames(fixed_qfilt_icr1000_ddr.df)
 fixed_qfilt_icr1000_ddr.df[1:20,1:10]
 
 # Check input genotype matrix
@@ -81,102 +79,120 @@ opts_knit$set(root.dir = base_folder)
 gt_qfilt_icr1000_ddr.mx[1:10,1:4]
 gq_qfilt_icr1000_ddr.mx[1:10,1:4]
 
-# Filter GT for GQ > 20 
+# Filter GT (placing NA in appropriate cells) when GQ > 20
 NA -> gt_qfilt_icr1000_ddr.mx[ gq_qfilt_icr1000_ddr.mx < 20 ]
 
 # Check output
 gt_qfilt_icr1000_ddr.mx[1:10,1:4]
 gq_qfilt_icr1000_ddr.mx[1:10,1:4]
 
-# Cleanup
+# Clean up
 rm(gq_qfilt_icr1000_ddr.mx)
 
 ```
 
-# recode_gt_to_additive
+# recode_gt_to_additive  
+Genotypes which remain following filtering are presented as 0/0, 0/1, 1/1 etc. This section sets up an empty matrix of equivalent dimensions to the genotype matrix, then evaulates each genotype and calculates additive genotype values (0, 1 or 2)  
 
-** add comments **
-
-```{r relrecode_gt_to_additive}
+```{r recode_gt_to_additive}
 
 # Set up empty matrix with 'NA' in cells, add row and column names from genotype matrix
-gt_qfilt_icr1000_ddr_additive.mx <- matrix(NA, 
+gt_add_qfilt_icr1000_ddr.mx <- matrix(NA, 
                                            ncol=ncol(gt_qfilt_icr1000_ddr.mx),
                                            nrow=nrow(gt_qfilt_icr1000_ddr.mx))
-colnames(gt_qfilt_icr1000_ddr_additive.mx) <- colnames(gt_qfilt_icr1000_ddr.mx)
-rownames(gt_qfilt_icr1000_ddr_additive.mx) <- rownames(gt_qfilt_icr1000_ddr.mx)
+colnames(gt_add_qfilt_icr1000_ddr.mx) <- colnames(gt_qfilt_icr1000_ddr.mx)
+rownames(gt_add_qfilt_icr1000_ddr.mx) <- rownames(gt_qfilt_icr1000_ddr.mx)
 
-#table(gt_qfilt_icr1000_ddr.mx)
-#summary(as.factor(gt_qfilt_icr1000_ddr.mx))
-gt_qfilt_icr1000_ddr_additive.mx[65:70,1:4]
+# Check genotype additive matrix
+gt_add_qfilt_icr1000_ddr.mx[65:70,1:4]
 
-0 -> gt_qfilt_icr1000_ddr_additive.mx[ gt_qfilt_icr1000_ddr.mx == "0/0" ]
-1 -> gt_qfilt_icr1000_ddr_additive.mx[ gt_qfilt_icr1000_ddr.mx == "0/1" ]
-1 -> gt_qfilt_icr1000_ddr_additive.mx[ gt_qfilt_icr1000_ddr.mx == "1/0" ]
-2 -> gt_qfilt_icr1000_ddr_additive.mx[ gt_qfilt_icr1000_ddr.mx == "1/1" ]
+# Check genotype coding present in original genotype matrix
+table(gt_qfilt_icr1000_ddr.mx) # 0/0, 0/1, 1/0 and 1/1 all present
+summary(as.factor(gt_qfilt_icr1000_ddr.mx)) # as.factor allows assessment on NA values present
 
-gt_qfilt_icr1000_ddr_additive.mx[65:70,1:4]
+# Replace genotypes in original genotype matrix with additive values into the additive genotype matrix
+0 -> gt_add_qfilt_icr1000_ddr.mx[ gt_qfilt_icr1000_ddr.mx == "0/0" ]
+1 -> gt_add_qfilt_icr1000_ddr.mx[ gt_qfilt_icr1000_ddr.mx == "0/1" ]
+1 -> gt_add_qfilt_icr1000_ddr.mx[ gt_qfilt_icr1000_ddr.mx == "1/0" ]
+2 -> gt_add_qfilt_icr1000_ddr.mx[ gt_qfilt_icr1000_ddr.mx == "1/1" ]
 
+# Check updated additive genotype matrix
+gt_add_qfilt_icr1000_ddr.mx[65:70,1:4]
+
+# Clean up
 rm(gt_qfilt_icr1000_ddr.mx)
 
 ```
 
 # filter_by_call_rate
-
-** add comments **
+Following GQ filtering, genotypes associated with variants may not have a high call rate (number of times a genotype is called relative to the number of subjects). Variants with call rates < 0.8 will be filtered out as they are not considered reliable calls   
 
 ```{r filter_by_call_rate}
 
+# Set up call rate user defined function
 call_rate.udf <- function(vector_of_genotypes){
   result <- sum(!is.na(vector_of_genotypes)) / length(vector_of_genotypes)
   return(result)
 }
 
-call_rate <- apply(gt_qfilt_icr1000_ddr_additive.mx, 1, call_rate.udf)
+# Calculate the number of genotype calls for each variant and plot a histogram
+call_rate <- apply(gt_add_qfilt_icr1000_ddr.mx, 1, call_rate.udf)
 hist(call_rate, xlim=c(0,1))
 
+# Filter call rate >= 0.8
 call_rate_pass <- call_rate >= 0.8
 sum(call_rate_pass)
 
-gt_crfilt_qfilt_icr1000_ddr_additive.mx <- gt_qfilt_icr1000_ddr_additive.mx[call_rate_pass,]
-fixed_crfilt_qfilt_icr1000_ddr.df <- fixed_qfilt_icr1000_ddr.df[call_rate_pass,]
+# Create an additive call rate filtered genotype matrix
+gt_add_crfilt_icr1000_ddr.mx <- gt_add_qfilt_icr1000_ddr.mx[call_rate_pass,]
 
-dim(gt_crfilt_qfilt_icr1000_ddr_additive.mx)
-dim(fixed_crfilt_qfilt_icr1000_ddr.df)
+# Syncronise fixed column dataframe with variants remaining call rate filtered additive genotype matrix
+fixed_crfilt_icr1000_ddr.df <- fixed_qfilt_icr1000_ddr.df[call_rate_pass,]
 
-call_rate <- apply(gt_crfilt_qfilt_icr1000_ddr_additive.mx, 1, call_rate.udf)
+# Check output matricies
+dim(gt_add_crfilt_icr1000_ddr.mx)
+dim(fixed_crfilt_icr1000_ddr.df)
+
+# Calculate the number of genotype calls in the output matrix for each variant and plot a histogram 
+call_rate <- apply(gt_add_crfilt_icr1000_ddr.mx, 1, call_rate.udf)
 hist(call_rate, xlim=c(0,1))
 
-rm(gt_qfilt_icr1000_ddr_additive.mx, fixed_qfilt_icr1000_ddr.df, call_rate.udf)
+# Clean up
+rm(gt_add_qfilt_icr1000_ddr.mx, fixed_qfilt_icr1000_ddr.df, call_rate.udf, call_rate, call_rate_pass)
 
 ```
 
 # recalculate_af
-
-** add comments **
+Following GQ filtering step the AC (allele count; counts for each alternate allele [het = 1; hom = 2 etc.] by variant) and AN (allele number; total number of diploid allele counts across population) are recalculated. This allows the AF (allele frequency; AC divided by AN) to be calculated. The fixed column dataframe is then updated with this information to allow subsequent AF filtering to occur based on updated (new_AF) values  
 
 ```{r recalculate_af}
 
-# calculate ac
-new_AC <- apply(gt_crfilt_qfilt_icr1000_ddr_additive.mx, 1, sum, na.rm=T)
+# Calculate updated AC
+new_AC <- apply(gt_add_crfilt_icr1000_ddr.mx, 1, sum, na.rm=T)
 new_AC[1:5]
 
+# Set up allele number user defined function
 get_AN.udf <- function(vector_of_additive_genotypes){
   result <- 2*sum(!is.na(vector_of_additive_genotypes))
   return(result)
 }
 
-new_AN <- apply(gt_crfilt_qfilt_icr1000_ddr_additive.mx, 1, get_AN.udf)
+# Calculate updated AN
+new_AN <- apply(gt_add_crfilt_icr1000_ddr.mx, 1, get_AN.udf)
 
+# Check updated AN values, plot histogram and ensure no variants have AN = 0
 new_AN[1:5]
 hist(new_AN)
 sum(new_AN==0)
 
+# Calculate updated AF values and plot a histogram
 new_AF <- new_AC / new_AN
 hist(new_AF)
 
-fixed_crfilt_qfilt_icr1000_ddr.df <- cbind(fixed_crfilt_qfilt_icr1000_ddr.df, new_AC, new_AN, new_AF)
+# Introduce updated AC, AN and AF values into fixed column dataframe
+fixed_crfilt_icr1000_ddr.df <- cbind(fixed_crfilt_icr1000_ddr.df, new_AC, new_AN, new_AF)
 
+# Clean up
 rm(get_AN.udf, new_AC, new_AN, new_AF)
 
 ```

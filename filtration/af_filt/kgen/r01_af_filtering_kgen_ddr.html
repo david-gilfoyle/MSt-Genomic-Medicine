@@ -123,19 +123,19 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 4 May 2018</p>
+Updated: David Gilfoyle 17 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of QUAL filtered dataset based on AF &lt;= 0.01<br />
+<p>Variant filtering of AC filtered dataset based on AF &lt;= 0.01<br />
 Dataset: 1000 Genome Project<br />
 Gene Selection: DNA Repair Genes<br />
-Input Variants: 368,639</p>
+Input Variants: 367,613</p>
 </div>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-04 15:02:16 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 09:47:03 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -154,25 +154,24 @@ library(dplyr)</code></pre>
 <div id="load_rdata_file" class="section level1">
 <h1>load_rdata_file</h1>
 <pre class="r"><code># Setup input folder
-input_folder=&quot;/home/ec2-user/results/filtered/qual_filt/kgen&quot;
+input_folder=&quot;/home/ec2-user/results/filtered/ac_filt/kgen&quot;
 
 # Load RData file - contains dataframe containing all variants
-load(paste(input_folder, &quot;r01_kgen_ddr_updated_rownames.RData&quot;, sep=&quot;/&quot;))
+load(paste(input_folder, &quot;r01_kgen_ddr_ac_filtered.RData&quot;, sep=&quot;/&quot;))
 
 # Setup script input dataframe naming
-input.df &lt;- fixed_kgen_ddr.df
-rm(fixed_kgen_ddr.df)
-input.mx &lt;- gt_kgen_ddr.mx
-rm(gt_kgen_ddr.mx)
+input.df &lt;- fixed_ac_filt_kgen_ddr.df
+rm(fixed_ac_filt_kgen_ddr.df)
+input.mx &lt;- gt_ac_filt_kgen_ddr.mx
+rm(gt_ac_filt_kgen_ddr.mx)
 
 # Check input dataframe and matrix
 dim(input.df)</code></pre>
-<pre><code>## [1] 368639     94</code></pre>
+<pre><code>## [1] 367613     94</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>input.df[20:40,1:10]</code></pre>
 <pre><code>##                CHROM     POS          ID REF ALT QUAL FILTER   AA AC
-## rs188864364_20     1 2115432 rs188864364   G   A  100   PASS g||| 12
 ## rs538334300_21     1 2115435 rs538334300   T   G  100   PASS t||| 18
 ## rs554535450_22     1 2115465 rs554535450   G   A  100   PASS g|||  2
 ## rs568263906_23     1 2115478 rs568263906   C   T  100   PASS c|||  2
@@ -193,8 +192,8 @@ dim(input.df)</code></pre>
 ## rs146627712_38     1 2115864 rs146627712   T   C  100   PASS T|||  2
 ## rs116090142_39     1 2115880 rs116090142   A   G  100   PASS A|||  4
 ## rs141442853_40     1 2115908 rs141442853   T   C  100   PASS T||| 12
+## rs568098207_41     1 2115917 rs568098207   G   A  100   PASS G|||  1
 ##                         AF
-## rs188864364_20  0.00239617
 ## rs538334300_21  0.00359425
 ## rs554535450_22 0.000399361
 ## rs568263906_23 0.000399361
@@ -214,17 +213,18 @@ dim(input.df)</code></pre>
 ## rs61343432_37    0.0103834
 ## rs146627712_38 0.000399361
 ## rs116090142_39 0.000798722
-## rs141442853_40  0.00239617</code></pre>
+## rs141442853_40  0.00239617
+## rs568098207_41 0.000199681</code></pre>
 <pre class="r"><code>class(input.df$AF)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>input.df$AF[20:40]</code></pre>
-<pre><code>##  [1] &quot;0.00239617&quot;  &quot;0.00359425&quot;  &quot;0.000399361&quot; &quot;0.000399361&quot; &quot;0.00299521&quot; 
-##  [6] &quot;0.000199681&quot; &quot;0.000199681&quot; &quot;0.000199681&quot; &quot;0.00219649&quot;  &quot;0.00139776&quot; 
-## [11] &quot;0.00259585&quot;  &quot;0.000199681&quot; &quot;0.0071885&quot;   &quot;0.000199681&quot; &quot;0.000199681&quot;
-## [16] &quot;0.000199681&quot; &quot;0.00119808&quot;  &quot;0.0103834&quot;   &quot;0.000399361&quot; &quot;0.000798722&quot;
-## [21] &quot;0.00239617&quot;</code></pre>
+<pre><code>##  [1] &quot;0.00359425&quot;  &quot;0.000399361&quot; &quot;0.000399361&quot; &quot;0.00299521&quot;  &quot;0.000199681&quot;
+##  [6] &quot;0.000199681&quot; &quot;0.000199681&quot; &quot;0.00219649&quot;  &quot;0.00139776&quot;  &quot;0.00259585&quot; 
+## [11] &quot;0.000199681&quot; &quot;0.0071885&quot;   &quot;0.000199681&quot; &quot;0.000199681&quot; &quot;0.000199681&quot;
+## [16] &quot;0.00119808&quot;  &quot;0.0103834&quot;   &quot;0.000399361&quot; &quot;0.000798722&quot; &quot;0.00239617&quot; 
+## [21] &quot;0.000199681&quot;</code></pre>
 <pre class="r"><code>dim(input.mx)</code></pre>
-<pre><code>## [1] 368639   2504</code></pre>
+<pre><code>## [1] 367613   2504</code></pre>
 <pre class="r"><code>class(input.mx)</code></pre>
 <pre><code>## [1] &quot;matrix&quot;</code></pre>
 <pre class="r"><code>input.mx[1:5,1:5]</code></pre>
@@ -259,12 +259,11 @@ output.df &lt;- tibble::column_to_rownames(output.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 313889     94</code></pre>
+<pre><code>## [1] 312863     94</code></pre>
 <pre class="r"><code>class(output.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>output.df[20:40,1:10]</code></pre>
 <pre><code>##                CHROM     POS          ID REF ALT QUAL FILTER   AA AC
-## rs188864364_20     1 2115432 rs188864364   G   A  100   PASS g||| 12
 ## rs538334300_21     1 2115435 rs538334300   T   G  100   PASS t||| 18
 ## rs554535450_22     1 2115465 rs554535450   G   A  100   PASS g|||  2
 ## rs568263906_23     1 2115478 rs568263906   C   T  100   PASS c|||  2
@@ -285,8 +284,8 @@ dim(output.df)</code></pre>
 ## rs116090142_39     1 2115880 rs116090142   A   G  100   PASS A|||  4
 ## rs141442853_40     1 2115908 rs141442853   T   C  100   PASS T||| 12
 ## rs568098207_41     1 2115917 rs568098207   G   A  100   PASS G|||  1
+## rs113629589_42     1 2115919 rs113629589   C   G  100   PASS G||| 36
 ##                         AF
-## rs188864364_20  0.00239617
 ## rs538334300_21  0.00359425
 ## rs554535450_22 0.000399361
 ## rs568263906_23 0.000399361
@@ -306,13 +305,14 @@ dim(output.df)</code></pre>
 ## rs146627712_38 0.000399361
 ## rs116090142_39 0.000798722
 ## rs141442853_40  0.00239617
-## rs568098207_41 0.000199681</code></pre>
+## rs568098207_41 0.000199681
+## rs113629589_42   0.0071885</code></pre>
 <pre class="r"><code>output.df$AF[20:40]</code></pre>
-<pre><code>##  [1] &quot;0.00239617&quot;  &quot;0.00359425&quot;  &quot;0.000399361&quot; &quot;0.000399361&quot; &quot;0.00299521&quot; 
-##  [6] &quot;0.000199681&quot; &quot;0.000199681&quot; &quot;0.000199681&quot; &quot;0.00219649&quot;  &quot;0.00139776&quot; 
-## [11] &quot;0.00259585&quot;  &quot;0.000199681&quot; &quot;0.0071885&quot;   &quot;0.000199681&quot; &quot;0.000199681&quot;
-## [16] &quot;0.000199681&quot; &quot;0.00119808&quot;  &quot;0.000399361&quot; &quot;0.000798722&quot; &quot;0.00239617&quot; 
-## [21] &quot;0.000199681&quot;</code></pre>
+<pre><code>##  [1] &quot;0.00359425&quot;  &quot;0.000399361&quot; &quot;0.000399361&quot; &quot;0.00299521&quot;  &quot;0.000199681&quot;
+##  [6] &quot;0.000199681&quot; &quot;0.000199681&quot; &quot;0.00219649&quot;  &quot;0.00139776&quot;  &quot;0.00259585&quot; 
+## [11] &quot;0.000199681&quot; &quot;0.0071885&quot;   &quot;0.000199681&quot; &quot;0.000199681&quot; &quot;0.000199681&quot;
+## [16] &quot;0.00119808&quot;  &quot;0.000399361&quot; &quot;0.000798722&quot; &quot;0.00239617&quot;  &quot;0.000199681&quot;
+## [21] &quot;0.0071885&quot;</code></pre>
 </div>
 <div id="syncronise_filtered_variants_and_genotype_data" class="section level1">
 <h1>syncronise_filtered_variants_and_genotype_data</h1>
@@ -322,7 +322,6 @@ output.mx &lt;- input.mx[rownames(output.df),]
 # Compare filtered fixed column dataframe and genotype matrix
 output.df[20:40,1:5]</code></pre>
 <pre><code>##                CHROM     POS          ID REF ALT
-## rs188864364_20     1 2115432 rs188864364   G   A
 ## rs538334300_21     1 2115435 rs538334300   T   G
 ## rs554535450_22     1 2115465 rs554535450   G   A
 ## rs568263906_23     1 2115478 rs568263906   C   T
@@ -342,10 +341,10 @@ output.df[20:40,1:5]</code></pre>
 ## rs146627712_38     1 2115864 rs146627712   T   C
 ## rs116090142_39     1 2115880 rs116090142   A   G
 ## rs141442853_40     1 2115908 rs141442853   T   C
-## rs568098207_41     1 2115917 rs568098207   G   A</code></pre>
+## rs568098207_41     1 2115917 rs568098207   G   A
+## rs113629589_42     1 2115919 rs113629589   C   G</code></pre>
 <pre class="r"><code>output.mx[20:40,1:2]</code></pre>
 <pre><code>##                HG00096 HG00097
-## rs188864364_20 &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs538334300_21 &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs554535450_22 &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs568263906_23 &quot;0|0&quot;   &quot;0|0&quot;  
@@ -365,7 +364,8 @@ output.df[20:40,1:5]</code></pre>
 ## rs146627712_38 &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs116090142_39 &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs141442853_40 &quot;0|0&quot;   &quot;0|0&quot;  
-## rs568098207_41 &quot;0|0&quot;   &quot;0|0&quot;</code></pre>
+## rs568098207_41 &quot;0|0&quot;   &quot;0|0&quot;  
+## rs113629589_42 &quot;0|0&quot;   &quot;0|0&quot;</code></pre>
 </div>
 <div id="update_dataframe_naming" class="section level1">
 <h1>update_dataframe_naming</h1>
@@ -406,17 +406,17 @@ rm(input.df, output.df, input.mx, output.mx)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] bindrcpp_0.2 knitr_1.20   dplyr_0.7.4 
+## [1] bindrcpp_0.2.2 knitr_1.20     dplyr_0.7.4   
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.16     digest_0.6.15    rprojroot_1.3-2  assertthat_0.2.0
 ##  [5] R6_2.2.2         backports_1.1.2  magrittr_1.5     evaluate_0.10.1 
-##  [9] pillar_1.2.1     rlang_0.2.0      stringi_1.1.7    rmarkdown_1.9   
-## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.18     
+##  [9] pillar_1.2.2     rlang_0.2.0      stringi_1.2.2    rmarkdown_1.9   
+## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.19     
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-04 15:09:21 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 09:54:28 UTC&quot;</code></pre>
 </div>
 
 

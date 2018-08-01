@@ -123,7 +123,7 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 4 May 2018</p>
+Updated: David Gilfoyle 16 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
@@ -135,7 +135,7 @@ Input Variants: 94,255</p>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-04 14:30:48 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 16:04:24 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -168,35 +168,37 @@ dim(input.df)</code></pre>
 <pre><code>## [1] 94255   154</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
-<pre class="r"><code>input.df[1:20,1:10]</code></pre>
-<pre><code>##    CHROM     POS          ID  REF ALT      QUAL FILTER  AC AC_AFR AC_AMR
-## 1      1 2115988        &lt;NA&gt;    G   A  13848.50   PASS  19     13      1
-## 2      1 2115989  rs45536443    C   T   9388.40   PASS  30      0      0
-## 3      1 2116002        &lt;NA&gt; TCTC   T   1246.54   PASS   1      1      0
-## 4      1 2116005 rs192915352    C   T   2269.91   PASS   4      2      1
-## 5      1 2116038        &lt;NA&gt;    C   T   6180.00   PASS  12      0      0
-## 6      1 2116069        &lt;NA&gt;    C   T   5334.09   PASS   5      1      0
-## 7      1 2116070 rs143763676    G   C   2572.31   PASS   1      1      0
-## 8      1 2116070 rs143763676    G   A   2572.31   PASS   2      0      0
-## 9      1 2116072        &lt;NA&gt;    C   A   1245.46   PASS   2      0      0
-## 10     1 2116072        &lt;NA&gt;    C   G   1245.46   PASS   1      0      0
-## 11     1 2116075        &lt;NA&gt;    C   T  11045.90   PASS  14      0      1
-## 12     1 2116108 rs140890348    C   T   1155.88   PASS   2      1      0
-## 13     1 2116114  rs56402864    C   G 101575.00   PASS 155      1      8
-## 14     1 2116114  rs56402864    C   T 101575.00   PASS   5      0      0
-## 15     1 2116156        &lt;NA&gt;    G   A   1645.82   PASS   7      0      0
-## 16     1 2116175 rs185563823    C   T  63459.20   PASS 134     57      6
-## 17     1 2116318        &lt;NA&gt;    A   G   1537.21   PASS   5      1      0
-## 18     1 2116324        &lt;NA&gt;    C   T   1875.30   PASS   5      0      0
-## 19     1 2116330        &lt;NA&gt;    C   A   1488.56   PASS   4      0      4
-## 20     1 2116330        &lt;NA&gt;    C   T   1488.56   PASS   1      0      0</code></pre>
+<pre class="r"><code>input.df[60:80,1:10]</code></pre>
+<pre><code>##    CHROM     POS        ID REF ALT      QUAL FILTER   AC AC_AFR AC_AMR
+## 60     1 2116848      &lt;NA&gt;  CT   C   2807.05   PASS    1      0      0
+## 61     1 2116855      &lt;NA&gt;   C   G   2807.16   PASS    1      0      0
+## 62     1 2116856      &lt;NA&gt;   C   T   8871.52   PASS    3      1      2
+## 63     1 2116872      &lt;NA&gt;   C   T  77934.10   PASS   19     13      0
+## 64     1 2116873      &lt;NA&gt;   C   A   6241.25   PASS    3      3      0
+## 65     1 2116886      &lt;NA&gt;   G   A   2260.15   PASS    1      0      0
+## 66     1 2116889      &lt;NA&gt;   A   G   1788.16   PASS    1      0      0
+## 67     1 2116901      &lt;NA&gt;   G   C  17597.80   PASS    2      2      0
+## 68     1 2116901      &lt;NA&gt;   G   A  17597.80   PASS    1      0      0
+## 69     1 2116921      &lt;NA&gt;   C   T   1140.09   PASS    1      0      0
+## 70     1 2116933      &lt;NA&gt;   G   C   1253.17   PASS    1      0      0
+## 71     1 2116949      &lt;NA&gt;   G   A   1210.25   PASS    1      0      0
+## 72     1 2116956      &lt;NA&gt;   T   G   2453.98   PASS    2      0      0
+## 73     1 2116973      &lt;NA&gt;   C   G   1316.44   PASS    1      0      0
+## 74     1 2116996      &lt;NA&gt;   C   T   2702.12   PASS    3      2      0
+## 75     1 2117558 rs3123595   C   T 768611.00   PASS 1247     68     16
+## 76     1 2117559      &lt;NA&gt;   G   A   3308.97   PASS    8      0      1
+## 77     1 2117653      &lt;NA&gt;   C   T   3631.86   PASS   21      0      0
+## 78     1 2118567      &lt;NA&gt;   G   A   2834.53   PASS    3      1      0
+## 79     1 2118577      &lt;NA&gt;   G   A   6353.30   PASS    9      0      0
+## 80     1 2118581      &lt;NA&gt;   C   G  27101.60   PASS   20     20      0</code></pre>
 <pre class="r"><code>class(input.df$AF)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
-<pre class="r"><code>input.df$AF[1:20]</code></pre>
-<pre><code>##  [1] &quot;0.0001789&quot; &quot;0.0002825&quot; &quot;9.416e-06&quot; &quot;3.766e-05&quot; &quot;0.000113&quot; 
-##  [6] &quot;4.708e-05&quot; &quot;9.415e-06&quot; &quot;1.883e-05&quot; &quot;1.883e-05&quot; &quot;9.415e-06&quot;
-## [11] &quot;0.0001318&quot; &quot;1.883e-05&quot; &quot;0.001459&quot;  &quot;4.708e-05&quot; &quot;6.594e-05&quot;
-## [16] &quot;0.001266&quot;  &quot;4.708e-05&quot; &quot;4.708e-05&quot; &quot;3.766e-05&quot; &quot;9.416e-06&quot;</code></pre>
+<pre class="r"><code>input.df$AF[60:80]</code></pre>
+<pre><code>##  [1] &quot;4.801e-05&quot; &quot;4.827e-05&quot; &quot;0.0001449&quot; &quot;0.000907&quot;  &quot;0.000143&quot; 
+##  [6] &quot;4.687e-05&quot; &quot;4.686e-05&quot; &quot;9.054e-05&quot; &quot;4.527e-05&quot; &quot;4.486e-05&quot;
+## [11] &quot;4.59e-05&quot;  &quot;4.721e-05&quot; &quot;9.579e-05&quot; &quot;4.931e-05&quot; &quot;0.0001481&quot;
+## [16] &quot;0.087&quot;     &quot;0.000547&quot;  &quot;0.001457&quot;  &quot;0.0001438&quot; &quot;0.000433&quot; 
+## [21] &quot;0.0009631&quot;</code></pre>
 <pre class="r"><code># Setup base and output folders
 base_folder=&quot;/home/ec2-user/scripts/filtration/af_filt/exac_v1&quot;
 output_folder=&quot;/home/ec2-user/results/filtered/af_filt/exac_v1&quot;
@@ -220,33 +222,35 @@ dim(output.df)</code></pre>
 <pre><code>## [1] 92077   154</code></pre>
 <pre class="r"><code>class(output.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
-<pre class="r"><code>output.df[1:20,1:10]</code></pre>
-<pre><code>##    CHROM     POS          ID  REF ALT      QUAL FILTER  AC AC_AFR AC_AMR
-## 1      1 2115988        &lt;NA&gt;    G   A  13848.50   PASS  19     13      1
-## 2      1 2115989  rs45536443    C   T   9388.40   PASS  30      0      0
-## 3      1 2116002        &lt;NA&gt; TCTC   T   1246.54   PASS   1      1      0
-## 4      1 2116005 rs192915352    C   T   2269.91   PASS   4      2      1
-## 5      1 2116038        &lt;NA&gt;    C   T   6180.00   PASS  12      0      0
-## 6      1 2116069        &lt;NA&gt;    C   T   5334.09   PASS   5      1      0
-## 7      1 2116070 rs143763676    G   C   2572.31   PASS   1      1      0
-## 8      1 2116070 rs143763676    G   A   2572.31   PASS   2      0      0
-## 9      1 2116072        &lt;NA&gt;    C   A   1245.46   PASS   2      0      0
-## 10     1 2116072        &lt;NA&gt;    C   G   1245.46   PASS   1      0      0
-## 11     1 2116075        &lt;NA&gt;    C   T  11045.90   PASS  14      0      1
-## 12     1 2116108 rs140890348    C   T   1155.88   PASS   2      1      0
-## 13     1 2116114  rs56402864    C   G 101575.00   PASS 155      1      8
-## 14     1 2116114  rs56402864    C   T 101575.00   PASS   5      0      0
-## 15     1 2116156        &lt;NA&gt;    G   A   1645.82   PASS   7      0      0
-## 16     1 2116175 rs185563823    C   T  63459.20   PASS 134     57      6
-## 17     1 2116318        &lt;NA&gt;    A   G   1537.21   PASS   5      1      0
-## 18     1 2116324        &lt;NA&gt;    C   T   1875.30   PASS   5      0      0
-## 19     1 2116330        &lt;NA&gt;    C   A   1488.56   PASS   4      0      4
-## 20     1 2116330        &lt;NA&gt;    C   T   1488.56   PASS   1      0      0</code></pre>
-<pre class="r"><code>output.df$AF[1:20]</code></pre>
-<pre><code>##  [1] &quot;0.0001789&quot; &quot;0.0002825&quot; &quot;9.416e-06&quot; &quot;3.766e-05&quot; &quot;0.000113&quot; 
-##  [6] &quot;4.708e-05&quot; &quot;9.415e-06&quot; &quot;1.883e-05&quot; &quot;1.883e-05&quot; &quot;9.415e-06&quot;
-## [11] &quot;0.0001318&quot; &quot;1.883e-05&quot; &quot;0.001459&quot;  &quot;4.708e-05&quot; &quot;6.594e-05&quot;
-## [16] &quot;0.001266&quot;  &quot;4.708e-05&quot; &quot;4.708e-05&quot; &quot;3.766e-05&quot; &quot;9.416e-06&quot;</code></pre>
+<pre class="r"><code>output.df[60:80,1:10]</code></pre>
+<pre><code>##    CHROM     POS   ID REF ALT     QUAL FILTER AC AC_AFR AC_AMR
+## 60     1 2116848 &lt;NA&gt;  CT   C  2807.05   PASS  1      0      0
+## 61     1 2116855 &lt;NA&gt;   C   G  2807.16   PASS  1      0      0
+## 62     1 2116856 &lt;NA&gt;   C   T  8871.52   PASS  3      1      2
+## 63     1 2116872 &lt;NA&gt;   C   T 77934.10   PASS 19     13      0
+## 64     1 2116873 &lt;NA&gt;   C   A  6241.25   PASS  3      3      0
+## 65     1 2116886 &lt;NA&gt;   G   A  2260.15   PASS  1      0      0
+## 66     1 2116889 &lt;NA&gt;   A   G  1788.16   PASS  1      0      0
+## 67     1 2116901 &lt;NA&gt;   G   C 17597.80   PASS  2      2      0
+## 68     1 2116901 &lt;NA&gt;   G   A 17597.80   PASS  1      0      0
+## 69     1 2116921 &lt;NA&gt;   C   T  1140.09   PASS  1      0      0
+## 70     1 2116933 &lt;NA&gt;   G   C  1253.17   PASS  1      0      0
+## 71     1 2116949 &lt;NA&gt;   G   A  1210.25   PASS  1      0      0
+## 72     1 2116956 &lt;NA&gt;   T   G  2453.98   PASS  2      0      0
+## 73     1 2116973 &lt;NA&gt;   C   G  1316.44   PASS  1      0      0
+## 74     1 2116996 &lt;NA&gt;   C   T  2702.12   PASS  3      2      0
+## 75     1 2117559 &lt;NA&gt;   G   A  3308.97   PASS  8      0      1
+## 76     1 2117653 &lt;NA&gt;   C   T  3631.86   PASS 21      0      0
+## 77     1 2118567 &lt;NA&gt;   G   A  2834.53   PASS  3      1      0
+## 78     1 2118577 &lt;NA&gt;   G   A  6353.30   PASS  9      0      0
+## 79     1 2118581 &lt;NA&gt;   C   G 27101.60   PASS 20     20      0
+## 80     1 2118687 &lt;NA&gt;   G   A  1426.05   PASS  3      0      0</code></pre>
+<pre class="r"><code>output.df$AF[60:80]</code></pre>
+<pre><code>##  [1] &quot;4.801e-05&quot; &quot;4.827e-05&quot; &quot;0.0001449&quot; &quot;0.000907&quot;  &quot;0.000143&quot; 
+##  [6] &quot;4.687e-05&quot; &quot;4.686e-05&quot; &quot;9.054e-05&quot; &quot;4.527e-05&quot; &quot;4.486e-05&quot;
+## [11] &quot;4.59e-05&quot;  &quot;4.721e-05&quot; &quot;9.579e-05&quot; &quot;4.931e-05&quot; &quot;0.0001481&quot;
+## [16] &quot;0.000547&quot;  &quot;0.001457&quot;  &quot;0.0001438&quot; &quot;0.000433&quot;  &quot;0.0009631&quot;
+## [21] &quot;0.0001492&quot;</code></pre>
 </div>
 <div id="update_dataframe_naming" class="section level1">
 <h1>update_dataframe_naming</h1>
@@ -286,17 +290,17 @@ rm(input.df, output.df)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] bindrcpp_0.2 knitr_1.20   dplyr_0.7.4 
+## [1] bindrcpp_0.2.2 knitr_1.20     dplyr_0.7.4   
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.16     digest_0.6.15    rprojroot_1.3-2  assertthat_0.2.0
 ##  [5] R6_2.2.2         backports_1.1.2  magrittr_1.5     evaluate_0.10.1 
-##  [9] pillar_1.2.1     rlang_0.2.0      stringi_1.1.7    rmarkdown_1.9   
-## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.18     
+##  [9] pillar_1.2.2     rlang_0.2.0      stringi_1.2.2    rmarkdown_1.9   
+## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.19     
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-04 14:31:01 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 16:04:38 UTC&quot;</code></pre>
 </div>
 
 

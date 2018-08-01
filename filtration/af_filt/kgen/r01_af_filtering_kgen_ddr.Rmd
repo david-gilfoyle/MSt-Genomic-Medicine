@@ -6,16 +6,16 @@ editor_options:
 ---
 
 Started: David Gilfoyle 3 May 2018  
-Updated: David Gilfoyle 4 May 2018
+Updated: David Gilfoyle 17 May 2018
 
 ---
 
 # Summary
 
-Variant filtering of QUAL filtered dataset based on AF <= 0.01  
+Variant filtering of AC filtered dataset based on AF <= 0.01  
 Dataset: 1000 Genome Project  
 Gene Selection: DNA Repair Genes  
-Input Variants: 368,639
+Input Variants: 367,613
 
 # start_section
 
@@ -36,16 +36,16 @@ library(knitr)
 ```{r load_rdata_file}
 
 # Setup input folder
-input_folder="/home/ec2-user/results/filtered/qual_filt/kgen"
+input_folder="/home/ec2-user/results/filtered/ac_filt/kgen"
 
 # Load RData file - contains dataframe containing all variants
-load(paste(input_folder, "r01_kgen_ddr_updated_rownames.RData", sep="/"))
+load(paste(input_folder, "r01_kgen_ddr_ac_filtered.RData", sep="/"))
 
 # Setup script input dataframe naming
-input.df <- fixed_kgen_ddr.df
-rm(fixed_kgen_ddr.df)
-input.mx <- gt_kgen_ddr.mx
-rm(gt_kgen_ddr.mx)
+input.df <- fixed_ac_filt_kgen_ddr.df
+rm(fixed_ac_filt_kgen_ddr.df)
+input.mx <- gt_ac_filt_kgen_ddr.mx
+rm(gt_ac_filt_kgen_ddr.mx)
 
 # Check input dataframe and matrix
 dim(input.df)

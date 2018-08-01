@@ -1,0 +1,147 @@
+---
+title: "r01_hc_lof_mis_filt_data_extract_ddr"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 17 May 2018  
+Updated: David Gilfoyle 17 May 2018
+
+---
+
+# Summary
+
+LoF and Missense Variant Filtered Data Extraction (High Quality Variants) 
+Dataset: ExAC (non-TCGA), ICR1000 and 1000 Genomes Project  
+Gene Selection: DNA Repair Genes  
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
+```
+
+# load_lof_rdata_files
+
+```{r load_lof_rdata_files}
+
+# Setup input folder
+exac_input_folder="/home/ec2-user/results/filtered/lof_filt/exac_v1"
+icr1000_input_folder="/home/ec2-user/results/filtered/lof_filt/icr1000"
+kgen_input_folder="/home/ec2-user/results/filtered/lof_filt/kgen"
+
+# Load RData file - contains dataframe containing high quality filtered variants (remove all other dataframes and genotype matrices)
+load(paste(exac_input_folder, "r01_exac_nontcga_ddr_lof_filtered.RData", sep="/"))
+rm(fixed_lof_filt_exac_nontcga_ddr.df, fixed_lof_hc_pli_filt_exac_nontcga_ddr.df)
+
+load(paste(icr1000_input_folder, "r01_icr1000_ddr_lof_filtered.RData", sep="/"))
+rm(fixed_lof_filt_icr1000_ddr.df, fixed_lof_hc_pli_filt_icr1000_ddr.df, gt_add_lof_filt_icr1000_ddr.mx, gt_add_lof_hc_filt_icr1000_ddr.mx, gt_add_lof_hc_pli_filt_icr1000_ddr.mx)
+
+load(paste(kgen_input_folder, "r01_kgen_ddr_lof_filtered.RData", sep="/"))
+rm(fixed_lof_filt_kgen_ddr.df, fixed_lof_hc_pli_filt_kgen_ddr.df, gt_lof_filt_kgen_ddr.mx, gt_lof_hc_filt_kgen_ddr.mx, gt_lof_hc_pli_filt_kgen_ddr.mx, input_folder, exac_input_folder, icr1000_input_folder, kgen_input_folder, meta.df)
+
+# Check input dataframes
+dim(fixed_lof_hc_filt_exac_nontcga_ddr.df) # should be 2,560
+dim(fixed_lof_hc_filt_icr1000_ddr.df) # should be 125
+dim(fixed_lof_hc_filt_kgen_ddr.df) # should be 210
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/data_analysis/hc_variants"
+output_folder="/home/ec2-user/results/data_analysis/hc_variants"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# output_hc_lof_datatables
+
+```{r output_hc_lof_datatables}
+
+# Compile file names
+exac_file_name <- paste(output_folder,"exac_nontcga_ddr_hc_lof_variants_table.txt", sep="/")
+icr1000_file_name <- paste(output_folder,"icr1000_ddr_hc_lof_variants_table.txt", sep="/")
+kgen_file_name <- paste(output_folder,"kgen_ddr_hc_lof_variants_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(fixed_lof_hc_filt_exac_nontcga_ddr.df, file=exac_file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+write.table(fixed_lof_hc_filt_icr1000_ddr.df, file=icr1000_file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+write.table(fixed_lof_hc_filt_kgen_ddr.df, file=kgen_file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(fixed_lof_hc_filt_exac_nontcga_ddr.df, fixed_lof_hc_filt_icr1000_ddr.df, fixed_lof_hc_filt_kgen_ddr.df, exac_file_name, icr1000_file_name, kgen_file_name)
+
+```
+
+# load_mis_rdata_files
+
+```{r load_mis_rdata_files}
+
+# Setup input folder
+exac_input_folder="/home/ec2-user/results/filtered/mis_filt/exac_v1"
+icr1000_input_folder="/home/ec2-user/results/filtered/mis_filt/icr1000"
+kgen_input_folder="/home/ec2-user/results/filtered/mis_filt/kgen"
+
+# Load RData file - contains dataframe containing high quality filtered variants (remove all other dataframes and genotype matrices)
+load(paste(exac_input_folder, "r01_exac_nontcga_ddr_mis_filtered.RData", sep="/"))
+rm(fixed_mis_filt_exac_nontcga_ddr.df, fixed_mis_hc_pli_filt_exac_nontcga_ddr.df, output_cor.df)
+
+load(paste(icr1000_input_folder, "r01_icr1000_ddr_mis_filtered.RData", sep="/"))
+rm(fixed_mis_filt_icr1000_ddr.df, fixed_mis_hc_pli_filt_icr1000_ddr.df, gt_add_mis_filt_icr1000_ddr.mx, gt_add_mis_hc_filt_icr1000_ddr.mx, gt_add_mis_hc_pli_filt_icr1000_ddr.mx)
+
+load(paste(kgen_input_folder, "r01_kgen_ddr_mis_filtered.RData", sep="/"))
+rm(fixed_mis_filt_kgen_ddr.df, fixed_mis_hc_pli_filt_kgen_ddr.df, gt_mis_filt_kgen_ddr.mx, gt_mis_hc_filt_kgen_ddr.mx, gt_mis_hc_pli_filt_kgen_ddr.mx, input_folder, exac_input_folder, icr1000_input_folder, kgen_input_folder, meta.df)
+
+# Check input dataframes
+dim(fixed_mis_hc_filt_exac_nontcga_ddr.df) # should be 1,776
+dim(fixed_mis_hc_filt_icr1000_ddr.df) # should be 91
+dim(fixed_mis_hc_filt_kgen_ddr.df) # should be 156
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/data_analysis/hc_variants"
+output_folder="/home/ec2-user/results/data_analysis/hc_variants"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# output_hc_mis_datatables
+
+```{r output_hc_mis_datatables}
+
+# Compile file names
+exac_file_name <- paste(output_folder,"exac_nontcga_ddr_hc_mis_variants_table.txt", sep="/")
+icr1000_file_name <- paste(output_folder,"icr1000_ddr_hc_mis_variants_table.txt", sep="/")
+kgen_file_name <- paste(output_folder,"kgen_ddr_hc_mis_variants_table.txt", sep="/")
+
+# Write tab-separated text file
+write.table(fixed_mis_hc_filt_exac_nontcga_ddr.df, file=exac_file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+write.table(fixed_mis_hc_filt_icr1000_ddr.df, file=icr1000_file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+write.table(fixed_mis_hc_filt_kgen_ddr.df, file=kgen_file_name, quote=F, sep="\t", row.names = F, col.names = TRUE)
+
+# Clean-up
+rm(fixed_mis_hc_filt_exac_nontcga_ddr.df, fixed_mis_hc_filt_icr1000_ddr.df, fixed_mis_hc_filt_kgen_ddr.df, exac_file_name, icr1000_file_name, kgen_file_name, base_folder, output_folder)
+
+```
+

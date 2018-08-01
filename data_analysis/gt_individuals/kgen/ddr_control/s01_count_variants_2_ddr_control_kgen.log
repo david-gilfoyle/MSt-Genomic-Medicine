@@ -1,0 +1,187 @@
+Starting s01_count_variants_2_ddr_control_kgen.sh
+Mon 28 May 21:52:51 UTC 2018
+
+
+DDR Positive Individual NA18504 (YRI (AFR))
+Criteria met - 13 missense variants
+
+Variant count using Grep -vc ^#
+
+5099969
+
+Variant count using GATK_4 Count Variants
+
+Using GATK jar /home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=1 -jar /home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar CountVariants -V /home/ec2-user/results/data_analysis/gt_individuals/kgen/ddr_control//NA18504/s01_NA18504_ddr_control_kgen_merged_raw.vcf.gz
+21:52:59.131 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar!/com/intel/gkl/native/libgkl_compression.so
+21:52:59.261 INFO  CountVariants - ------------------------------------------------------------
+21:52:59.262 INFO  CountVariants - The Genome Analysis Toolkit (GATK) v4.0.2.1
+21:52:59.262 INFO  CountVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:52:59.262 INFO  CountVariants - Executing as ec2-user@ip-172-31-36-234 on Linux v4.14.33-51.37.amzn1.x86_64 amd64
+21:52:59.262 INFO  CountVariants - Java runtime: OpenJDK 64-Bit Server VM v1.8.0_171-b10
+21:52:59.262 INFO  CountVariants - Start Date/Time: 28 May 2018 21:52:59 UTC
+21:52:59.262 INFO  CountVariants - ------------------------------------------------------------
+21:52:59.262 INFO  CountVariants - ------------------------------------------------------------
+21:52:59.263 INFO  CountVariants - HTSJDK Version: 2.14.3
+21:52:59.263 INFO  CountVariants - Picard Version: 2.17.2
+21:52:59.263 INFO  CountVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 1
+21:52:59.263 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:52:59.263 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:52:59.263 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:52:59.263 INFO  CountVariants - Deflater: IntelDeflater
+21:52:59.263 INFO  CountVariants - Inflater: IntelInflater
+21:52:59.263 INFO  CountVariants - GCS max retries/reopens: 20
+21:52:59.263 INFO  CountVariants - Using google-cloud-java patch 6d11bef1c81f885c26b2b56c8616b7a705171e4f from https://github.com/droazen/google-cloud-java/tree/dr_all_nio_fixes
+21:52:59.263 INFO  CountVariants - Initializing engine
+21:52:59.602 INFO  FeatureManager - Using codec VCFCodec to read file file:///home/ec2-user/results/data_analysis/gt_individuals/kgen/ddr_control/NA18504/s01_NA18504_ddr_control_kgen_merged_raw.vcf.gz
+21:52:59.980 INFO  CountVariants - Done initializing engine
+21:52:59.981 INFO  ProgressMeter - Starting traversal
+21:52:59.981 INFO  ProgressMeter -        Current Locus  Elapsed Minutes    Variants Processed  Variants/Minute
+21:53:09.985 INFO  ProgressMeter -           9:35174606              0.2               2794000       16758972.3
+21:53:17.397 INFO  ProgressMeter -          X:154517615              0.3               5099969       17569943.7
+21:53:17.397 INFO  ProgressMeter - Traversal complete. Processed 5099969 total variants in 0.3 minutes.
+21:53:17.397 INFO  CountVariants - Shutting down engine
+[28 May 2018 21:53:17 UTC] org.broadinstitute.hellbender.tools.walkers.CountVariants done. Elapsed time: 0.30 minutes.
+Runtime.totalMemory()=799539200
+Tool returned:
+5099969
+
+DDR Positive Individual HG02952 (ESN (AFR))
+Criteria met - 10 missense variants - NEIL3 marginal - %HI 48.62%
+
+Variant count using Grep -vc ^#
+
+5183291
+
+Variant count using GATK_4 Count Variants
+
+Using GATK jar /home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=1 -jar /home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar CountVariants -V /home/ec2-user/results/data_analysis/gt_individuals/kgen/ddr_control//HG02952/s01_HG02952_ddr_control_kgen_merged_raw.vcf.gz
+21:53:24.820 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar!/com/intel/gkl/native/libgkl_compression.so
+21:53:24.954 INFO  CountVariants - ------------------------------------------------------------
+21:53:24.954 INFO  CountVariants - The Genome Analysis Toolkit (GATK) v4.0.2.1
+21:53:24.954 INFO  CountVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:53:24.954 INFO  CountVariants - Executing as ec2-user@ip-172-31-36-234 on Linux v4.14.33-51.37.amzn1.x86_64 amd64
+21:53:24.954 INFO  CountVariants - Java runtime: OpenJDK 64-Bit Server VM v1.8.0_171-b10
+21:53:24.954 INFO  CountVariants - Start Date/Time: 28 May 2018 21:53:24 UTC
+21:53:24.955 INFO  CountVariants - ------------------------------------------------------------
+21:53:24.955 INFO  CountVariants - ------------------------------------------------------------
+21:53:24.955 INFO  CountVariants - HTSJDK Version: 2.14.3
+21:53:24.956 INFO  CountVariants - Picard Version: 2.17.2
+21:53:24.957 INFO  CountVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 1
+21:53:24.957 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:53:24.957 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:53:24.957 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:53:24.957 INFO  CountVariants - Deflater: IntelDeflater
+21:53:24.957 INFO  CountVariants - Inflater: IntelInflater
+21:53:24.957 INFO  CountVariants - GCS max retries/reopens: 20
+21:53:24.957 INFO  CountVariants - Using google-cloud-java patch 6d11bef1c81f885c26b2b56c8616b7a705171e4f from https://github.com/droazen/google-cloud-java/tree/dr_all_nio_fixes
+21:53:24.957 INFO  CountVariants - Initializing engine
+21:53:25.310 INFO  FeatureManager - Using codec VCFCodec to read file file:///home/ec2-user/results/data_analysis/gt_individuals/kgen/ddr_control/HG02952/s01_HG02952_ddr_control_kgen_merged_raw.vcf.gz
+21:53:25.633 INFO  CountVariants - Done initializing engine
+21:53:25.633 INFO  ProgressMeter - Starting traversal
+21:53:25.634 INFO  ProgressMeter -        Current Locus  Elapsed Minutes    Variants Processed  Variants/Minute
+21:53:35.637 INFO  ProgressMeter -           9:21020114              0.2               2791000       16742651.5
+21:53:43.261 INFO  ProgressMeter -          X:155158333              0.3               5183291       17644244.9
+21:53:43.261 INFO  ProgressMeter - Traversal complete. Processed 5183291 total variants in 0.3 minutes.
+21:53:43.261 INFO  CountVariants - Shutting down engine
+[28 May 2018 21:53:43 UTC] org.broadinstitute.hellbender.tools.walkers.CountVariants done. Elapsed time: 0.31 minutes.
+Runtime.totalMemory()=803209216
+Tool returned:
+5183291
+
+DDR Positive Individual HG02981 (ESN (AFR))
+Criteria met - 7 missense variants
+
+Variant count using Grep -vc ^#
+
+5133172
+
+Variant count using GATK_4 Count Variants
+
+Using GATK jar /home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=1 -jar /home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar CountVariants -V /home/ec2-user/results/data_analysis/gt_individuals/kgen/ddr_control//HG02981/s01_HG02981_ddr_control_kgen_merged_raw.vcf.gz
+21:53:50.615 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar!/com/intel/gkl/native/libgkl_compression.so
+21:53:50.735 INFO  CountVariants - ------------------------------------------------------------
+21:53:50.736 INFO  CountVariants - The Genome Analysis Toolkit (GATK) v4.0.2.1
+21:53:50.736 INFO  CountVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:53:50.736 INFO  CountVariants - Executing as ec2-user@ip-172-31-36-234 on Linux v4.14.33-51.37.amzn1.x86_64 amd64
+21:53:50.736 INFO  CountVariants - Java runtime: OpenJDK 64-Bit Server VM v1.8.0_171-b10
+21:53:50.736 INFO  CountVariants - Start Date/Time: 28 May 2018 21:53:50 UTC
+21:53:50.736 INFO  CountVariants - ------------------------------------------------------------
+21:53:50.736 INFO  CountVariants - ------------------------------------------------------------
+21:53:50.737 INFO  CountVariants - HTSJDK Version: 2.14.3
+21:53:50.737 INFO  CountVariants - Picard Version: 2.17.2
+21:53:50.737 INFO  CountVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 1
+21:53:50.737 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:53:50.737 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:53:50.737 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:53:50.737 INFO  CountVariants - Deflater: IntelDeflater
+21:53:50.737 INFO  CountVariants - Inflater: IntelInflater
+21:53:50.737 INFO  CountVariants - GCS max retries/reopens: 20
+21:53:50.737 INFO  CountVariants - Using google-cloud-java patch 6d11bef1c81f885c26b2b56c8616b7a705171e4f from https://github.com/droazen/google-cloud-java/tree/dr_all_nio_fixes
+21:53:50.737 INFO  CountVariants - Initializing engine
+21:53:51.075 INFO  FeatureManager - Using codec VCFCodec to read file file:///home/ec2-user/results/data_analysis/gt_individuals/kgen/ddr_control/HG02981/s01_HG02981_ddr_control_kgen_merged_raw.vcf.gz
+21:53:51.369 INFO  CountVariants - Done initializing engine
+21:53:51.369 INFO  ProgressMeter - Starting traversal
+21:53:51.370 INFO  ProgressMeter -        Current Locus  Elapsed Minutes    Variants Processed  Variants/Minute
+21:54:01.373 INFO  ProgressMeter -           8:57586813              0.2               2587000       15520448.0
+21:54:09.766 INFO  ProgressMeter -          X:155183920              0.3               5133172       16742244.0
+21:54:09.767 INFO  ProgressMeter - Traversal complete. Processed 5133172 total variants in 0.3 minutes.
+21:54:09.767 INFO  CountVariants - Shutting down engine
+[28 May 2018 21:54:09 UTC] org.broadinstitute.hellbender.tools.walkers.CountVariants done. Elapsed time: 0.32 minutes.
+Runtime.totalMemory()=747110400
+Tool returned:
+5133172
+
+DDR Positive Individual HG01055 (PUR (AMR))
+criteria met - 2 missense variants
+
+Variant count using Grep -vc ^#
+
+4441215
+
+Variant count using GATK_4 Count Variants
+
+Using GATK jar /home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar
+Running:
+    java -Dsamjdk.use_async_io_read_samtools=false -Dsamjdk.use_async_io_write_samtools=true -Dsamjdk.use_async_io_write_tribble=false -Dsamjdk.compression_level=1 -jar /home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar CountVariants -V /home/ec2-user/results/data_analysis/gt_individuals/kgen/ddr_control//HG01055/s01_HG01055_ddr_control_kgen_merged_raw.vcf.gz
+21:54:16.503 INFO  NativeLibraryLoader - Loading libgkl_compression.so from jar:file:/home/ec2-user/tools/gatk_4_0/gatk-4.0.2.1/gatk-package-4.0.2.1-local.jar!/com/intel/gkl/native/libgkl_compression.so
+21:54:16.641 INFO  CountVariants - ------------------------------------------------------------
+21:54:16.642 INFO  CountVariants - The Genome Analysis Toolkit (GATK) v4.0.2.1
+21:54:16.642 INFO  CountVariants - For support and documentation go to https://software.broadinstitute.org/gatk/
+21:54:16.642 INFO  CountVariants - Executing as ec2-user@ip-172-31-36-234 on Linux v4.14.33-51.37.amzn1.x86_64 amd64
+21:54:16.642 INFO  CountVariants - Java runtime: OpenJDK 64-Bit Server VM v1.8.0_171-b10
+21:54:16.642 INFO  CountVariants - Start Date/Time: 28 May 2018 21:54:16 UTC
+21:54:16.642 INFO  CountVariants - ------------------------------------------------------------
+21:54:16.642 INFO  CountVariants - ------------------------------------------------------------
+21:54:16.643 INFO  CountVariants - HTSJDK Version: 2.14.3
+21:54:16.643 INFO  CountVariants - Picard Version: 2.17.2
+21:54:16.643 INFO  CountVariants - HTSJDK Defaults.COMPRESSION_LEVEL : 1
+21:54:16.643 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_READ_FOR_SAMTOOLS : false
+21:54:16.643 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_SAMTOOLS : true
+21:54:16.643 INFO  CountVariants - HTSJDK Defaults.USE_ASYNC_IO_WRITE_FOR_TRIBBLE : false
+21:54:16.643 INFO  CountVariants - Deflater: IntelDeflater
+21:54:16.643 INFO  CountVariants - Inflater: IntelInflater
+21:54:16.643 INFO  CountVariants - GCS max retries/reopens: 20
+21:54:16.643 INFO  CountVariants - Using google-cloud-java patch 6d11bef1c81f885c26b2b56c8616b7a705171e4f from https://github.com/droazen/google-cloud-java/tree/dr_all_nio_fixes
+21:54:16.643 INFO  CountVariants - Initializing engine
+21:54:16.970 INFO  FeatureManager - Using codec VCFCodec to read file file:///home/ec2-user/results/data_analysis/gt_individuals/kgen/ddr_control/HG01055/s01_HG01055_ddr_control_kgen_merged_raw.vcf.gz
+21:54:17.283 INFO  CountVariants - Done initializing engine
+21:54:17.284 INFO  ProgressMeter - Starting traversal
+21:54:17.284 INFO  ProgressMeter -        Current Locus  Elapsed Minutes    Variants Processed  Variants/Minute
+21:54:27.286 INFO  ProgressMeter -         11:100874035              0.2               2928000       17566243.4
+21:54:32.163 INFO  ProgressMeter -          X:155143516              0.2               4441215       17910532.3
+21:54:32.163 INFO  ProgressMeter - Traversal complete. Processed 4441215 total variants in 0.2 minutes.
+21:54:32.163 INFO  CountVariants - Shutting down engine
+[28 May 2018 21:54:32 UTC] org.broadinstitute.hellbender.tools.walkers.CountVariants done. Elapsed time: 0.26 minutes.
+Runtime.totalMemory()=741867520
+Tool returned:
+4441215
+
+Completed s01_count_variants_2_ddr_control_kgen.sh
+Mon 28 May 21:54:32 UTC 2018
+

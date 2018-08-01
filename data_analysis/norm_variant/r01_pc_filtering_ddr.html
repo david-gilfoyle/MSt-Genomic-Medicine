@@ -123,7 +123,7 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 7 May 2018<br />
-Updated: David Gilfoyle 13 May 2018</p>
+Updated: David Gilfoyle 17 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
@@ -134,7 +134,7 @@ Gene Selection: DNA Repair Genes (removing PMS2P3, PRKDC and RECQL4)</p>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-13 08:09:49 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 10:57:33 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -161,7 +161,7 @@ kgen_input_folder=&quot;/home/ec2-user/results/filtered/af_filt/kgen&quot;
 load(paste(exac_input_folder, &quot;r01_exac_full_ddr_af_filtered.RData&quot;, sep=&quot;/&quot;))
 load(paste(exac_input_folder, &quot;r01_exac_nontcga_ddr_af_filtered.RData&quot;, sep=&quot;/&quot;))
 load(paste(icr1000_input_folder, &quot;r01_icr1000_ddr_af_filtered.RData&quot;, sep=&quot;/&quot;))
-rm(gt_af_filt_icr1000_ddr.mx)
+rm(gt_add_af_filt_icr1000_ddr.mx)
 load(paste(kgen_input_folder, &quot;r01_kgen_ddr_af_filtered.RData&quot;, sep=&quot;/&quot;))
 rm(gt_af_filt_kgen_ddr.mx)
 
@@ -170,10 +170,10 @@ dim(fixed_af_filt_exac_full_ddr.df) # should be 99,236</code></pre>
 <pre><code>## [1] 99236   154</code></pre>
 <pre class="r"><code>dim(fixed_af_filt_exac_nontcga_ddr.df) # should be 92,077</code></pre>
 <pre><code>## [1] 92077   154</code></pre>
-<pre class="r"><code>dim(fixed_af_filt_icr1000_ddr.df) # should be 6,442</code></pre>
-<pre><code>## [1] 6442   92</code></pre>
-<pre class="r"><code>dim(fixed_af_filt_kgen_ddr.df) # should be 313,889</code></pre>
-<pre><code>## [1] 313889     94</code></pre>
+<pre class="r"><code>dim(fixed_af_filt_icr1000_ddr.df) # should be 6,152</code></pre>
+<pre><code>## [1] 6152   95</code></pre>
+<pre class="r"><code>dim(fixed_af_filt_kgen_ddr.df) # should be 312,863</code></pre>
+<pre><code>## [1] 312863     94</code></pre>
 <pre class="r"><code># Setup base folder
 base_folder=&quot;/home/ec2-user/scripts/data_analysis/norm_variant&quot;
 
@@ -207,10 +207,10 @@ dim(exac_full_ddr.df) # should be 87,168</code></pre>
 <pre><code>## [1] 87168   154</code></pre>
 <pre class="r"><code>dim(exac_nontcga_ddr.df) # should be 80,858</code></pre>
 <pre><code>## [1] 80858   154</code></pre>
-<pre class="r"><code>dim(icr1000_ddr.df) # should be 5,651</code></pre>
-<pre><code>## [1] 5651   92</code></pre>
-<pre class="r"><code>dim(kgen_ddr.df) # should be 266,765</code></pre>
-<pre><code>## [1] 266765     94</code></pre>
+<pre class="r"><code>dim(icr1000_ddr.df) # should be 5,407</code></pre>
+<pre><code>## [1] 5407   95</code></pre>
+<pre class="r"><code>dim(kgen_ddr.df) # should be 265,878</code></pre>
+<pre><code>## [1] 265878     94</code></pre>
 <pre class="r"><code># Clean-up
 rm(fixed_af_filt_exac_full_ddr.df, fixed_af_filt_exac_nontcga_ddr.df, fixed_af_filt_icr1000_ddr.df, fixed_af_filt_kgen_ddr.df)</code></pre>
 </div>
@@ -364,7 +364,7 @@ unique(exac_full_pc_ddr.df$Consequence)</code></pre>
 ## [14] &quot;frameshift_variant&amp;splice_region_variant&quot;
 ## [15] &quot;start_lost&amp;splice_region_variant&quot;</code></pre>
 <pre class="r"><code>dim(icr1000_pc_ddr.df)</code></pre>
-<pre><code>## [1] 2640   92</code></pre>
+<pre><code>## [1] 2608   95</code></pre>
 <pre class="r"><code>unique(kgen_pc_ddr.df$Consequence)</code></pre>
 <pre><code>##  [1] &quot;missense_variant&quot;                                                              
 ##  [2] &quot;splice_region_variant&amp;synonymous_variant&quot;                                      
@@ -387,7 +387,7 @@ unique(exac_full_pc_ddr.df$Consequence)</code></pre>
 ## [19] &quot;coding_sequence_variant&amp;5_prime_UTR_variant&amp;intron_variant&amp;feature_elongation&quot; 
 ## [20] &quot;stop_gained&amp;frameshift_variant&amp;splice_region_variant&quot;</code></pre>
 <pre class="r"><code>dim(kgen_pc_ddr.df)</code></pre>
-<pre><code>## [1] 11149    94</code></pre>
+<pre><code>## [1] 11097    94</code></pre>
 </div>
 <div id="final_section" class="section level1">
 <h1>final_section</h1>
@@ -428,7 +428,7 @@ unique(exac_full_pc_ddr.df$Consequence)</code></pre>
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-13 08:12:55 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 11:00:41 UTC&quot;</code></pre>
 </div>
 
 

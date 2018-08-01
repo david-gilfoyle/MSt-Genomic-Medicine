@@ -1,0 +1,297 @@
+---
+title: "s01_explore_kgen_hc_lof_hi_path_individuals"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 18 May 2018  
+Updated: David Gilfoyle 18 May 2018
+
+---
+
+# Summary
+
+The goal of this analysis is to identify individuals with specific high confidence (HC) protein-affecting (LoF) potentially pathogenic variants in DDR genes with %HI <= 10% (haploinsufficent).  
+
+From a previous analysis it is known that homo- or hemi- zygous variants in the HC LoF filtered 1000 Genomes Project do not correspond with these gene variants. Assessment of individuals with LoF variants in haploinsufficient genes may therefore be an alternative option to observe delterious effects on genome stability.  
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+# Make output wider (default was 80 columns?)
+options(width = 400)
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/lof_filt/kgen"
+
+# Load RData file - contains dataframe containing all variants and genotype matrix
+load(paste(input_folder, "r01_kgen_ddr_lof_filtered.RData", sep="/"))
+
+# Keep only HC dataset
+rm(fixed_lof_filt_kgen_ddr.df, fixed_lof_hc_pli_filt_kgen_ddr.df, gt_lof_filt_kgen_ddr.mx, gt_lof_hc_pli_filt_kgen_ddr.mx, input_folder, output_folder, base_folder)
+
+# List remaining objects
+ls()
+
+# Establish rownames in fixed dataframe
+fixed_lof_hc_filt_kgen_ddr.df <- tibble::column_to_rownames(fixed_lof_hc_filt_kgen_ddr.df, var = "rowname")
+
+# Check remaining dataframe and matrix
+dim(fixed_lof_hc_filt_kgen_ddr.df)
+class(fixed_lof_hc_filt_kgen_ddr.df)
+fixed_lof_hc_filt_kgen_ddr.df[1:20,1:10]
+
+dim(gt_lof_hc_filt_kgen_ddr.mx)
+class(gt_lof_hc_filt_kgen_ddr.mx)
+gt_lof_hc_filt_kgen_ddr.mx[1:20,1:5]
+
+# Check rowmnames are same 
+sum(rownames(gt_lof_hc_filt_kgen_ddr.mx) != rownames(fixed_lof_hc_filt_kgen_ddr.df)) # should be 0
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/data_analysis/gt_analysis"
+output_folder="/home/ec2-user/results/data_analysis/gt_analysis"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# recode_genotypes_to_additive_numeric
+
+0,1,2 for REF-REF, REF-ALT and ALT-ALT respectively  
+Loosing phasing and hemizygous information  
+
+```{r recode_genotypes_to_additive_numeric}
+
+# Prepare matrix of NA-s
+gt_add.mx <- matrix(NA,
+                    nrow=nrow(gt_lof_hc_filt_kgen_ddr.mx),
+                    ncol=ncol(gt_lof_hc_filt_kgen_ddr.mx))
+
+colnames(gt_add.mx) <- colnames(gt_lof_hc_filt_kgen_ddr.mx)
+rownames(gt_add.mx) <- rownames(gt_lof_hc_filt_kgen_ddr.mx)
+
+dim(gt_add.mx)
+gt_add.mx[1:5,1:5]
+
+# explore the source matrix
+gt_lof_hc_filt_kgen_ddr.mx[1:5,1:5]
+summary(as.factor(gt_lof_hc_filt_kgen_ddr.mx))
+
+# populate the new matrix
+0 -> gt_add.mx[ gt_lof_hc_filt_kgen_ddr.mx == "0"]
+0 -> gt_add.mx[ gt_lof_hc_filt_kgen_ddr.mx == "0|0"]
+1 -> gt_add.mx[ gt_lof_hc_filt_kgen_ddr.mx == "1"]
+1 -> gt_add.mx[ gt_lof_hc_filt_kgen_ddr.mx == "0|1"]
+1 -> gt_add.mx[ gt_lof_hc_filt_kgen_ddr.mx == "1|0"]
+2 -> gt_add.mx[ gt_lof_hc_filt_kgen_ddr.mx == "1|1"]
+
+# check result
+dim(gt_add.mx)
+gt_add.mx[1:5,1:5]
+summary(as.factor(gt_add.mx))
+sum(is.na(gt_add.mx))
+
+```
+
+# extract_individuals_with_hc_lof_hi_pathogencic_variants
+
+# rs267607789_72408
+
+```{r rs267607789_72408}
+
+# rs267607789_72408 MLH1, %HI 3.18, Pathways MMR (Wood's Database) & MMR/FA (KEGG)
+variant <- which(rownames(gt_lof_hc_filt_kgen_ddr.mx) == "rs267607789_72408")
+variant
+fixed_lof_hc_filt_kgen_ddr.df[variant,1:10]
+fixed_lof_hc_filt_kgen_ddr.df$Consequence[variant]
+fixed_lof_hc_filt_kgen_ddr.df$SYMBOL[variant]
+fixed_lof_hc_filt_kgen_ddr.df$CLIN_SIG[variant]
+individual <- which(gt_add.mx[variant,] > 0)
+individual
+gt_lof_hc_filt_kgen_ddr.mx[variant,individual]
+
+```
+
+# rs199731535_83526
+
+```{r rs199731535_83526}
+
+# rs199731535_83526 ATR, %HI 8.60, Pathways Other DDR (Wood's Database) & FA (KEGG)
+variant <- which(rownames(gt_lof_hc_filt_kgen_ddr.mx) == "rs199731535_83526")
+variant
+fixed_lof_hc_filt_kgen_ddr.df[variant,1:10]
+fixed_lof_hc_filt_kgen_ddr.df$Consequence[variant]
+fixed_lof_hc_filt_kgen_ddr.df$SYMBOL[variant]
+fixed_lof_hc_filt_kgen_ddr.df$CLIN_SIG[variant]
+individual <- which(gt_add.mx[variant,] > 0)
+individual
+gt_lof_hc_filt_kgen_ddr.mx[variant,individual]
+
+```
+
+# rs557012154_228437
+
+```{r rs557012154_228437}
+
+# rs557012154_228437 ATM, %HI 0.96, Pathways Sensitivity to DNA damaging agents (Wood's Database) & HRR (KEGG)
+variant <- which(rownames(gt_lof_hc_filt_kgen_ddr.mx) == "rs557012154_228437")
+variant
+fixed_lof_hc_filt_kgen_ddr.df[variant,1:10]
+fixed_lof_hc_filt_kgen_ddr.df$Consequence[variant]
+fixed_lof_hc_filt_kgen_ddr.df$SYMBOL[variant]
+fixed_lof_hc_filt_kgen_ddr.df$CLIN_SIG[variant]
+individual <- which(gt_add.mx[variant,] > 0)
+individual
+gt_lof_hc_filt_kgen_ddr.mx[variant,individual]
+
+```
+
+# rs192810283_229206
+
+```{r rs192810283_229206}
+
+# rs192810283_229206 ATM, %HI 0.96, Pathways Sensitivity to DNA damaging agents (Wood's Database) & HRR (KEGG)
+variant <- which(rownames(gt_lof_hc_filt_kgen_ddr.mx) == "rs192810283_229206")
+variant
+fixed_lof_hc_filt_kgen_ddr.df[variant,1:10]
+fixed_lof_hc_filt_kgen_ddr.df$Consequence[variant]
+fixed_lof_hc_filt_kgen_ddr.df$SYMBOL[variant]
+fixed_lof_hc_filt_kgen_ddr.df$CLIN_SIG[variant]
+individual <- which(gt_add.mx[variant,] > 0)
+individual
+gt_lof_hc_filt_kgen_ddr.mx[variant,individual]
+
+```
+
+# rs200976093_229584
+
+```{r rs200976093_229584}
+
+# rs200976093_229584 ATM, %HI 0.96, Pathways Sensitivity to DNA damaging agents (Wood's Database) & HRR (KEGG)
+variant <- which(rownames(gt_lof_hc_filt_kgen_ddr.mx) == "rs200976093_229584")
+variant
+fixed_lof_hc_filt_kgen_ddr.df[variant,1:10]
+fixed_lof_hc_filt_kgen_ddr.df$Consequence[variant]
+fixed_lof_hc_filt_kgen_ddr.df$SYMBOL[variant]
+fixed_lof_hc_filt_kgen_ddr.df$CLIN_SIG[variant]
+individual <- which(gt_add.mx[variant,] > 0)
+individual
+gt_lof_hc_filt_kgen_ddr.mx[variant,individual]
+
+```
+
+# rs80358027_330111
+
+```{r rs80358027_330111}
+
+# rs80358027_330111 BRCA1, %HI 1.19, Pathways HRR (Wood's Database) & FA/HHR (KEGG)
+variant <- which(rownames(gt_lof_hc_filt_kgen_ddr.mx) == "rs80358027_330111")
+variant
+fixed_lof_hc_filt_kgen_ddr.df[variant,1:10]
+fixed_lof_hc_filt_kgen_ddr.df$Consequence[variant]
+fixed_lof_hc_filt_kgen_ddr.df$SYMBOL[variant]
+fixed_lof_hc_filt_kgen_ddr.df$CLIN_SIG[variant]
+individual <- which(gt_add.mx[variant,] > 0)
+individual
+gt_lof_hc_filt_kgen_ddr.mx[variant,individual]
+
+```
+
+# rs80357134_331148
+
+```{r rs80357134_331148}
+
+# rs80357134_331148 BRCA1, %HI 1.19, Pathways HRR (Wood's Database) & FA/HHR (KEGG)
+variant <- which(rownames(gt_lof_hc_filt_kgen_ddr.mx) == "rs80357134_331148")
+variant
+fixed_lof_hc_filt_kgen_ddr.df[variant,1:10]
+fixed_lof_hc_filt_kgen_ddr.df$Consequence[variant]
+fixed_lof_hc_filt_kgen_ddr.df$SYMBOL[variant]
+fixed_lof_hc_filt_kgen_ddr.df$CLIN_SIG[variant]
+individual <- which(gt_add.mx[variant,] > 0)
+individual
+gt_lof_hc_filt_kgen_ddr.mx[variant,individual]
+
+```
+
+# rs555607708_360164
+
+```{r rs555607708_360164}
+
+# rs555607708_360164 CHEK2, %HI 6.90, Pathways Other DDR (Wood's Database) & - (KEGG)
+variant <- which(rownames(gt_lof_hc_filt_kgen_ddr.mx) == "rs555607708_360164")
+variant
+fixed_lof_hc_filt_kgen_ddr.df[variant,1:10]
+fixed_lof_hc_filt_kgen_ddr.df$Consequence[variant]
+fixed_lof_hc_filt_kgen_ddr.df$SYMBOL[variant]
+fixed_lof_hc_filt_kgen_ddr.df$CLIN_SIG[variant]
+individual <- which(gt_add.mx[variant,] > 0)
+individual
+gt_lof_hc_filt_kgen_ddr.mx[variant,individual]
+
+```
+
+# rs545982789_360638
+
+```{r rs545982789_360638}
+
+# rs545982789_360638 CHEK2, %HI 6.90, Pathways Other DDR (Wood's Database) & - (KEGG)
+variant <- which(rownames(gt_lof_hc_filt_kgen_ddr.mx) == "rs545982789_360638")
+variant
+fixed_lof_hc_filt_kgen_ddr.df[variant,1:10]
+fixed_lof_hc_filt_kgen_ddr.df$Consequence[variant]
+fixed_lof_hc_filt_kgen_ddr.df$SYMBOL[variant]
+fixed_lof_hc_filt_kgen_ddr.df$CLIN_SIG[variant]
+individual <- which(gt_add.mx[variant,] > 0)
+individual
+gt_lof_hc_filt_kgen_ddr.mx[variant,individual]
+
+```
+
+# rs536907995_361204
+
+```{r rs536907995_361204}
+
+# rs536907995_361204 CHEK2, %HI 6.90, Pathways Other DDR (Wood's Database) & - (KEGG)
+variant <- which(rownames(gt_lof_hc_filt_kgen_ddr.mx) == "rs536907995_361204")
+variant
+fixed_lof_hc_filt_kgen_ddr.df[variant,1:10]
+fixed_lof_hc_filt_kgen_ddr.df$Consequence[variant]
+fixed_lof_hc_filt_kgen_ddr.df$SYMBOL[variant]
+fixed_lof_hc_filt_kgen_ddr.df$CLIN_SIG[variant]
+individual <- which(gt_add.mx[variant,] > 0)
+individual
+gt_lof_hc_filt_kgen_ddr.mx[variant,individual]
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```

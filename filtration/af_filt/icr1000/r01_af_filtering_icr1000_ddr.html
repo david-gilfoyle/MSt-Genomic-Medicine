@@ -123,19 +123,19 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 4 May 2018</p>
+Updated: David Gilfoyle 16 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of QUAL filtered dataset based on AF &lt;= 0.01<br />
+<p>Variant filtering of GQ filtered dataset based on AF &lt;= 0.01<br />
 Dataset: ICR1000<br />
 Gene Selection: DNA Repair Genes<br />
-Input Variants: 10,304</p>
+Input Variants: 8,378</p>
 </div>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-04 14:36:11 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 16:22:18 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -154,20 +154,20 @@ library(dplyr)</code></pre>
 <div id="load_rdata_file" class="section level1">
 <h1>load_rdata_file</h1>
 <pre class="r"><code># Setup input folder
-input_folder=&quot;/home/ec2-user/results/filtered/qual_filt/icr1000&quot;
+input_folder=&quot;/home/ec2-user/results/filtered/gq_filt/icr1000&quot;
 
 # Load RData file - contains dataframe containing all variants
-load(paste(input_folder, &quot;r01_icr1000_ddr_qual_filt.RData&quot;, sep=&quot;/&quot;))
+load(paste(input_folder, &quot;r01_icr1000_ddr_gq_filt.RData&quot;, sep=&quot;/&quot;))
 
 # Setup script input dataframe naming
-input.df &lt;- fixed_qfilt_icr1000_ddr.df
-rm(fixed_qfilt_icr1000_ddr.df)
-input.mx &lt;- gt_qfilt_icr1000_ddr.mx
-rm(gt_qfilt_icr1000_ddr.mx)
+input.df &lt;- fixed_crfilt_icr1000_ddr.df
+rm(fixed_crfilt_icr1000_ddr.df)
+input.mx &lt;- gt_add_crfilt_icr1000_ddr.mx
+rm(gt_add_crfilt_icr1000_ddr.mx)
 
 # Check input dataframe and matrix
 dim(input.df)</code></pre>
-<pre><code>## [1] 10304    92</code></pre>
+<pre><code>## [1] 8378   95</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>input.df[1:20,1:10]</code></pre>
@@ -182,8 +182,6 @@ dim(input.df)</code></pre>
 ## 1_2116737_9        1 2116737        &lt;NA&gt;    A       G   569.17   &lt;NA&gt;
 ## 1_2116747_10       1 2116747        &lt;NA&gt;    C       T   537.17   &lt;NA&gt;
 ## 1_2116794_11       1 2116794        &lt;NA&gt;    G       C   661.17   &lt;NA&gt;
-## rs2503699_17       1 2118539   rs2503699    T       C  6140.38   &lt;NA&gt;
-## rs2503701_20       1 2121118   rs2503701    C       T 33362.30   &lt;NA&gt;
 ## rs183100575_21     1 2121259 rs183100575    G       C   479.30   &lt;NA&gt;
 ## rs111474129_27     1 2121751 rs111474129    G       A   581.87   &lt;NA&gt;
 ## 1_2121926_29       1 2121926        &lt;NA&gt;    G       A   408.45   &lt;NA&gt;
@@ -192,6 +190,8 @@ dim(input.df)</code></pre>
 ## 1_2124345_32       1 2124345        &lt;NA&gt; TTTG       T 14687.90   &lt;NA&gt;
 ## 1_2124416_33       1 2124416        &lt;NA&gt;    T       C   793.17   &lt;NA&gt;
 ## rs1058411_37       1 2125172   rs1058411    G       A 51493.80   &lt;NA&gt;
+## rs147283443_42     1 2125440 rs147283443    T       C   670.98   &lt;NA&gt;
+## rs146607591_44     1 2125543 rs146607591    A       G  1040.01   &lt;NA&gt;
 ##                ABHet ABHom  AC
 ## 1_2115989_1    0.537 0.996   1
 ## rs56402864_2   0.500 0.999   3
@@ -203,8 +203,6 @@ dim(input.df)</code></pre>
 ## 1_2116737_9    0.580 0.997   1
 ## 1_2116747_10   0.500 0.999   1
 ## 1_2116794_11   0.435 0.999   1
-## rs2503699_17   0.556 0.996 302
-## rs2503701_20   0.522 0.947 949
 ## rs183100575_21 0.500 0.998   3
 ## rs111474129_27 0.612 0.999   3
 ## 1_2121926_29   0.559 0.998   1
@@ -212,37 +210,39 @@ dim(input.df)</code></pre>
 ## 1_2124345_31      NA    NA  49
 ## 1_2124345_32      NA    NA  55
 ## 1_2124416_33   0.556 0.999   1
-## rs1058411_37   0.486 0.998 245</code></pre>
-<pre class="r"><code>class(input.df$AF)</code></pre>
-<pre><code>## [1] &quot;character&quot;</code></pre>
-<pre class="r"><code>input.df$AF[1:20]</code></pre>
-<pre><code>##  [1] &quot;0.0005005&quot; &quot;0.001502&quot;  &quot;0.001001&quot;  &quot;0.016&quot;     &quot;0.007508&quot; 
-##  [6] &quot;0.0005005&quot; &quot;0.0005005&quot; &quot;0.0005005&quot; &quot;0.0005005&quot; &quot;0.0005005&quot;
-## [11] &quot;0.834&quot;     &quot;0.624&quot;     &quot;0.001502&quot;  &quot;0.001505&quot;  &quot;0.0005005&quot;
-## [16] &quot;0.0005005&quot; &quot;0.025&quot;     &quot;0.028&quot;     &quot;0.0005005&quot; &quot;0.124&quot;</code></pre>
+## rs1058411_37   0.486 0.998 245
+## rs147283443_42 0.552 0.997   3
+## rs146607591_44 0.478 0.998   4</code></pre>
+<pre class="r"><code>class(input.df$new_AF)</code></pre>
+<pre><code>## [1] &quot;numeric&quot;</code></pre>
+<pre class="r"><code>input.df$new_AF[1:20]</code></pre>
+<pre><code>##  [1] 0.0005005005 0.0015015015 0.0010020040 0.0158163265 0.0075075075
+##  [6] 0.0005086470 0.0005010020 0.0005005005 0.0005005005 0.0005010020
+## [11] 0.0016685206 0.0016008538 0.0005025126 0.0005005005 0.0277463194
+## [16] 0.0084937712 0.0005005005 0.1341890315 0.0015274949 0.0020161290</code></pre>
 <pre class="r"><code>dim(input.mx)</code></pre>
-<pre><code>## [1] 10304   999</code></pre>
+<pre><code>## [1] 8378  999</code></pre>
 <pre class="r"><code>class(input.mx)</code></pre>
 <pre><code>## [1] &quot;matrix&quot;</code></pre>
 <pre class="r"><code>input.mx[1:5,1:5]</code></pre>
 <pre><code>##               EGAR00001237542_1520_A02 EGAR00001237543_1520_A03
-## 1_2115989_1   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs56402864_2  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs185563823_3 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs45459595_5  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs11553733_6  &quot;0/0&quot;                    &quot;0/0&quot;                   
+## 1_2115989_1                          0                        0
+## rs56402864_2                         0                        0
+## rs185563823_3                        0                        0
+## rs45459595_5                        NA                        0
+## rs11553733_6                         0                        0
 ##               EGAR00001237544_1520_A04 EGAR00001237545_1520_A08
-## 1_2115989_1   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs56402864_2  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs185563823_3 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs45459595_5  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs11553733_6  &quot;0/0&quot;                    &quot;0/0&quot;                   
+## 1_2115989_1                          0                        0
+## rs56402864_2                         0                        0
+## rs185563823_3                        0                        0
+## rs45459595_5                        NA                        0
+## rs11553733_6                         0                        0
 ##               EGAR00001237546_1520_A09
-## 1_2115989_1   &quot;0/0&quot;                   
-## rs56402864_2  &quot;0/0&quot;                   
-## rs185563823_3 &quot;0/0&quot;                   
-## rs45459595_5  &quot;0/0&quot;                   
-## rs11553733_6  &quot;0/0&quot;</code></pre>
+## 1_2115989_1                          0
+## rs56402864_2                         0
+## rs185563823_3                        0
+## rs45459595_5                         0
+## rs11553733_6                         0</code></pre>
 <pre class="r"><code># Check rowmnames are same 
 sum(rownames(input.mx) != rownames(input.df)) # should be 0</code></pre>
 <pre><code>## [1] 0</code></pre>
@@ -259,16 +259,16 @@ getwd()</code></pre>
 </div>
 <div id="af_filtering" class="section level1">
 <h1>af_filtering</h1>
-<p>Allele frequency filtering based on selection of rare variants (AF &lt;= 0.01) within data set</p>
+<p>Allele frequency filtering based on selection of rare variants (new_AF &lt;= 0.01) within data set</p>
 <pre class="r"><code># Filter AF &lt;= 0.01
 input.df &lt;- tibble::rownames_to_column(input.df, var = &quot;rowname&quot;)
 output.df &lt;- input.df %&gt;% 
-  filter(as.numeric(AF) &lt;= 0.01)
+  filter(as.numeric(new_AF) &lt;= 0.01)
 output.df &lt;- tibble::column_to_rownames(output.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 6442   92</code></pre>
+<pre><code>## [1] 6152   95</code></pre>
 <pre class="r"><code>class(output.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
@@ -286,10 +286,10 @@ dim(output.df)</code></pre>
 ## rs111474129_27     1  2121751 rs111474129    G   A   581.87   &lt;NA&gt; 0.612
 ## 1_2121926_29       1  2121926        &lt;NA&gt;    G   A   408.45   &lt;NA&gt; 0.559
 ## 1_2122080_30       1  2122080        &lt;NA&gt;    C   T   433.17   &lt;NA&gt; 0.583
+## 1_2124345_32       1  2124345        &lt;NA&gt; TTTG   T 14687.90   &lt;NA&gt;    NA
 ## 1_2124416_33       1  2124416        &lt;NA&gt;    T   C   793.17   &lt;NA&gt; 0.556
 ## rs147283443_42     1  2125440 rs147283443    T   C   670.98   &lt;NA&gt; 0.552
 ## rs146607591_44     1  2125543 rs146607591    A   G  1040.01   &lt;NA&gt; 0.478
-## 1_10490723_51      1 10490723        &lt;NA&gt;    C   T   289.16   &lt;NA&gt; 0.286
 ## 1_10491355_52      1 10491355        &lt;NA&gt;    C   A   835.17   &lt;NA&gt; 0.533
 ## 1_10491358_53      1 10491358        &lt;NA&gt;    A   G   608.17   &lt;NA&gt; 0.532
 ## 1_10491417_54      1 10491417        &lt;NA&gt; CTTT   C  1976.10   &lt;NA&gt;    NA
@@ -307,18 +307,18 @@ dim(output.df)</code></pre>
 ## rs111474129_27 0.999  3
 ## 1_2121926_29   0.998  1
 ## 1_2122080_30   0.999  1
+## 1_2124345_32      NA 55
 ## 1_2124416_33   0.999  1
 ## rs147283443_42 0.997  3
 ## rs146607591_44 0.998  4
-## 1_10490723_51  1.000  5
 ## 1_10491355_52  0.996  1
 ## 1_10491358_53  0.997  1
 ## 1_10491417_54     NA  1</code></pre>
-<pre class="r"><code>output.df$AF[1:20]</code></pre>
-<pre><code>##  [1] &quot;0.0005005&quot; &quot;0.001502&quot;  &quot;0.001001&quot;  &quot;0.007508&quot;  &quot;0.0005005&quot;
-##  [6] &quot;0.0005005&quot; &quot;0.0005005&quot; &quot;0.0005005&quot; &quot;0.0005005&quot; &quot;0.001502&quot; 
-## [11] &quot;0.001505&quot;  &quot;0.0005005&quot; &quot;0.0005005&quot; &quot;0.0005005&quot; &quot;0.001502&quot; 
-## [16] &quot;0.002002&quot;  &quot;0.003121&quot;  &quot;0.0005005&quot; &quot;0.0005005&quot; &quot;0.0005005&quot;</code></pre>
+<pre class="r"><code>output.df$new_AF[1:20]</code></pre>
+<pre><code>##  [1] 0.0005005005 0.0015015015 0.0010020040 0.0075075075 0.0005086470
+##  [6] 0.0005010020 0.0005005005 0.0005005005 0.0005010020 0.0016685206
+## [11] 0.0016008538 0.0005025126 0.0005005005 0.0084937712 0.0005005005
+## [16] 0.0015274949 0.0020161290 0.0005005005 0.0005005005 0.0005005005</code></pre>
 </div>
 <div id="syncronise_filtered_variants_and_genotype_data" class="section level1">
 <h1>syncronise_filtered_variants_and_genotype_data</h1>
@@ -341,41 +341,41 @@ output.df[1:20,1:5]</code></pre>
 ## rs111474129_27     1  2121751 rs111474129    G   A
 ## 1_2121926_29       1  2121926        &lt;NA&gt;    G   A
 ## 1_2122080_30       1  2122080        &lt;NA&gt;    C   T
+## 1_2124345_32       1  2124345        &lt;NA&gt; TTTG   T
 ## 1_2124416_33       1  2124416        &lt;NA&gt;    T   C
 ## rs147283443_42     1  2125440 rs147283443    T   C
 ## rs146607591_44     1  2125543 rs146607591    A   G
-## 1_10490723_51      1 10490723        &lt;NA&gt;    C   T
 ## 1_10491355_52      1 10491355        &lt;NA&gt;    C   A
 ## 1_10491358_53      1 10491358        &lt;NA&gt;    A   G
 ## 1_10491417_54      1 10491417        &lt;NA&gt; CTTT   C</code></pre>
 <pre class="r"><code>output.mx[1:20,1:2]</code></pre>
 <pre><code>##                EGAR00001237542_1520_A02 EGAR00001237543_1520_A03
-## 1_2115989_1    &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs56402864_2   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs185563823_3  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs11553733_6   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2116628_7    &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs202100130_8  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2116737_9    &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2116747_10   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2116794_11   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs183100575_21 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs111474129_27 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2121926_29   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2122080_30   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_2124416_33   &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs147283443_42 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## rs146607591_44 &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_10490723_51  NA                       &quot;0/0&quot;                   
-## 1_10491355_52  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_10491358_53  &quot;0/0&quot;                    &quot;0/0&quot;                   
-## 1_10491417_54  &quot;0/0&quot;                    &quot;0/0&quot;</code></pre>
+## 1_2115989_1                           0                        0
+## rs56402864_2                          0                        0
+## rs185563823_3                         0                        0
+## rs11553733_6                          0                        0
+## 1_2116628_7                          NA                       NA
+## rs202100130_8                         0                        0
+## 1_2116737_9                           0                        0
+## 1_2116747_10                          0                        0
+## 1_2116794_11                          0                        0
+## rs183100575_21                       NA                       NA
+## rs111474129_27                       NA                       NA
+## 1_2121926_29                          0                        0
+## 1_2122080_30                          0                        0
+## 1_2124345_32                         NA                        0
+## 1_2124416_33                          0                        0
+## rs147283443_42                        0                        0
+## rs146607591_44                        0                        0
+## 1_10491355_52                         0                        0
+## 1_10491358_53                         0                        0
+## 1_10491417_54                         0                        0</code></pre>
 </div>
 <div id="update_dataframe_naming" class="section level1">
 <h1>update_dataframe_naming</h1>
 <pre class="r"><code># Reset of output dataframe names
 fixed_af_filt_icr1000_ddr.df &lt;- output.df
-gt_af_filt_icr1000_ddr.mx &lt;- output.mx
+gt_add_af_filt_icr1000_ddr.mx &lt;- output.mx
 
 # Clean-up
 rm(input.df, output.df, input.mx, output.mx)</code></pre>
@@ -387,9 +387,9 @@ rm(input.df, output.df, input.mx, output.mx)</code></pre>
 <div id="final_section" class="section level1">
 <h1>final_section</h1>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>## [1] &quot;base_folder&quot;                  &quot;fixed_af_filt_icr1000_ddr.df&quot;
-## [3] &quot;gt_af_filt_icr1000_ddr.mx&quot;    &quot;input_folder&quot;                
-## [5] &quot;meta.df&quot;                      &quot;output_folder&quot;</code></pre>
+<pre><code>## [1] &quot;base_folder&quot;                   &quot;fixed_af_filt_icr1000_ddr.df&quot; 
+## [3] &quot;gt_add_af_filt_icr1000_ddr.mx&quot; &quot;input_folder&quot;                 
+## [5] &quot;meta.df&quot;                       &quot;output_folder&quot;</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.4.1 (2017-06-30)
 ## Platform: x86_64-redhat-linux-gnu (64-bit)
@@ -410,17 +410,17 @@ rm(input.df, output.df, input.mx, output.mx)</code></pre>
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] bindrcpp_0.2 knitr_1.20   dplyr_0.7.4 
+## [1] bindrcpp_0.2.2 knitr_1.20     dplyr_0.7.4   
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.16     digest_0.6.15    rprojroot_1.3-2  assertthat_0.2.0
 ##  [5] R6_2.2.2         backports_1.1.2  magrittr_1.5     evaluate_0.10.1 
-##  [9] pillar_1.2.1     rlang_0.2.0      stringi_1.1.7    rmarkdown_1.9   
-## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.18     
+##  [9] pillar_1.2.2     rlang_0.2.0      stringi_1.2.2    rmarkdown_1.9   
+## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.19     
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-04 14:36:16 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 16:22:20 UTC&quot;</code></pre>
 </div>
 
 

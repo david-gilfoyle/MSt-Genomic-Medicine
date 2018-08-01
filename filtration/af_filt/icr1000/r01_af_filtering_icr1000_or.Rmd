@@ -6,16 +6,16 @@ editor_options:
 ---
 
 Started: David Gilfoyle 3 May 2018  
-Updated: David Gilfoyle 4 May 2018
+Updated: David Gilfoyle 16 May 2018
 
 ---
 
 # Summary
 
-Variant filtering of QUAL filtered dataset based on AF <= 0.01  
+Variant filtering of GQ filtered dataset based on AF <= 0.01  
 Dataset: ICR1000  
 Gene Selection: Olfactory Receptor Genes  
-Input Variants: 5,189
+Input Variants: 4,200
 
 # start_section
 
@@ -36,23 +36,23 @@ library(knitr)
 ```{r load_rdata_file}
 
 # Setup input folder
-input_folder="/home/ec2-user/results/filtered/qual_filt/icr1000"
+input_folder="/home/ec2-user/results/filtered/gq_filt/icr1000"
 
 # Load RData file - contains dataframe containing all variants
-load(paste(input_folder, "r01_icr1000_or_qual_filt.RData", sep="/"))
+load(paste(input_folder, "r01_icr1000_or_gq_filt.RData", sep="/"))
 
 # Setup script input dataframe naming
-input.df <- fixed_qfilt_icr1000_or.df
-rm(fixed_qfilt_icr1000_or.df)
-input.mx <- gt_qfilt_icr1000_or.mx
-rm(gt_qfilt_icr1000_or.mx)
+input.df <- fixed_crfilt_icr1000_or.df
+rm(fixed_crfilt_icr1000_or.df)
+input.mx <- gt_add_crfilt_icr1000_or.mx
+rm(gt_add_crfilt_icr1000_or.mx)
 
 # Check input dataframe and matrix
 dim(input.df)
 class(input.df)
 input.df[1:20,1:10]
-class(input.df$AF)
-input.df$AF[1:20]
+class(input.df$new_AF)
+input.df$new_AF[1:20]
 
 dim(input.mx)
 class(input.mx)
@@ -75,21 +75,21 @@ opts_knit$set(root.dir = base_folder)
 
 # af_filtering
 
-Allele frequency filtering based on selection of rare variants (AF <= 0.01) within data set
+Allele frequency filtering based on selection of rare variants (new_AF <= 0.01) within data set
 
 ```{r af_filtering}
 
 # Filter AF <= 0.01
 input.df <- tibble::rownames_to_column(input.df, var = "rowname")
 output.df <- input.df %>% 
-  filter(as.numeric(AF) <= 0.01)
+  filter(as.numeric(new_AF) <= 0.01)
 output.df <- tibble::column_to_rownames(output.df, var = "rowname")
 
 # Check output dataframe
 dim(output.df)
 class(output.df)
 output.df[1:20,1:10]
-output.df$AF[1:20]
+output.df$new_AF[1:20]
 
 ```
 
@@ -112,7 +112,7 @@ output.mx[1:20,1:2]
 
 # Reset of output dataframe names
 fixed_af_filt_icr1000_or.df <- output.df
-gt_af_filt_icr1000_or.mx <- output.mx
+gt_add_af_filt_icr1000_or.mx <- output.mx
 
 # Clean-up
 rm(input.df, output.df, input.mx, output.mx)

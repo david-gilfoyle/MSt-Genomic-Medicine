@@ -123,11 +123,11 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 7 May 2018</p>
+Updated: David Gilfoyle 16 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of AF filtered dataset to select non-coding (Consequence), high confidence (HC) non-coding (FATHMM_MKL_NC &gt; 0.5 and CADD_PHRED &gt; 15) and HC non-coding variants in genes with pLI &gt;= 0.9<br />
+<p>Variant filtering of AF filtered dataset to select non-coding (Consequence) and high confidence (HC) non-coding (FATHMM_MKL_NC &gt; 0.5 and CADD_PHRED &gt; 20)<br />
 Dataset: ExAC (full)<br />
 Gene Selection: DNA Repair Genes<br />
 Input Variants: 92,077</p>
@@ -135,7 +135,7 @@ Input Variants: 92,077</p>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-07 08:35:55 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 19:40:37 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -161,10 +161,9 @@ load(paste(input_folder, &quot;r01_exac_nontcga_ddr_af_filtered.RData&quot;, sep
 
 # Setup script input dataframe naming
 input.df &lt;- fixed_af_filt_exac_nontcga_ddr.df
-rm(fixed_af_filt_exac_tcga_ddr.df)</code></pre>
-<pre><code>## Warning in rm(fixed_af_filt_exac_tcga_ddr.df): object
-## 'fixed_af_filt_exac_tcga_ddr.df' not found</code></pre>
-<pre class="r"><code># Check input dataframe
+rm(fixed_af_filt_exac_nontcga_ddr.df)
+
+# Check input dataframe
 dim(input.df)</code></pre>
 <pre><code>## [1] 92077   154</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
@@ -460,7 +459,7 @@ dim(output.df)</code></pre>
 <h1>additional_filtering</h1>
 <p>Output assessed based on further filtering with:<br />
 1) FATHMM_MKL_NC &gt; 0.5 - assessment indicates that some entries are NA - these appear to be insertion, deletion and substitution variants and they will be retained. However, removal of variants with FATHMM_MKL_NC &gt; 0.5 is considered appropriate to enrich dataset for potentially deleterious variants<br />
-2) CADD_PHRED &gt; 15 - assessment indicates that some entries are NA - these appear to be mainly insertion, deletion and substitution variants and they will be retained. However, removal of variants with CADD_PHRED &lt;= 15 is considered appropriate to enrich dataset for potentially deleterious variants</p>
+2) CADD_PHRED &gt; 20 - assessment indicates that some entries are NA - these appear to be mainly insertion, deletion and substitution variants and they will be retained. However, removal of variants with CADD_PHRED &lt;= 20 is considered appropriate to enrich dataset for potentially deleterious variants</p>
 <pre class="r"><code># Assessment of filtering FATHMM_MKL_NC &gt; 0.5
 class(output.df$FATHMM_MKL_NC)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
@@ -475,15 +474,15 @@ class(output.df$FATHMM_MKL_NC)</code></pre>
 <pre class="r"><code># output_fathmm_na.df &lt;- output.df %&gt;% 
 #   filter(is.na(FATHMM_MKL_NC))
 
-# Assessment of filtering CADD_PHREDD &gt; 15
+# Assessment of filtering CADD_PHREDD &gt; 20
 sum(is.na(output.df$CADD_PHRED))</code></pre>
 <pre><code>## [1] 374</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 1</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 3174</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 346</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 3380</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 141</code></pre>
 <pre class="r"><code># output_cadd_na.df &lt;- output.df %&gt;% 
 #  filter(is.na(CADD_PHRED))
 
@@ -491,195 +490,103 @@ sum(is.na(output.df$CADD_PHRED))</code></pre>
 output_hc.df &lt;- output.df %&gt;% 
   filter((as.numeric(FATHMM_MKL_NC) &gt; 0.5) |
            (is.na(FATHMM_MKL_NC))) %&gt;%
-  filter((as.numeric(CADD_PHRED) &gt; 15) |
+  filter((as.numeric(CADD_PHRED) &gt; 20) |
            (is.na(CADD_PHRED)))
 
 # Check output dataframe
 dim(output_hc.df)</code></pre>
-<pre><code>## [1] 640 154</code></pre>
+<pre><code>## [1] 499 154</code></pre>
 <pre class="r"><code>output_hc.df[1:20,1:10]</code></pre>
 <pre><code>##    CHROM      POS          ID      REF      ALT      QUAL FILTER  AC
 ## 1      1  2116002        &lt;NA&gt;     TCTC        T   1246.54   PASS   1
 ## 2      1  2116070 rs143763676        G        C   2572.31   PASS   1
-## 3      1  2116070 rs143763676        G        A   2572.31   PASS   2
-## 4      1  2116108 rs140890348        C        T   1155.88   PASS   2
-## 5      1  2116380 rs138081046        G        A   3662.48   PASS   2
-## 6      1  2116380 rs138081046        G        C   3662.48   PASS   1
-## 7      1  2116395 rs144015632        G        A   4410.80   PASS   3
-## 8      1  2116455  rs80119748        G       GT   7824.85   PASS   6
-## 9      1  2116478        &lt;NA&gt;        G       GT   2263.30   PASS   1
-## 10     1  2116848        &lt;NA&gt;       CT        C   2807.05   PASS   1
-## 11     1 28241166        &lt;NA&gt;        G       GC   2050.75   PASS   1
-## 12     1 45794938        &lt;NA&gt;     TAAC        T 328230.00   PASS 130
-## 13     1 45805860        &lt;NA&gt; CGCCAGGA        C   5988.08   PASS   6
-## 14     1 45805860        &lt;NA&gt; CGCCAGGA TGCCAGGA   5988.08   PASS   3
-## 15     1 45806025        &lt;NA&gt;        A       AG  12519.30   PASS  22
-## 16     1 62905532        &lt;NA&gt;        G       GA   4948.78   PASS  18
-## 17     1 62916657        &lt;NA&gt;    AGTGT        A   2778.06   PASS   2
-## 18     1 62916657        &lt;NA&gt;    AGTGT    CGTGT   2778.06   PASS   1
-## 19     1 62916657        &lt;NA&gt;    AGTGT      AGT   2778.06   PASS   2
-## 20     1 62916677        &lt;NA&gt;    ATATT        A   9189.44   PASS   3
+## 3      1  2116380 rs138081046        G        A   3662.48   PASS   2
+## 4      1  2116380 rs138081046        G        C   3662.48   PASS   1
+## 5      1  2116395 rs144015632        G        A   4410.80   PASS   3
+## 6      1  2116455  rs80119748        G       GT   7824.85   PASS   6
+## 7      1  2116478        &lt;NA&gt;        G       GT   2263.30   PASS   1
+## 8      1  2116848        &lt;NA&gt;       CT        C   2807.05   PASS   1
+## 9      1 28241166        &lt;NA&gt;        G       GC   2050.75   PASS   1
+## 10     1 45794938        &lt;NA&gt;     TAAC        T 328230.00   PASS 130
+## 11     1 45805860        &lt;NA&gt; CGCCAGGA        C   5988.08   PASS   6
+## 12     1 45805860        &lt;NA&gt; CGCCAGGA TGCCAGGA   5988.08   PASS   3
+## 13     1 45806025        &lt;NA&gt;        A       AG  12519.30   PASS  22
+## 14     1 62905532        &lt;NA&gt;        G       GA   4948.78   PASS  18
+## 15     1 62916657        &lt;NA&gt;    AGTGT        A   2778.06   PASS   2
+## 16     1 62916657        &lt;NA&gt;    AGTGT    CGTGT   2778.06   PASS   1
+## 17     1 62916657        &lt;NA&gt;    AGTGT      AGT   2778.06   PASS   2
+## 18     1 62916677        &lt;NA&gt;    ATATT        A   9189.44   PASS   3
+## 19     1 62916677        &lt;NA&gt;    ATATT   ATTATT   9189.44   PASS   1
+## 20     1 62916677        &lt;NA&gt;    ATATT    TTATT   9189.44   PASS   3
 ##    AC_AFR AC_AMR
 ## 1       1      0
 ## 2       1      0
-## 3       0      0
-## 4       1      0
-## 5       2      0
+## 3       2      0
+## 4       0      0
+## 5       1      0
 ## 6       0      0
-## 7       1      0
+## 7       0      0
 ## 8       0      0
 ## 9       0      0
 ## 10      0      0
 ## 11      0      0
-## 12      0      0
+## 12      3      0
 ## 13      0      0
-## 14      3      0
+## 14      1      0
 ## 15      0      0
-## 16      1      0
-## 17      0      0
+## 16      0      0
+## 17      1      0
 ## 18      0      0
-## 19      1      0
+## 19      0      1
 ## 20      0      0</code></pre>
 <pre class="r"><code>output_hc.df$Consequence[1:20]</code></pre>
 <pre><code>##  [1] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
 ##  [3] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
 ##  [5] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
 ##  [7] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
-##  [9] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
-## [11] &quot;5_prime_UTR_variant&quot;     &quot;3_prime_UTR_variant&quot;    
+##  [9] &quot;5_prime_UTR_variant&quot;     &quot;3_prime_UTR_variant&quot;    
+## [11] &quot;5_prime_UTR_variant&quot;     &quot;5_prime_UTR_variant&quot;    
 ## [13] &quot;5_prime_UTR_variant&quot;     &quot;5_prime_UTR_variant&quot;    
-## [15] &quot;5_prime_UTR_variant&quot;     &quot;5_prime_UTR_variant&quot;    
+## [15] &quot;3_prime_UTR_variant&quot;     &quot;3_prime_UTR_variant&quot;    
 ## [17] &quot;3_prime_UTR_variant&quot;     &quot;3_prime_UTR_variant&quot;    
 ## [19] &quot;3_prime_UTR_variant&quot;     &quot;3_prime_UTR_variant&quot;</code></pre>
 <pre class="r"><code>output_hc.df$FATHMM_MKL_NC[1:20]</code></pre>
-<pre><code>##  [1] NA        &quot;0.99115&quot; &quot;0.99072&quot; &quot;0.97248&quot; &quot;0.99668&quot; &quot;0.99687&quot; &quot;0.99540&quot;
+<pre><code>##  [1] NA        &quot;0.99115&quot; &quot;0.99668&quot; &quot;0.99687&quot; &quot;0.99540&quot; NA        NA       
 ##  [8] NA        NA        NA        NA        NA        NA        NA       
 ## [15] NA        NA        NA        NA        NA        NA</code></pre>
 <pre class="r"><code>output_hc.df$CADD_PHRED[1:20]</code></pre>
-<pre><code>##  [1] NA      &quot;24.6&quot;  &quot;17.52&quot; &quot;18.92&quot; &quot;25.6&quot;  &quot;28.0&quot;  &quot;25.4&quot;  NA     
-##  [9] NA      NA      NA      NA      NA      NA      NA      NA     
-## [17] NA      NA      NA      NA</code></pre>
+<pre><code>##  [1] NA     &quot;24.6&quot; &quot;25.6&quot; &quot;28.0&quot; &quot;25.4&quot; NA     NA     NA     NA     NA    
+## [11] NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</code></pre>
 <pre class="r"><code>unique(output_hc.df$SYMBOL)</code></pre>
 <pre><code>##   [1] &quot;C1orf86&quot; &quot;RPA2&quot;    &quot;MUTYH&quot;   &quot;TOE1&quot;    &quot;USP1&quot;    &quot;MSH4&quot;    &quot;CLK2&quot;   
-##   [8] &quot;UBE2T&quot;   &quot;GEN1&quot;    &quot;BRE&quot;     &quot;MSH2&quot;    &quot;MSH6&quot;    &quot;FANCL&quot;   &quot;VRK2&quot;   
-##  [15] &quot;REV1&quot;    &quot;ERCC3&quot;   &quot;RIF1&quot;    &quot;BARD1&quot;   &quot;XRCC5&quot;   &quot;CAMK1&quot;   &quot;FANCD2&quot; 
-##  [22] &quot;XPC&quot;     &quot;LSM3&quot;    &quot;MLH1&quot;    &quot;LRRFIP2&quot; &quot;WDR48&quot;   &quot;ATRIP&quot;   &quot;TREX1&quot;  
-##  [29] &quot;POLQ&quot;    &quot;MBD4&quot;    &quot;TOPBP1&quot;  &quot;ATR&quot;     &quot;HLTF&quot;    &quot;RFC4&quot;    &quot;HES1&quot;   
-##  [36] &quot;UVSSA&quot;   &quot;POLN&quot;    &quot;HAUS3&quot;   &quot;RNF4&quot;    &quot;RFC1&quot;    &quot;HELQ&quot;    &quot;FAM175A&quot;
-##  [43] &quot;ERCC8&quot;   &quot;CDK7&quot;    &quot;RAD17&quot;   &quot;MSH3&quot;    &quot;RASA1&quot;   &quot;CCNH&quot;    &quot;RAD50&quot;  
-##  [50] &quot;UBE2B&quot;   &quot;TDP2&quot;    &quot;FANCE&quot;   &quot;POLH&quot;    &quot;REV3L&quot;   &quot;GTF2H5&quot;  &quot;NUDT1&quot;  
-##  [57] &quot;PMS2&quot;    &quot;MPLKIP&quot;  &quot;HUS1&quot;    &quot;RFC2&quot;    &quot;XRCC2&quot;   &quot;NEIL2&quot;   &quot;POLB&quot;   
-##  [64] &quot;MCM4&quot;    &quot;UBE2V2&quot;  &quot;NBN&quot;     &quot;RRM2B&quot;   &quot;LRRC14&quot;  &quot;APTX&quot;    &quot;FANCG&quot;  
-##  [71] &quot;RMI1&quot;    &quot;XPA&quot;     &quot;RAD23B&quot;  &quot;DNTT&quot;    &quot;GTF2H1&quot;  &quot;FANCF&quot;   &quot;DDB2&quot;   
-##  [78] &quot;PRPF19&quot;  &quot;DDB1&quot;    &quot;MUS81&quot;   &quot;ATM&quot;     &quot;CHEK1&quot;   &quot;RAD52&quot;   &quot;RECQL&quot;  
-##  [85] &quot;PYROXD1&quot; &quot;NABP2&quot;   &quot;UBE2N&quot;   &quot;SYCP3&quot;   &quot;CHPT1&quot;   &quot;TDG&quot;     &quot;USP30&quot;  
-##  [92] &quot;UNG&quot;     &quot;RFC5&quot;    &quot;HMGB1&quot;   &quot;BRCA2&quot;   &quot;RFC3&quot;    &quot;ERCC5&quot;   &quot;LIG4&quot;   
-##  [99] &quot;CUL4A&quot;   &quot;PARP2&quot;   &quot;APEX1&quot;   &quot;FANCM&quot;   &quot;MNAT1&quot;   &quot;MLH3&quot;    &quot;FAN1&quot;   
-## [106] &quot;RAD51&quot;   &quot;TP53BP1&quot; &quot;NEIL1&quot;   &quot;MAN2C1&quot;  &quot;POLG&quot;    &quot;FANCI&quot;   &quot;BLM&quot;    
-## [113] &quot;MPG&quot;     &quot;EME2&quot;    &quot;SPSB3&quot;   &quot;NTHL1&quot;   &quot;Y_RNA&quot;   &quot;RMI2&quot;    &quot;ERCC4&quot;  
-## [120] &quot;FANCA&quot;   &quot;PER1&quot;    &quot;TOP3A&quot;   &quot;LIG3&quot;    &quot;RAD51D&quot;  &quot;BRCA1&quot;   &quot;RAD51C&quot; 
-## [127] &quot;RECQL5&quot;  &quot;ENDOV&quot;   &quot;RBBP8&quot;   &quot;POLI&quot;    &quot;XAB2&quot;    &quot;RAD23A&quot;  &quot;BABAM1&quot; 
-## [134] &quot;XRCC1&quot;   &quot;ERCC2&quot;   &quot;LIG1&quot;    &quot;PTOV1&quot;   &quot;PNKP&quot;    &quot;PCNA&quot;    &quot;SPO11&quot;  
-## [141] &quot;CHEK2&quot;   &quot;DMC1&quot;    &quot;RBX1&quot;    &quot;XRCC6&quot;   &quot;UBE2A&quot;   &quot;CUL4B&quot;   &quot;TREX2&quot;  
-## [148] &quot;BRCC3&quot;</code></pre>
-</div>
-<div id="additional_filtering_exac_pli" class="section level1">
-<h1>additional_filtering_exac_pli</h1>
-<p>Deleterious non-coding variants in a single allele are expected to have a greater impact in loss intolerant genes (ExAC pLI &gt;= 0.9)</p>
-<pre class="r"><code># Assessment of impact of filtering ExAC pLI &gt;= 0.9
-sum(is.na(output_hc.df$ExACpLI))</code></pre>
-<pre><code>## [1] 22</code></pre>
-<pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &lt; 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 523</code></pre>
-<pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &gt;= 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 95</code></pre>
-<pre class="r"><code># Additional filtration based on ExAC pLI &gt;= 0.9
-output_hc_pli.df &lt;- output_hc.df %&gt;% 
-  filter(as.numeric(ExACpLI) &gt;= 0.9)
-
-# Check output dataframe
-dim(output_hc_pli.df)</code></pre>
-<pre><code>## [1]  95 154</code></pre>
-<pre class="r"><code>output_hc_pli.df[1:20,1:10]</code></pre>
-<pre><code>##    CHROM       POS          ID   REF    ALT      QUAL FILTER  AC AC_AFR
-## 1      1  62905532        &lt;NA&gt;     G     GA   4948.78   PASS  18      1
-## 2      1  62916657        &lt;NA&gt; AGTGT      A   2778.06   PASS   2      0
-## 3      1  62916657        &lt;NA&gt; AGTGT  CGTGT   2778.06   PASS   1      0
-## 4      1  62916657        &lt;NA&gt; AGTGT    AGT   2778.06   PASS   2      1
-## 5      1  62916677        &lt;NA&gt; ATATT      A   9189.44   PASS   3      0
-## 6      1  62916677        &lt;NA&gt; ATATT ATTATT   9189.44   PASS   1      0
-## 7      1  62916677        &lt;NA&gt; ATATT  TTATT   9189.44   PASS   3      0
-## 8      1  62916677        &lt;NA&gt; ATATT  GTATT   9189.44   PASS   2      2
-## 9      1 155232958        &lt;NA&gt;     G      C   1495.48   PASS   3      0
-## 10     1 155232958        &lt;NA&gt;     G      T   1495.48   PASS   1      1
-## 11     1 155232977        &lt;NA&gt;   TAA      T 128706.00   PASS 133      2
-## 12     1 155232992        &lt;NA&gt;     G      C   1105.06   PASS   1      0
-## 13     1 155233007 rs148908482     C      T  16279.00   PASS  19      1
-## 14     2 100017658        &lt;NA&gt;     C      G   1019.95   PASS   1      0
-## 15     2 100017660        &lt;NA&gt;     C      T   1254.45   PASS   2      0
-## 16     2 100017664        &lt;NA&gt;     T      C   1206.94   PASS   1      0
-## 17     2 100017669        &lt;NA&gt;     C      T   3139.44   PASS   2      0
-## 18     2 100017670        &lt;NA&gt;     A      C   8978.52   PASS   3      0
-## 19     2 152266444        &lt;NA&gt;     C      T   2455.80   PASS   3      0
-## 20     2 152266460        &lt;NA&gt;     A      G   1459.36   PASS   1      0
-##    AC_AMR
-## 1       0
-## 2       0
-## 3       0
-## 4       0
-## 5       0
-## 6       1
-## 7       0
-## 8       0
-## 9       0
-## 10      0
-## 11     14
-## 12      1
-## 13      0
-## 14      0
-## 15      0
-## 16      0
-## 17      0
-## 18      0
-## 19      0
-## 20      0</code></pre>
-<pre class="r"><code>output_hc_pli.df$Consequence[1:20]</code></pre>
-<pre><code>##  [1] &quot;5_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-##  [3] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-##  [5] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-##  [7] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-##  [9] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-## [11] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-## [13] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-## [15] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-## [17] &quot;3_prime_UTR_variant&quot;   &quot;3_prime_UTR_variant&quot;  
-## [19] &quot;upstream_gene_variant&quot; &quot;5_prime_UTR_variant&quot;</code></pre>
-<pre class="r"><code>output_hc_pli.df$FATHMM_MKL_NC[1:20]</code></pre>
-<pre><code>##  [1] NA        NA        NA        NA        NA        NA        NA       
-##  [8] NA        &quot;0.93989&quot; &quot;0.93914&quot; NA        &quot;0.90766&quot; &quot;0.90441&quot; &quot;0.94423&quot;
-## [15] &quot;0.96686&quot; &quot;0.91349&quot; &quot;0.94763&quot; &quot;0.95822&quot; &quot;0.91039&quot; &quot;0.99481&quot;</code></pre>
-<pre class="r"><code>output_hc_pli.df$CADD_PHRED[1:20]</code></pre>
-<pre><code>##  [1] NA      NA      NA      NA      NA      NA      NA      NA     
-##  [9] &quot;18.15&quot; &quot;18.94&quot; NA      &quot;16.68&quot; &quot;18.43&quot; &quot;18.65&quot; &quot;21.0&quot;  &quot;22.3&quot; 
-## [17] &quot;22.8&quot;  &quot;15.10&quot; &quot;17.68&quot; &quot;21.1&quot;</code></pre>
-<pre class="r"><code>output_hc_pli.df$ExACpLI[1:20]</code></pre>
-<pre><code>##  [1] &quot;0.99&quot; &quot;0.99&quot; &quot;0.99&quot; &quot;0.99&quot; &quot;0.99&quot; &quot;0.99&quot; &quot;0.99&quot; &quot;0.99&quot; &quot;1.00&quot; &quot;1.00&quot;
-## [11] &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot; &quot;1.00&quot;</code></pre>
-<pre class="r"><code>unique(output_hc_pli.df$SYMBOL)</code></pre>
-<pre><code>##  [1] &quot;USP1&quot;    &quot;CLK2&quot;    &quot;REV1&quot;    &quot;RIF1&quot;    &quot;XRCC5&quot;   &quot;WDR48&quot;   &quot;TOPBP1&quot; 
-##  [8] &quot;RASA1&quot;   &quot;REV3L&quot;   &quot;RAD23B&quot;  &quot;GTF2H1&quot;  &quot;PRPF19&quot;  &quot;DDB1&quot;    &quot;NABP2&quot;  
-## [15] &quot;CUL4A&quot;   &quot;RAD51&quot;   &quot;TP53BP1&quot; &quot;XAB2&quot;    &quot;PCNA&quot;    &quot;RBX1&quot;    &quot;XRCC6&quot;  
-## [22] &quot;CUL4B&quot;</code></pre>
+##   [8] &quot;UBE2T&quot;   &quot;GEN1&quot;    &quot;BRE&quot;     &quot;MSH6&quot;    &quot;FANCL&quot;   &quot;VRK2&quot;    &quot;REV1&quot;   
+##  [15] &quot;ERCC3&quot;   &quot;RIF1&quot;    &quot;BARD1&quot;   &quot;XRCC5&quot;   &quot;CAMK1&quot;   &quot;FANCD2&quot;  &quot;XPC&quot;    
+##  [22] &quot;LSM3&quot;    &quot;MLH1&quot;    &quot;LRRFIP2&quot; &quot;WDR48&quot;   &quot;ATRIP&quot;   &quot;TREX1&quot;   &quot;POLQ&quot;   
+##  [29] &quot;TOPBP1&quot;  &quot;ATR&quot;     &quot;HLTF&quot;    &quot;RFC4&quot;    &quot;HES1&quot;    &quot;UVSSA&quot;   &quot;POLN&quot;   
+##  [36] &quot;HAUS3&quot;   &quot;RNF4&quot;    &quot;RFC1&quot;    &quot;HELQ&quot;    &quot;FAM175A&quot; &quot;CDK7&quot;    &quot;MSH3&quot;   
+##  [43] &quot;RASA1&quot;   &quot;CCNH&quot;    &quot;RAD50&quot;   &quot;UBE2B&quot;   &quot;TDP2&quot;    &quot;FANCE&quot;   &quot;POLH&quot;   
+##  [50] &quot;REV3L&quot;   &quot;GTF2H5&quot;  &quot;NUDT1&quot;   &quot;PMS2&quot;    &quot;HUS1&quot;    &quot;XRCC2&quot;   &quot;NEIL2&quot;  
+##  [57] &quot;POLB&quot;    &quot;MCM4&quot;    &quot;UBE2V2&quot;  &quot;NBN&quot;     &quot;RRM2B&quot;   &quot;LRRC14&quot;  &quot;APTX&quot;   
+##  [64] &quot;FANCG&quot;   &quot;RMI1&quot;    &quot;XPA&quot;     &quot;RAD23B&quot;  &quot;DNTT&quot;    &quot;FANCF&quot;   &quot;DDB2&quot;   
+##  [71] &quot;DDB1&quot;    &quot;ATM&quot;     &quot;CHEK1&quot;   &quot;RECQL&quot;   &quot;PYROXD1&quot; &quot;UBE2N&quot;   &quot;SYCP3&quot;  
+##  [78] &quot;CHPT1&quot;   &quot;TDG&quot;     &quot;USP30&quot;   &quot;UNG&quot;     &quot;RFC5&quot;    &quot;HMGB1&quot;   &quot;BRCA2&quot;  
+##  [85] &quot;RFC3&quot;    &quot;ERCC5&quot;   &quot;LIG4&quot;    &quot;CUL4A&quot;   &quot;PARP2&quot;   &quot;APEX1&quot;   &quot;FANCM&quot;  
+##  [92] &quot;MNAT1&quot;   &quot;MLH3&quot;    &quot;FAN1&quot;    &quot;RAD51&quot;   &quot;TP53BP1&quot; &quot;NEIL1&quot;   &quot;MAN2C1&quot; 
+##  [99] &quot;POLG&quot;    &quot;FANCI&quot;   &quot;BLM&quot;     &quot;MPG&quot;     &quot;EME2&quot;    &quot;SPSB3&quot;   &quot;NTHL1&quot;  
+## [106] &quot;Y_RNA&quot;   &quot;RMI2&quot;    &quot;ERCC4&quot;   &quot;FANCA&quot;   &quot;PER1&quot;    &quot;TOP3A&quot;   &quot;LIG3&quot;   
+## [113] &quot;RAD51D&quot;  &quot;BRCA1&quot;   &quot;RAD51C&quot;  &quot;RECQL5&quot;  &quot;ENDOV&quot;   &quot;RBBP8&quot;   &quot;POLI&quot;   
+## [120] &quot;XAB2&quot;    &quot;RAD23A&quot;  &quot;XRCC1&quot;   &quot;ERCC2&quot;   &quot;LIG1&quot;    &quot;PTOV1&quot;   &quot;PNKP&quot;   
+## [127] &quot;PCNA&quot;    &quot;SPO11&quot;   &quot;CHEK2&quot;   &quot;RBX1&quot;    &quot;XRCC6&quot;   &quot;UBE2A&quot;   &quot;CUL4B&quot;  
+## [134] &quot;TREX2&quot;</code></pre>
 </div>
 <div id="update_dataframe_naming" class="section level1">
 <h1>update_dataframe_naming</h1>
 <pre class="r"><code># Reset of output dataframe names
 fixed_nc_filt_exac_nontcga_ddr.df &lt;- output.df
 fixed_nc_hc_filt_exac_nontcga_ddr.df &lt;- output_hc.df
-fixed_nc_hc_pli_filt_exac_nontcga_ddr.df &lt;- output_hc_pli.df
 
 # Clean-up
-rm(input.df, output.df, output_hc.df, output_hc_pli.df, ddr_genes, removed_variant.df)</code></pre>
+rm(input.df, output.df, output_hc.df, ddr_genes, removed_variant.df)</code></pre>
 </div>
 <div id="save_results" class="section level1">
 <h1>save_results</h1>
@@ -688,14 +595,12 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, ddr_genes, removed_varia
 <div id="final_section" class="section level1">
 <h1>final_section</h1>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>## [1] &quot;base_folder&quot;                             
-## [2] &quot;fixed_af_filt_exac_nontcga_ddr.df&quot;       
-## [3] &quot;fixed_nc_filt_exac_nontcga_ddr.df&quot;       
-## [4] &quot;fixed_nc_hc_filt_exac_nontcga_ddr.df&quot;    
-## [5] &quot;fixed_nc_hc_pli_filt_exac_nontcga_ddr.df&quot;
-## [6] &quot;input_folder&quot;                            
-## [7] &quot;meta.df&quot;                                 
-## [8] &quot;output_folder&quot;</code></pre>
+<pre><code>## [1] &quot;base_folder&quot;                         
+## [2] &quot;fixed_nc_filt_exac_nontcga_ddr.df&quot;   
+## [3] &quot;fixed_nc_hc_filt_exac_nontcga_ddr.df&quot;
+## [4] &quot;input_folder&quot;                        
+## [5] &quot;meta.df&quot;                             
+## [6] &quot;output_folder&quot;</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.4.1 (2017-06-30)
 ## Platform: x86_64-redhat-linux-gnu (64-bit)
@@ -716,17 +621,17 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, ddr_genes, removed_varia
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] bindrcpp_0.2 knitr_1.20   dplyr_0.7.4 
+## [1] bindrcpp_0.2.2 knitr_1.20     dplyr_0.7.4   
 ## 
 ## loaded via a namespace (and not attached):
 ##  [1] Rcpp_0.12.16     digest_0.6.15    rprojroot_1.3-2  assertthat_0.2.0
 ##  [5] R6_2.2.2         backports_1.1.2  magrittr_1.5     evaluate_0.10.1 
-##  [9] pillar_1.2.1     rlang_0.2.0      stringi_1.1.7    rmarkdown_1.9   
-## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.18     
+##  [9] pillar_1.2.2     rlang_0.2.0      stringi_1.2.2    rmarkdown_1.9   
+## [13] tools_3.4.1      stringr_1.3.0    glue_1.2.0       yaml_2.1.19     
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-07 08:36:14 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 19:40:44 UTC&quot;</code></pre>
 </div>
 
 

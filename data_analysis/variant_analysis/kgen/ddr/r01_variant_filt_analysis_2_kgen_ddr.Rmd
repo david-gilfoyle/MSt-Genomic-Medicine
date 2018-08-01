@@ -1,0 +1,186 @@
+---
+title: "r01_variant_filt_analysis_2_kgen_ddr"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 18 July 2018  
+Updated: David Gilfoyle 18 July 2018
+
+---
+
+# Summary
+
+Additional Data Analysis Based on AC Filtered Dataset 
+Dataset: ICR1000  
+Gene Selection: DNA Repair Genes  
+Input Variants: 367,613
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(ggplot2)
+library(knitr)
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/ac_filt/kgen"
+
+# Load RData file - contains dataframe containing all variants
+load(paste(input_folder, "r01_kgen_ddr_ac_filtered.RData", sep="/"))
+
+# Set data frame variable
+fixed.df <- fixed_ac_filt_kgen_ddr.df
+
+# Remove imported dataset
+rm (fixed_ac_filt_kgen_ddr.df, gt_ac_filt_kgen_ddr.mx)
+
+# Check input dataframe
+dim(fixed.df)
+class(fixed.df)
+str(fixed.df)
+fixed.df[1:20,1:10]
+
+# Setup base folder
+base_folder="/home/ec2-user/scripts/data_analysis/variant_analysis/kgen/ddr"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# variant_class_assessment
+
+```{r variant_class_assessment}
+
+# Check for missed data
+sum(is.na(fixed.df$VARIANT_CLASS))
+
+# Isoltate variant class column
+varc_annotations.vector <- fixed.df$VARIANT_CLASS
+
+# Determine different variant classes present
+unique(varc_annotations.vector)
+
+# Variant class counts
+varc_counts.named.vector <- sort(table(varc_annotations.vector), decreasing = T)
+varc_counts.named.vector
+
+# Clean-up
+rm(varc_annotations.vector, varc_counts.named.vector)
+
+```
+
+# cnv_analysis
+
+```{r cnv_analysis}
+
+# Extact CNV lines from fixed dataframe
+fixed.df <- tibble::rownames_to_column(fixed.df, var = "rowname")
+cnv_fixed.df <- fixed.df %>% 
+  filter((VARIANT_CLASS == "CN0") |
+        (VARIANT_CLASS == "CN2"))
+cnv_fixed.df <- tibble::column_to_rownames(cnv_fixed.df, var = "rowname")
+
+# Check output dataframes
+dim(cnv_fixed.df)
+
+# Clean-up
+rm(fixed.df, input_folder)
+
+```
+
+# cnv_all_genes
+
+```{r cnv_all_genes}
+
+# Check for missed data
+sum(is.na(cnv_fixed.df$SYMBOL))
+
+# Isoltate gene symbol column
+symbol.vector <- cnv_fixed.df$SYMBOL
+
+# Determine different genes present
+unique(symbol.vector)
+
+# Number of CNVs in each gene
+symbol.named.vector <- sort(table(symbol.vector), decreasing = T)
+symbol.named.vector
+
+# Clean-up
+rm(symbol.named.vector, symbol.vector)
+
+```
+
+# variants_associated_with_ddr_genes
+
+```{r variants_associated_with_ddr_genes}
+
+# Set of DDR genes supporting variant filtration
+ddr_genes <- c("UNG", "SMUG1", "MBD4", "TDG", "OGG1", "MUTYH", "NTHL1", "MPG", "NEIL1", "NEIL2", "NEIL3", "HMGB1", "APEX1", "APEX2", "LIG3", "XRCC1", "PNKP", "APLF", "PARP1", "PARP2", "PARP3", "MGMT", "ALKBH2", "ALKBH3", "TDP1", "TDP2", "MSH2", "MSH3", "MSH6", "MLH1", "PMS2", "MSH4", "MSH5", "MLH3", "PMS1", "PMS2P3", "XPC", "RAD23B", "CETN2", "RAD23A", "XPA", "DDB1", "DDB2", "RPA1", "RPA2", "RPA3", "ERCC3", "ERCC2", "GTF2H1", "GTF2H2", "GTF2H3", "GTF2H4", "GTF2H5", "CDK7", "CCNH", "MNAT1", "ERCC5", "ERCC1", "ERCC4", "LIG1", "RBX1", "CUL4A", "CUL4B", "ERCC8", "ERCC6", "UVSSA", "XAB2", "MMS19", "RAD51", "RAD51B", "RAD51D", "DMC1", "XRCC2", "XRCC3", "RAD52", "RAD54L", "RAD54B", "BRCA1", "SHFM1", "RAD50", "MRE11A", "NBN", "RBBP8", "MUS81", "EME1", "EME2", "SLX1A", "SLX1B", "GEN1", "BARD1", "BABAM1", "FAM175A", "BRE", "UIMC1", "BRCC3", "SYCP3", "FANCA", "FANCB", "FANCC", "BRCA2", "FANCD2", "FANCE", "FANCF", "FANCG", "FANCI", "BRIP1", "FANCL", "FANCM", "PALB2", "RAD51C", "SLX4", "C1orf86", "C19orf40", "APITD1", "WDR48", "USP1", "C17orf70", "HES1", "RMI1", "RMI2", "TOP3A", "UBE2T", "XRCC6", "XRCC5", "PRKDC", "LIG4", "XRCC4", "DCLRE1C", "NHEJ1", "DNTT", "NUDT1", "DUT", "RRM2B", "POLB", "POLG", "POLD1", "POLE", "PCNA", "REV3L", "MAD2L2", "REV1", "POLH", "POLI", "POLQ", "POLK", "POLL", "POLM", "POLN", "FEN1", "FAN1", "TREX1", "TREX2", "EXO1", "APTX", "SPO11", "ENDOV", "UBE2A", "UBE2B", "RAD18", "SHPRH", "HLTF", "RNF168", "SPRTN", "RNF8", "RNF4", "UBE2V2", "UBE2N", "H2AFX", "CHAF1A", "SETMAR", "BLM", "WRN", "RECQL4", "ATM", "MPLKIP", "DCLRE1A", "DCLRE1B", "RPA4", "PRPF19", "RECQL", "RECQL5", "HELQ", "RDM1", "NABP2", "RFC1", "RFC2", "RFC3", "RFC4", "RFC5", "ATR", "ATRIP", "MDC1", "RAD1", "RAD9A", "HUS1", "RAD17", "CHEK1", "CHEK2", "TP53", "TP53BP1", "RIF1", "TOPBP1", "CLK2", "PER1")
+
+# Filtering of variants based on DDR genes using SYMBOL 
+ddr_cnv_fixed.df <- cnv_fixed.df %>%
+  filter(cnv_fixed.df$SYMBOL %in% ddr_genes)
+
+removed_variant.df <- cnv_fixed.df %>%
+  filter(!cnv_fixed.df$SYMBOL %in% ddr_genes)
+
+# Check output dataframes
+dim(ddr_cnv_fixed.df)
+unique(ddr_cnv_fixed.df$SYMBOL)
+unique(removed_variant.df$SYMBOL)
+
+# Clean-up
+rm(ddr_genes, removed_variant.df)
+
+```
+
+# cnv_ddr_genes
+
+```{r cnv_ddr_genes}
+
+# Check for missed data
+sum(is.na(ddr_cnv_fixed.df$SYMBOL)) # should be 0 (no missed data)
+
+# Isoltate gene symbol column
+symbol.vector <- ddr_cnv_fixed.df$SYMBOL
+
+# Determine different genes present
+unique(symbol.vector)
+
+# Number of CNVs in each gene
+symbol.named.vector <- sort(table(symbol.vector), decreasing = T)
+symbol.named.vector
+
+# Clean-up
+rm(cnv_fixed.df, ddr_cnv_fixed.df, meta.df, symbol.named.vector, symbol.vector)
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```
+

@@ -1,0 +1,461 @@
+---
+title: "s01_explore_kgen_hc_mis_individuals"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 12 Jun 2018  
+Updated: David Gilfoyle 12 Jun 2018
+
+---
+
+# Summary
+
+The ultimate goal of this analysis is to identify individuals with "highest burden" of high confidence missense DDR variants.  
+A simple sum of multiple missense DDR variants present in the same person may cause higher impact.  
+
+Homozygous variants may have stronger impact than heterozygous, despite having similar "consequence"/"impact" (all the variants are already HC missense at this stage).  
+
+X-chromosome hemizygous variants (variants on X chromosome in males) may be as functionaly important as autosomal nomozygous. No genes of interest are located on the Y-chromosome.  
+
+Compound hetrozygous variants could be detected using 1000 Genomes Project phased data. They may also have a higher functional role than simple heterozygous mutations.   
+
+Arguably, just a double-missense-hit in the same allele may be more detremental than a single LoF in the allele.    
+
+Finally, some of the variants already have Clin-Sig annotations, which will not be considered in detail in this script. This has been assessed during review of VEP annotation for all missense variants.  
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+# Make output wider (default was 80 columns?)
+options(width = 400)
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/mis_filt/kgen"
+
+# Load RData file - contains dataframe containing all variants and genotype matrix
+load(paste(input_folder, "r01_kgen_ddr_mis_filtered.RData", sep="/"))
+
+# Keep only HC dataset
+rm(fixed_mis_filt_kgen_ddr.df, fixed_mis_hc_pli_filt_kgen_ddr.df, gt_mis_filt_kgen_ddr.mx, gt_mis_hc_pli_filt_kgen_ddr.mx, input_folder, output_folder, base_folder)
+
+# List remaining objects
+ls()
+
+# Establish rownames in fixed dataframe
+fixed_mis_hc_filt_kgen_ddr.df <- tibble::column_to_rownames(fixed_mis_hc_filt_kgen_ddr.df, var = "rowname")
+
+# Check remaining dataframe and matrix
+dim(fixed_mis_hc_filt_kgen_ddr.df)
+class(fixed_mis_hc_filt_kgen_ddr.df)
+fixed_mis_hc_filt_kgen_ddr.df[1:20,1:10]
+
+dim(gt_mis_hc_filt_kgen_ddr.mx)
+class(gt_mis_hc_filt_kgen_ddr.mx)
+gt_mis_hc_filt_kgen_ddr.mx[1:20,1:5]
+
+# Check rowmnames are same 
+sum(rownames(gt_mis_hc_filt_kgen_ddr.mx) != rownames(fixed_mis_hc_filt_kgen_ddr.df)) # should be 0
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/data_analysis/gt_analysis"
+output_folder="/home/ec2-user/results/data_analysis/gt_analysis"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# explore_gt_data
+
+```{r explore_gt_data}
+
+# explore genotypes table
+summary(as.factor(gt_mis_hc_filt_kgen_ddr.mx)) # no gaploid ("0" and "1") genotypes
+
+# there are no missing genotypes
+sum(is.na(gt_mis_hc_filt_kgen_ddr.mx))
+
+```
+
+# explore_clin_sig
+
+Some of the variants have known clinical significance  
+
+```{r explore_clin_sig}
+
+fixed_mis_hc_filt_kgen_ddr.df[1:5,c("Location","CLIN_SIG")]
+clin_sig <- fixed_mis_hc_filt_kgen_ddr.df$CLIN_SIG
+table(unlist(strsplit(clin_sig, "&")))
+rm(clin_sig)
+
+```
+
+# recode_genotypes_to_additive_numeric
+
+0,1,2 for REF-REF, REF-ALT and ALT-ALT respectively  
+Loosing phasing and hemizygous information  
+
+```{r recode_genotypes_to_additive_numeric}
+
+# Prepare matrix of NA-s
+gt_add.mx <- matrix(NA,
+                    nrow=nrow(gt_mis_hc_filt_kgen_ddr.mx),
+                    ncol=ncol(gt_mis_hc_filt_kgen_ddr.mx))
+
+colnames(gt_add.mx) <- colnames(gt_mis_hc_filt_kgen_ddr.mx)
+rownames(gt_add.mx) <- rownames(gt_mis_hc_filt_kgen_ddr.mx)
+
+dim(gt_add.mx)
+gt_add.mx[1:5,1:5]
+
+# explore the source matrix
+gt_mis_hc_filt_kgen_ddr.mx[1:5,1:5]
+summary(as.factor(gt_mis_hc_filt_kgen_ddr.mx))
+
+# populate the new matrix
+0 -> gt_add.mx[ gt_mis_hc_filt_kgen_ddr.mx == "0"]
+0 -> gt_add.mx[ gt_mis_hc_filt_kgen_ddr.mx == "0|0"]
+1 -> gt_add.mx[ gt_mis_hc_filt_kgen_ddr.mx == "1"]
+1 -> gt_add.mx[ gt_mis_hc_filt_kgen_ddr.mx == "0|1"]
+1 -> gt_add.mx[ gt_mis_hc_filt_kgen_ddr.mx == "1|0"]
+2 -> gt_add.mx[ gt_mis_hc_filt_kgen_ddr.mx == "1|1"]
+
+# check result
+dim(gt_add.mx)
+gt_add.mx[1:5,1:5]
+summary(as.factor(gt_add.mx))
+sum(is.na(gt_add.mx))
+
+```
+
+# count_variants_burden_per_individual  
+
+Make and keep the named vector for later use  
+
+```{r simple_variants_burden}
+
+# count
+simple_burden <- apply(gt_add.mx, 2, sum)
+names(simple_burden) <- colnames(gt_add.mx)
+
+# explore
+simple_burden[1:5]
+sum(is.na(simple_burden)) # sanity check
+table(simple_burden)
+which(simple_burden == 3) # shows name and index
+
+```
+
+# recode_genotypes_to_homozygous
+
+1 for homozygous  
+0 for everything else  
+
+Since there were no gaploid genotypes, assessment of hemizygous genotypes is not relavent  
+
+```{r recode_genotypes_to_homozygous}
+
+# prepare matrix of NA-s
+gt_homo.mx <- matrix(NA,
+                          nrow=nrow(gt_mis_hc_filt_kgen_ddr.mx),
+                          ncol=ncol(gt_mis_hc_filt_kgen_ddr.mx))
+
+colnames(gt_homo.mx) <- colnames(gt_mis_hc_filt_kgen_ddr.mx)
+rownames(gt_homo.mx) <- rownames(gt_mis_hc_filt_kgen_ddr.mx)
+
+dim(gt_homo.mx)
+gt_homo.mx[1:5,1:5]
+
+# explore the source matrix
+gt_mis_hc_filt_kgen_ddr.mx[1:5,1:5]
+summary(as.factor(gt_mis_hc_filt_kgen_ddr.mx))
+
+# populate the new matrix: 
+0 -> gt_homo.mx[ gt_mis_hc_filt_kgen_ddr.mx == "0|0"]
+0 -> gt_homo.mx[ gt_mis_hc_filt_kgen_ddr.mx == "0|1"]
+0 -> gt_homo.mx[ gt_mis_hc_filt_kgen_ddr.mx == "1|0"]
+1 -> gt_homo.mx[ gt_mis_hc_filt_kgen_ddr.mx == "1|1"]
+
+# check result
+dim(gt_homo.mx)
+gt_homo.mx[1:5,1:5]
+summary(as.factor(gt_homo.mx))
+sum(is.na(gt_homo.mx))
+
+```
+
+# count_homo_hemi_zygous_variants_per_individual
+
+Make and keep the named vector for later use  
+
+```{r count_homo_hemi}
+
+# count
+homo <- apply(gt_homo.mx, 2, sum)
+names(homo) <- colnames(gt_homo.mx)
+
+# explore
+homo[1:5]
+sum(is.na(homo)) # sanity check
+table(homo)
+which(homo == 1) # shows name and index
+
+```
+
+# make_matrix_of_compound_hets 
+
+Aggregate per gene  
+1 for compound_het  
+0 for everything else  
+
+This chunk uses looping through rows and columns,  
+which is considered slow and bad practice in R programming.  
+I use loops here for simlicity and because the dataset is small.  
+
+```{r make_compound_hets}
+
+# make empty matrix for results
+comp_het_chr.mx <- matrix(nrow=0, ncol=ncol(gt_mis_hc_filt_kgen_ddr.mx)+1)
+colnames(comp_het_chr.mx) <- c("gene", colnames(gt_mis_hc_filt_kgen_ddr.mx))
+
+# get list of genes
+genes <- unique(fixed_mis_hc_filt_kgen_ddr.df$SYMBOL)
+genes[1:5]
+length(genes) # genes that dont have missense variants at all in any dataset may be discussed ...
+
+# Make a compound het in POLQ in HG00096 (for testing)
+#"0|1" -> gt_mis_hc_filt_kgen_ddr.mx[36,1]
+#"1|0" -> gt_mis_hc_filt_kgen_ddr.mx[37,1]
+
+# for each gene
+for(gene in genes){
+  
+  # select genes for testing
+  #gene <- "POLQ" # multiple variants gene
+  #gene <- "UBE2T" # single variant gene
+  
+  # select data for the gene
+  gene_rows <- fixed_mis_hc_filt_kgen_ddr.df$SYMBOL == gene
+  gene.mx <- gt_mis_hc_filt_kgen_ddr.mx[gene_rows,,drop=F] # note drop=F
+  
+  # make a compund het (for testing)
+  #"0|1" -> gene.mx[1,1]
+  #"1|0" -> gene.mx[2,1]
+  
+  # make vector of for result (assume no compound heterozygous)
+  comp_het <- rep(0, ncol(gt_mis_hc_filt_kgen_ddr.mx))
+  
+  # for genes with more than one variant
+  # (no compound heterozygous could be in a single-variant gene)
+  if(nrow(gene.mx) > 1){
+  
+    # for each individual
+    for(indiv in 1:ncol(gene.mx)){
+      
+      # for testing
+      #indiv <- 1
+      
+      # get vector of genotypes for variants in the current gene
+      variants <- gene.mx[,indiv]
+      
+      # if there are variants in both alleles
+      if("0|1" %in% variants & "1|0" %in% variants){
+        
+        # Update the gene's comp_het vector for this individual
+        1 -> comp_het[indiv]
+        
+      } 
+    } # next inividual
+  }
+  
+  # compile full result string 
+  result <- c(gene, comp_het)
+    
+  # add result string to result matrix
+  comp_het_chr.mx <- rbind(comp_het_chr.mx, result)
+
+} # next gene
+
+# explore and transform comp_het character matrix
+comp_het_chr.mx[16:21,1:5]
+rownames(comp_het_chr.mx) <- comp_het_chr.mx[,1]
+comp_het_chr.mx <- comp_het_chr.mx[,-1]
+comp_het_chr.mx[1:5,1:5]
+table(comp_het_chr.mx) # 1 compound het in kgen  
+
+# convert character matrix to numeric (to keep data type consistent with content)
+comp_het.mx <- matrix(as.numeric(comp_het_chr.mx), nrow=nrow(comp_het_chr.mx))
+colnames(comp_het.mx) <- colnames(comp_het_chr.mx)
+rownames(comp_het.mx) <- rownames(comp_het_chr.mx)
+
+# explore the numeric matrix
+comp_het.mx[1:5,1:5]
+sum(comp_het.mx)
+
+# clean-up
+rm(genes, gene, gene_rows, gene.mx, comp_het, indiv, variants, result, comp_het_chr.mx)
+
+```
+
+# count_compound_hets_per_individual
+
+```{r count_compound_hets}
+
+# count
+comp_het <- apply(comp_het.mx, 2, sum)
+names(comp_het) <- colnames(comp_het.mx)
+
+# explore
+comp_het[1:5]
+sum(is.na(comp_het)) # sanity check
+table(comp_het)
+which(comp_het == 1) # shows name and index
+
+```
+
+# merge_results
+
+Merge simple burden, homo and compound hets into a single table  
+
+```{r}
+
+# make numeric summary matrix
+summary.mx <- cbind(simple_burden, homo, comp_het)
+summary.mx[1:5,]
+sum(is.na(summary.mx)) # sanity check
+
+# add aggregate score
+aggregate_score <- apply(summary.mx, 1, sum)
+summary.mx <- cbind(summary.mx, aggregate_score)
+summary.mx[1:5,]
+
+# convert numeric matrix to data frame
+summary.df <- as.data.frame(summary.mx)
+summary.df <- cbind(individual=rownames(summary.mx),summary.df)
+summary.df$individual <- as.vector(summary.df$individual)
+rownames(summary.df) <- summary.df$individual
+str(summary.df)
+
+# show individuals carrying multiple HC missense variants
+summary.df %>% 
+  filter(aggregate_score > 1) %>% 
+  arrange(desc(aggregate_score), desc(homo))
+
+# clean-up
+rm(simple_burden, homo, comp_het, aggregate_score, summary.mx)
+
+```
+
+# function_to_explore_selected_individuals
+
+what genes are affected in selected individuals ?  
+
+```{r explore_selected_individuals}
+
+get_case_summary.udf <- function(case){
+  
+  # for testing
+  #case <- "NA19043"
+  
+  variants <- which(gt_mis_hc_filt_kgen_ddr.mx[,case] != "0|0")
+
+  genotypes <- gt_mis_hc_filt_kgen_ddr.mx[variants,case]
+
+  summary.df <- cbind(fixed_mis_hc_filt_kgen_ddr.df[variants,c("SYMBOL", "CHROM", "POS", "REF", "ALT", "Consequence")],
+                      genotypes,
+                      clinsig=fixed_mis_hc_filt_kgen_ddr.df[variants,c("CLIN_SIG")])
+  summary.df
+
+}
+
+```
+
+# explore_selected_individuals
+
+look at what genes are affected in selected individuals
+
+### HG00271 - Homozygous
+
+```{r HG00271}
+
+get_case_summary.udf("HG00271")
+
+```
+
+### NA18988 - Homozygous
+
+```{r NA18988}
+
+get_case_summary.udf("NA18988")
+
+```
+
+### NA19082 - Homozygous
+
+```{r NA19082}
+
+get_case_summary.udf("NA19082")
+
+```
+
+### HG01522 - 3 heterozygous (2 in same gene; same chromosome)
+
+```{r HG01522}
+
+get_case_summary.udf("HG01522")
+
+```
+
+### HG02583 - 2 heterozygous (compound heterozygous)
+
+```{r HG02583}
+
+get_case_summary.udf("HG02583")
+
+```
+
+### HG02661 - 3 heterozygous
+
+```{r HG02661}
+
+get_case_summary.udf("HG02661")
+
+```
+
+### NA20812 - 3 heterozygous (all in same gene; same chromosome)
+
+```{r NA20812}
+
+get_case_summary.udf("NA20812")
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```

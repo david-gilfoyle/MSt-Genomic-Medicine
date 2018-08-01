@@ -123,12 +123,11 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 6 May 2018</p>
+Updated: David Gilfoyle 16 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC)<br />
-and HC LoF variants in genes with pLI &gt;= 0.9<br />
+<p>Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC) and HC LoF variants in genes with pLI &gt;= 0.9<br />
 Dataset: ExAC (full)<br />
 Gene Selection: DNA Repair Genes<br />
 Input Variants: 99,236</p>
@@ -136,7 +135,7 @@ Input Variants: 99,236</p>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-13 08:37:32 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 17:02:04 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -427,7 +426,7 @@ dim(output.df)</code></pre>
 <h1>additional_filtering_loftee_hc</h1>
 <p>Output assessed based on further filtering with:<br />
 1) LOFTEE high confidence - assessment indicates that some entries are NA - these appear to be mainly start_lost and stop_lost and they will be retained. However, removal of low confidence variants (LC) is considered appropriate to enrich dataset for potentially deleterious variants<br />
-2) CADD_PHRED &gt; 15 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED &lt;= 15 is considered appropriate to enrich dataset for potentially deleterious variants</p>
+2) CADD_PHRED &gt; 20 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED &lt;= 20 is considered appropriate to enrich dataset for potentially deleterious variants</p>
 <pre class="r"><code># Assessment of impact of filtering LoF (LOFTEE) = High Confidence (HC)
 sum(is.na(output.df$LoF))</code></pre>
 <pre><code>## [1] 73</code></pre>
@@ -442,28 +441,28 @@ sum(is.na(output.df$LoF))</code></pre>
 <pre class="r"><code># output_lof_na.df &lt;- output.df %&gt;% 
 #   filter(is.na(LoF))
 
-# Assessment of filtering CADD_PHREDD &gt; 15
+# Assessment of filtering CADD_PHREDD &gt; 20
 sum(is.na(output.df$CADD_PHRED))</code></pre>
 <pre><code>## [1] 1504</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 20, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 31</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 1648</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 59</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 1620</code></pre>
 <pre class="r"><code># output_cadd_na.df &lt;- output.df %&gt;% 
 #  filter(is.na(CADD_PHRED))
 
-# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED &gt; 15
+# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED &gt; 20
 output_hc.df &lt;- output.df %&gt;% 
   filter((LoF == &quot;HC&quot;) |
            (is.na(LoF))) %&gt;%
-  filter((as.numeric(CADD_PHRED) &gt; 15) |
+  filter((as.numeric(CADD_PHRED) &gt; 20) |
            (is.na(CADD_PHRED)))
 
 # Check output dataframe
 dim(output_hc.df)</code></pre>
-<pre><code>## [1] 2932  154</code></pre>
+<pre><code>## [1] 2907  154</code></pre>
 <pre class="r"><code>output_hc.df[1:20,1:10]</code></pre>
 <pre><code>##    CHROM      POS         ID    REF ALT      QUAL FILTER  AC AC_AFR AC_AMR
 ## 1      1  2125102       &lt;NA&gt;      A  AT   1572.71   PASS   1      0      1
@@ -534,7 +533,7 @@ dim(output_hc.df)</code></pre>
 ## [163] &quot;RECQL5&quot;   &quot;ENDOV&quot;    &quot;C17orf70&quot; &quot;RBBP8&quot;    &quot;POLI&quot;     &quot;CHAF1A&quot;  
 ## [169] &quot;XAB2&quot;     &quot;RAD23A&quot;   &quot;BABAM1&quot;   &quot;C19orf40&quot; &quot;XRCC1&quot;    &quot;ERCC2&quot;   
 ## [175] &quot;ERCC1&quot;    &quot;LIG1&quot;     &quot;PNKP&quot;     &quot;POLD1&quot;    &quot;SPO11&quot;    &quot;CHEK2&quot;   
-## [181] &quot;DMC1&quot;     &quot;RPA4&quot;     &quot;CETN2&quot;    &quot;TREX2&quot;    &quot;BRCC3&quot;</code></pre>
+## [181] &quot;DMC1&quot;     &quot;RPA4&quot;     &quot;TREX2&quot;    &quot;BRCC3&quot;</code></pre>
 </div>
 <div id="additional_filtering_exac_pli" class="section level1">
 <h1>additional_filtering_exac_pli</h1>
@@ -543,7 +542,7 @@ dim(output_hc.df)</code></pre>
 sum(is.na(output_hc.df$ExACpLI))</code></pre>
 <pre><code>## [1] 22</code></pre>
 <pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &lt; 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 2859</code></pre>
+<pre><code>## [1] 2834</code></pre>
 <pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &gt;= 0.9, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 51</code></pre>
 <pre class="r"><code># Additional filtration based on ExAC pLI &gt;= 0.9
@@ -664,7 +663,7 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, ddr_genes, removed_varia
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-13 08:37:39 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 17:02:11 UTC&quot;</code></pre>
 </div>
 
 

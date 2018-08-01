@@ -6,16 +6,16 @@ editor_options:
 ---
 
 Started: David Gilfoyle 3 May 2018  
-Updated: David Gilfoyle 13 May 2018
+Updated: David Gilfoyle 17 May 2018
 
 ---
 
 # Summary
 
-Variant filtering of AF filtered dataset to select missense (Consequence, SIFT [deleterious] and PolyPhen [likely_damaging]), high confidence (HC) missense (missense variants with FATHMM < -1.5 and CADD_PHRED > 15) and HC missense variants in genes with pLI >= 0.9  
+Variant filtering of AF filtered dataset to select missense (Consequence, SIFT [deleterious] and PolyPhen [likely_damaging]), high confidence (HC) missense (missense variants with FATHMM < -1.5 and CADD_PHRED > 20) and HC missense variants in genes with pLI >= 0.9  
 Dataset: 1000 Genome Project  
 Gene Selection: Olfactory Receptor Genes (removing OR10G6, OR11H2, OR14A2, OR14K1, OR1F12, OR2AJ1, OR2T7, OR8U9 and OR9G9)  
-Input Variants: 47,624
+Input Variants: 47,482
 
 # start_section
 
@@ -155,7 +155,7 @@ output.mx[1:20,1:2]
 
 Output assessed based on further filtering with:  
 1) FATHMM < -1.5 - FATHMM contains score and information - needs to be split prior to filtering. A relatively low number of FATHMM entries are "Prediction(Available)" - status of these variants is unknown, but there is no obvious reason for the lack of score. However, in order to enrich the dataset for deleterious missense variants, these variants have been removed (appear as NA in seperated FATHMM_SCORE column)  
-2) CADD_PHRED > 15 - assessment indicates that some entries are NA - these appear to be indels (substitution variants) and will be retained. However, removal of variants with CADD_PHRED <= 15 is considered appropriate to enrich dataset for potentially pathogenic variants  
+2) CADD_PHRED > 20 - assessment indicates that some entries are NA - these appear to be indels (substitution variants) and will be retained. However, removal of variants with CADD_PHRED <= 20 is considered appropriate to enrich dataset for potentially pathogenic variants  
 
 ```{r additional_filtering_fathmm_cadd}
 
@@ -188,11 +188,11 @@ sum(output_cor.df$FATHMM_SCORE == -1.5, na.rm = TRUE)
 sum(output_cor.df$FATHMM_SCORE > -1.5, na.rm = TRUE)
 sum(output_cor.df$FATHMM_SCORE < -1.5, na.rm = TRUE)
 
-# Assessment of impact of filtering CADD_PHREDD > 15 in seperated dataframe
+# Assessment of impact of filtering CADD_PHREDD > 20 in seperated dataframe
 sum(is.na(output_cor.df$CADD_PHRED))
-sum(output_cor.df$CADD_PHRED == 15, na.rm = TRUE)
-sum(output_cor.df$CADD_PHRED < 15, na.rm = TRUE)
-sum(output_cor.df$CADD_PHRED > 15, na.rm = TRUE)
+sum(output_cor.df$CADD_PHRED == 20, na.rm = TRUE)
+sum(output_cor.df$CADD_PHRED < 20, na.rm = TRUE)
+sum(output_cor.df$CADD_PHRED > 20, na.rm = TRUE)
 
 # output_cadd_na.df <- output.df %>% 
 #  filter(is.na(CADD_PHRED))
@@ -201,7 +201,7 @@ sum(output_cor.df$CADD_PHRED > 15, na.rm = TRUE)
 output_cor.df <- tibble::rownames_to_column(output_cor.df, var = "rowname")
 output_hc.df <- output_cor.df %>% 
   filter(FATHMM_SCORE < -1.5) %>%
-  filter((as.numeric(CADD_PHRED) > 15) |
+  filter((as.numeric(CADD_PHRED) > 20) |
            (is.na(CADD_PHRED)))
 output_hc.df <- tibble::column_to_rownames(output_hc.df, var = "rowname")
 
@@ -230,7 +230,7 @@ output_hc.mx[1:3,1:2]
 
 # additional_filtering_exac_pli
 
-Deleterious missense variants in a single allele are expected to have a greater impact in loss intolerant genes (ExAC pLI >= 0.9) 
+Confirm HC missense variants in loss intolerant genes (ExAC pLI >= 0.9) 
 
 ```{r additional_filtering_exac_pli}
 

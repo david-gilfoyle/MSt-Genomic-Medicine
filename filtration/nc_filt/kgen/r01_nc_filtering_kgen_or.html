@@ -123,19 +123,19 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 7 May 2018</p>
+Updated: David Gilfoyle 17 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of AF filtered dataset to select non-coding (Consequence), high confidence (HC) non-coding (FATHMM_MKL_NC &gt; 0.5 and CADD_PHRED &gt; 15) and HC non-coding variants in genes with pLI &gt;= 0.9<br />
+<p>Variant filtering of AF filtered dataset to select non-coding (Consequence) and high confidence (HC) non-coding (FATHMM_MKL_NC &gt; 0.5 and CADD_PHRED &gt; 20)<br />
 Dataset: 1000 Genome Project<br />
 Gene Selection: Olfactory Receptor Genes<br />
-Input Variants: 47,624</p>
+Input Variants: 47,482</p>
 </div>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-07 20:31:51 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 10:52:20 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -167,7 +167,7 @@ rm(gt_af_filt_kgen_or.mx)
 
 # Check input dataframe
 dim(input.df)</code></pre>
-<pre><code>## [1] 47624    94</code></pre>
+<pre><code>## [1] 47482    94</code></pre>
 <pre class="r"><code>class(input.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>input.df[1:20,1:10]</code></pre>
@@ -244,7 +244,7 @@ dim(input.df)</code></pre>
 <pre><code>##  [1] &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot;
 ## [11] &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot; &quot;0.18&quot;</code></pre>
 <pre class="r"><code>dim(input.mx)</code></pre>
-<pre><code>## [1] 47624  2504</code></pre>
+<pre><code>## [1] 47482  2504</code></pre>
 <pre class="r"><code>class(input.mx)</code></pre>
 <pre><code>## [1] &quot;matrix&quot;</code></pre>
 <pre class="r"><code>input.mx[1:5,1:5]</code></pre>
@@ -284,7 +284,7 @@ removed_variant.df &lt;- input.df %&gt;%
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 47476    94</code></pre>
+<pre><code>## [1] 47334    94</code></pre>
 <pre class="r"><code>class(output.df)</code></pre>
 <pre><code>## [1] &quot;data.frame&quot;</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
@@ -460,7 +460,7 @@ output.df &lt;- tibble::column_to_rownames(output.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output.df)</code></pre>
-<pre><code>## [1] 19909    94</code></pre>
+<pre><code>## [1] 19849    94</code></pre>
 <pre class="r"><code>output.df[1:20,1:10]</code></pre>
 <pre><code>##                CHROM       POS          ID REF ALT QUAL FILTER
 ## rs562240137_1      1     68118 rs562240137   T   C  100   PASS
@@ -579,30 +579,30 @@ output.df[1:20,1:5]</code></pre>
 <h1>additional_filtering</h1>
 <p>Output assessed based on further filtering with:<br />
 1) FATHMM_MKL_NC &gt; 0.5 - assessment indicates that some entries are NA - these appear to be insertion, deletion and substitution variants and they will be retained. However, removal of variants with FATHMM_MKL_NC &gt; 0.5 is considered appropriate to enrich dataset for potentially deleterious variants<br />
-2) CADD_PHRED &gt; 15 - assessment indicates that some entries are NA - these appear to be mainly insertion, deletion and substitution variants and they will be retained. However, removal of variants with CADD_PHRED &lt;= 15 is considered appropriate to enrich dataset for potentially deleterious variants</p>
+2) CADD_PHRED &gt; 20 - assessment indicates that some entries are NA - these appear to be mainly insertion, deletion and substitution variants and they will be retained. However, removal of variants with CADD_PHRED &lt;= 20 is considered appropriate to enrich dataset for potentially deleterious variants</p>
 <pre class="r"><code># Assessment of filtering FATHMM_MKL_NC &gt; 0.5
 class(output.df$FATHMM_MKL_NC)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
 <pre class="r"><code>sum(is.na(output.df$FATHMM_MKL_NC))</code></pre>
-<pre><code>## [1] 723</code></pre>
+<pre><code>## [1] 722</code></pre>
 <pre class="r"><code>sum(as.numeric(output.df$FATHMM_MKL_NC) == 0.5, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
 <pre class="r"><code>sum(as.numeric(output.df$FATHMM_MKL_NC) &lt; 0.5, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 18592</code></pre>
+<pre><code>## [1] 18538</code></pre>
 <pre class="r"><code>sum(as.numeric(output.df$FATHMM_MKL_NC) &gt; 0.5, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 594</code></pre>
+<pre><code>## [1] 589</code></pre>
 <pre class="r"><code># output_fathmm_na.df &lt;- output.df %&gt;% 
 #   filter(is.na(FATHMM_MKL_NC))
 
-# Assessment of filtering CADD_PHREDD &gt; 15
+# Assessment of filtering CADD_PHREDD &gt; 20
 sum(is.na(output.df$CADD_PHRED))</code></pre>
-<pre><code>## [1] 723</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 722</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 20, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 19092</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 94</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 19115</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 12</code></pre>
 <pre class="r"><code># output_cadd_na.df &lt;- output.df %&gt;% 
 #  filter(is.na(CADD_PHRED))
 
@@ -611,17 +611,16 @@ output.df &lt;- tibble::rownames_to_column(output.df, var = &quot;rowname&quot;)
 output_hc.df &lt;- output.df %&gt;% 
   filter((as.numeric(FATHMM_MKL_NC) &gt; 0.5) |
            (is.na(FATHMM_MKL_NC))) %&gt;%
-  filter((as.numeric(CADD_PHRED) &gt; 15) |
+  filter((as.numeric(CADD_PHRED) &gt; 20) |
            (is.na(CADD_PHRED)))
 output_hc.df &lt;- tibble::column_to_rownames(output_hc.df, var = &quot;rowname&quot;)
 
 # Check output dataframe
 dim(output_hc.df)</code></pre>
-<pre><code>## [1] 772  94</code></pre>
+<pre><code>## [1] 733  94</code></pre>
 <pre class="r"><code>output_hc.df[1:20,1:10]</code></pre>
 <pre><code>##                           CHROM       POS                    ID       REF
 ## rs528419934_35                1     70351           rs528419934        TA
-## rs549358873_137               1 158369841           rs549358873         A
 ## rs574009346_145               1 158370041           rs574009346         C
 ## rs539650513_267               1 158434443           rs539650513         A
 ## rs534126638_489               1 158451674           rs534126638        AT
@@ -633,37 +632,37 @@ dim(output_hc.df)</code></pre>
 ## esv3587678_1006               1 158694006            esv3587678         G
 ## esv3587680_1007               1 158697228            esv3587680         A
 ## rs542032193_1008              1 158723559           rs542032193       CTT
-## rs575308510_1138              1 158726673           rs575308510         T
 ## rs538519340_1161              1 158735012           rs538519340        TA
 ## rs570511631_1242              1 158737122           rs570511631         T
 ## rs551210058_1434              1 159408542           rs551210058         G
 ## rs558061699_1436              1 159408667           rs558061699         G
-## rs547008125_1444              1 159408891           rs547008125         G
 ## rs376681523_1602              1 159505811           rs376681523        TG
-##                              ALT QUAL FILTER
-## rs528419934_35                 T  100   PASS
-## rs549358873_137                G  100   PASS
-## rs574009346_145               CT  100   PASS
-## rs539650513_267               AT  100   PASS
-## rs534126638_489                A  100   PASS
-## esv3587675;esv3587676_530  &lt;CN2&gt;  100   PASS
-## rs532502178_780                A  100   PASS
-## rs540772754_818           TTGGTC  100   PASS
-## rs147952043_884                T  100   PASS
-## rs142389297_910                A  100   PASS
-## esv3587678_1006            &lt;CN0&gt;  100   PASS
-## esv3587680_1007            &lt;CN0&gt;  100   PASS
-## rs542032193_1008               C  100   PASS
-## rs575308510_1138               A  100   PASS
-## rs538519340_1161               T  100   PASS
-## rs570511631_1242              TA  100   PASS
-## rs551210058_1434               A  100   PASS
-## rs558061699_1436              GT  100   PASS
-## rs547008125_1444               A  100   PASS
-## rs376681523_1602               T  100   PASS
+## esv3589518_1793               1 247692340            esv3589518         T
+## rs149892854_1950              1 247697287           rs149892854         T
+## esv3589520_2052               1 247752627            esv3589520         A
+##                                    ALT QUAL FILTER
+## rs528419934_35                       T  100   PASS
+## rs574009346_145                     CT  100   PASS
+## rs539650513_267                     AT  100   PASS
+## rs534126638_489                      A  100   PASS
+## esv3587675;esv3587676_530        &lt;CN2&gt;  100   PASS
+## rs532502178_780                      A  100   PASS
+## rs540772754_818                 TTGGTC  100   PASS
+## rs147952043_884                      T  100   PASS
+## rs142389297_910                      A  100   PASS
+## esv3587678_1006                  &lt;CN0&gt;  100   PASS
+## esv3587680_1007                  &lt;CN0&gt;  100   PASS
+## rs542032193_1008                     C  100   PASS
+## rs538519340_1161                     T  100   PASS
+## rs570511631_1242                    TA  100   PASS
+## rs551210058_1434                     A  100   PASS
+## rs558061699_1436                    GT  100   PASS
+## rs376681523_1602                     T  100   PASS
+## esv3589518_1793                  &lt;CN0&gt;  100   PASS
+## rs149892854_1950                   TTA  100   PASS
+## esv3589520_2052           &lt;INS:ME:ALU&gt;  100   PASS
 ##                                                           AA AC
 ## rs528419934_35                       |||unknown(NO_COVERAGE) 14
-## rs549358873_137                                         A|||  1
 ## rs574009346_145           TTTTTTT|TTTTTTT|TTTTTTTT|insertion  5
 ## rs539650513_267                            |||unknown(STR4?) 11
 ## rs534126638_489                 TTTTTT|TTTTTT|TTTTT|deletion  7
@@ -675,16 +674,16 @@ dim(output_hc.df)</code></pre>
 ## esv3587678_1006                                         &lt;NA&gt;  2
 ## esv3587680_1007                                         &lt;NA&gt;  1
 ## rs542032193_1008                                        &lt;NA&gt;  2
-## rs575308510_1138                                        T|||  2
 ## rs538519340_1161                         AAA|AAA|AA|deletion  8
 ## rs570511631_1242             AAAAAA|AAAAAA|AAAAAAA|insertion  5
 ## rs551210058_1434                                        G||| 26
 ## rs558061699_1436          TTTTTTT|TTTTTTT|TTTTTTTT|insertion  3
-## rs547008125_1444                                        G|||  1
 ## rs376681523_1602                              G|G|-|deletion  3
+## esv3589518_1793                                         &lt;NA&gt;  1
+## rs149892854_1950                                        &lt;NA&gt; 29
+## esv3589520_2052                                         &lt;NA&gt; 37
 ##                                    AF
 ## rs528419934_35             0.00279553
-## rs549358873_137           0.000199681
 ## rs574009346_145           0.000998403
 ## rs539650513_267            0.00219649
 ## rs534126638_489            0.00139776
@@ -696,42 +695,42 @@ dim(output_hc.df)</code></pre>
 ## esv3587678_1006           0.000399361
 ## esv3587680_1007           0.000199681
 ## rs542032193_1008          0.000399361
-## rs575308510_1138          0.000399361
 ## rs538519340_1161           0.00159744
 ## rs570511631_1242          0.000998403
 ## rs551210058_1434           0.00519169
 ## rs558061699_1436          0.000599042
-## rs547008125_1444          0.000199681
-## rs376681523_1602          0.000599042</code></pre>
+## rs376681523_1602          0.000599042
+## esv3589518_1793           0.000199681
+## rs149892854_1950           0.00579073
+## esv3589520_2052            0.00738818</code></pre>
 <pre class="r"><code>output_hc.df$Consequence[1:20]</code></pre>
-<pre><code>##  [1] &quot;downstream_gene_variant&quot;                                        
-##  [2] &quot;upstream_gene_variant&quot;                                          
-##  [3] &quot;upstream_gene_variant&quot;                                          
-##  [4] &quot;upstream_gene_variant&quot;                                          
-##  [5] &quot;downstream_gene_variant&quot;                                        
-##  [6] &quot;coding_sequence_variant&amp;5_prime_UTR_variant&quot;                    
-##  [7] &quot;downstream_gene_variant&quot;                                        
-##  [8] &quot;downstream_gene_variant&quot;                                        
-##  [9] &quot;upstream_gene_variant&quot;                                          
-## [10] &quot;downstream_gene_variant&quot;                                        
-## [11] &quot;coding_sequence_variant&amp;5_prime_UTR_variant&amp;3_prime_UTR_variant&quot;
-## [12] &quot;coding_sequence_variant&amp;5_prime_UTR_variant&amp;3_prime_UTR_variant&quot;
-## [13] &quot;upstream_gene_variant&quot;                                          
-## [14] &quot;downstream_gene_variant&quot;                                        
-## [15] &quot;downstream_gene_variant&quot;                                        
-## [16] &quot;upstream_gene_variant&quot;                                          
-## [17] &quot;upstream_gene_variant&quot;                                          
-## [18] &quot;upstream_gene_variant&quot;                                          
-## [19] &quot;upstream_gene_variant&quot;                                          
-## [20] &quot;5_prime_UTR_variant&quot;</code></pre>
+<pre><code>##  [1] &quot;downstream_gene_variant&quot;                                                       
+##  [2] &quot;upstream_gene_variant&quot;                                                         
+##  [3] &quot;upstream_gene_variant&quot;                                                         
+##  [4] &quot;downstream_gene_variant&quot;                                                       
+##  [5] &quot;coding_sequence_variant&amp;5_prime_UTR_variant&quot;                                   
+##  [6] &quot;downstream_gene_variant&quot;                                                       
+##  [7] &quot;downstream_gene_variant&quot;                                                       
+##  [8] &quot;upstream_gene_variant&quot;                                                         
+##  [9] &quot;downstream_gene_variant&quot;                                                       
+## [10] &quot;coding_sequence_variant&amp;5_prime_UTR_variant&amp;3_prime_UTR_variant&quot;               
+## [11] &quot;coding_sequence_variant&amp;5_prime_UTR_variant&amp;3_prime_UTR_variant&quot;               
+## [12] &quot;upstream_gene_variant&quot;                                                         
+## [13] &quot;downstream_gene_variant&quot;                                                       
+## [14] &quot;upstream_gene_variant&quot;                                                         
+## [15] &quot;upstream_gene_variant&quot;                                                         
+## [16] &quot;upstream_gene_variant&quot;                                                         
+## [17] &quot;5_prime_UTR_variant&quot;                                                           
+## [18] &quot;coding_sequence_variant&amp;5_prime_UTR_variant&amp;3_prime_UTR_variant&amp;intron_variant&quot;
+## [19] &quot;upstream_gene_variant&quot;                                                         
+## [20] &quot;downstream_gene_variant&quot;</code></pre>
 <pre class="r"><code>output_hc.df$FATHMM_MKL_NC[1:20]</code></pre>
-<pre><code>##  [1] NA        &quot;0.91809&quot; NA        NA        NA        NA        NA       
-##  [8] NA        NA        NA        NA        NA        NA        &quot;0.59262&quot;
-## [15] NA        NA        &quot;0.98091&quot; NA        &quot;0.75399&quot; NA</code></pre>
+<pre><code>##  [1] NA        NA        NA        NA        NA        NA        NA       
+##  [8] NA        NA        NA        NA        NA        NA        NA       
+## [15] &quot;0.98091&quot; NA        NA        NA        NA        NA</code></pre>
 <pre class="r"><code>output_hc.df$CADD_PHRED[1:20]</code></pre>
-<pre><code>##  [1] NA      &quot;15.87&quot; NA      NA      NA      NA      NA      NA     
-##  [9] NA      NA      NA      NA      NA      &quot;16.53&quot; NA      NA     
-## [17] &quot;22.6&quot;  NA      &quot;19.62&quot; NA</code></pre>
+<pre><code>##  [1] NA     NA     NA     NA     NA     NA     NA     NA     NA     NA    
+## [11] NA     NA     NA     NA     &quot;22.6&quot; NA     NA     NA     NA     NA</code></pre>
 <pre class="r"><code>unique(output_hc.df$SYMBOL)</code></pre>
 <pre><code>##   [1] &quot;OR4F5&quot;        &quot;OR10T2&quot;       &quot;OR10K1&quot;       &quot;OR10R2&quot;      
 ##   [5] &quot;OR6Y1&quot;        &quot;SPTA1&quot;        &quot;OR6K2&quot;        &quot;OR6K3&quot;       
@@ -744,68 +743,66 @@ dim(output_hc.df)</code></pre>
 ##  [33] &quot;OR2T6&quot;        &quot;OR2T1&quot;        &quot;OR2T7&quot;        &quot;OR2T3&quot;       
 ##  [37] &quot;OR2T5&quot;        &quot;OR2G6&quot;        &quot;OR2T29&quot;       &quot;OR2T34&quot;      
 ##  [41] &quot;OR2T10&quot;       &quot;OR2T11&quot;       &quot;OR2T35&quot;       &quot;OR2T27&quot;      
-##  [45] &quot;OR14I1&quot;       &quot;PRR21&quot;        &quot;OR6B3&quot;        &quot;OR5AC2&quot;      
-##  [49] &quot;OR5H14&quot;       &quot;OR5H15&quot;       &quot;OR5K4&quot;        &quot;OR5K3&quot;       
-##  [53] &quot;OR5K1&quot;        &quot;OR5K2&quot;        &quot;MGAT1&quot;        &quot;OR2Y1&quot;       
-##  [57] &quot;OR2V2&quot;        &quot;OR2V1&quot;        &quot;OR2B2&quot;        &quot;OR2B6&quot;       
-##  [61] &quot;OR1F12&quot;       &quot;OR2W1&quot;        &quot;OR2B3&quot;        &quot;OR2J2&quot;       
-##  [65] &quot;OR5V1&quot;        &quot;OR2H1&quot;        &quot;OR2H2&quot;        &quot;OR2AE1&quot;      
-##  [69] &quot;OR9A4&quot;        &quot;OR9A2&quot;        &quot;OR6V1&quot;        &quot;OR2F2&quot;       
-##  [73] &quot;OR2A5&quot;        &quot;OR2A12&quot;       &quot;OR2A2&quot;        &quot;OR2A14&quot;      
-##  [77] &quot;OR2A7&quot;        &quot;OR13J1&quot;       &quot;OR13F1&quot;       &quot;OR13C4&quot;      
-##  [81] &quot;OR13C3&quot;       &quot;OR13C8&quot;       &quot;OR13C5&quot;       &quot;OR13C2&quot;      
-##  [85] &quot;OR13C9&quot;       &quot;OR13D1&quot;       &quot;OR2K2&quot;        &quot;OR1J1&quot;       
-##  [89] &quot;OR1J2&quot;        &quot;OR1J4&quot;        &quot;OR1N1&quot;        &quot;OR1N2&quot;       
-##  [93] &quot;OR1L8&quot;        &quot;OR1Q1&quot;        &quot;OR1L3&quot;        &quot;OR1L4&quot;       
-##  [97] &quot;OR1L6&quot;        &quot;OR5C1&quot;        &quot;OR1K1&quot;        &quot;OR13A1&quot;      
-## [101] &quot;TRIM21&quot;       &quot;OR52K2&quot;       &quot;OR52K1&quot;       &quot;OR52M1&quot;      
-## [105] &quot;OR51E1&quot;       &quot;OR51E2&quot;       &quot;OR51T1&quot;       &quot;OR51F2&quot;      
-## [109] &quot;OR51S1&quot;       &quot;OR51L1&quot;       &quot;OR52J3&quot;       &quot;OR52A5&quot;      
-## [113] &quot;OR52A1&quot;       &quot;OR51V1&quot;       &quot;OR51B6&quot;       &quot;OR51I2&quot;      
-## [117] &quot;UBQLN3&quot;       &quot;OR52D1&quot;       &quot;OR52H1&quot;       &quot;TRIM6-TRIM34&quot;
-## [121] &quot;OR56B1&quot;       &quot;OR52N5&quot;       &quot;OR52N1&quot;       &quot;OR52N2&quot;      
-## [125] &quot;OR52E6&quot;       &quot;OR52E8&quot;       &quot;OR52E4&quot;       &quot;OR56A1&quot;      
-## [129] &quot;OR56B4&quot;       &quot;OR52B2&quot;       &quot;OR52W1&quot;       &quot;C11orf42&quot;    
-## [133] &quot;OR2AG2&quot;       &quot;OR6A2&quot;        &quot;OR10A5&quot;       &quot;OR10A2&quot;      
-## [137] &quot;OR10A4&quot;       &quot;OR2D3&quot;        &quot;ZNF215&quot;       &quot;OR5P2&quot;       
-## [141] &quot;OR5P3&quot;        &quot;OR10A6&quot;       &quot;OR10A3&quot;       &quot;PTPRJ&quot;       
-## [145] &quot;OR4B1&quot;        &quot;OR4S1&quot;        &quot;OR4C3&quot;        &quot;OR4A47&quot;      
-## [149] &quot;OR4C12&quot;       &quot;OR4A5&quot;        &quot;OR4C46&quot;       &quot;OR4A16&quot;      
-## [153] &quot;OR4C15&quot;       &quot;OR4A15&quot;       &quot;OR4P4&quot;        &quot;OR4C11&quot;      
-## [157] &quot;OR4S2&quot;        &quot;OR4C6&quot;        &quot;OR5D16&quot;       &quot;OR5D14&quot;      
-## [161] &quot;OR5L2&quot;        &quot;OR5I1&quot;        &quot;OR5W2&quot;        &quot;OR5AS1&quot;      
-## [165] &quot;OR10AG1&quot;      &quot;OR5F1&quot;        &quot;OR5T2&quot;        &quot;OR8J3&quot;       
-## [169] &quot;OR8I2&quot;        &quot;OR8H2&quot;        &quot;OR8H3&quot;        &quot;OR5J2&quot;       
-## [173] &quot;OR5T3&quot;        &quot;OR5T1&quot;        &quot;OR8H1&quot;        &quot;OR8K1&quot;       
-## [177] &quot;OR8J1&quot;        &quot;OR5M9&quot;        &quot;OR5M3&quot;        &quot;OR5M11&quot;      
-## [181] &quot;OR5M10&quot;       &quot;OR5M1&quot;        &quot;OR5AP2&quot;       &quot;OR9G1&quot;       
-## [185] &quot;OR9G4&quot;        &quot;OR5AK2&quot;       &quot;OR9Q1&quot;        &quot;OR9Q2&quot;       
-## [189] &quot;OR1S2&quot;        &quot;OR10Q1&quot;       &quot;OR10W1&quot;       &quot;OR5B17&quot;      
-## [193] &quot;OR5B2&quot;        &quot;OR5B12&quot;       &quot;OR5B21&quot;       &quot;OR5AN1&quot;      
-## [197] &quot;OR5A2&quot;        &quot;OR5A1&quot;        &quot;OR4D10&quot;       &quot;OR4D11&quot;      
-## [201] &quot;OR4D9&quot;        &quot;OR10V1&quot;       &quot;OR2AT4&quot;       &quot;OR6M1&quot;       
-## [205] &quot;OR8D4&quot;        &quot;OR4D5&quot;        &quot;OR6T1&quot;        &quot;OR10S1&quot;      
-## [209] &quot;OR10G6&quot;       &quot;OR10G4&quot;       &quot;OR10G9&quot;       &quot;OR10G8&quot;      
-## [213] &quot;OR10G7&quot;       &quot;OR8G5&quot;        &quot;OR8D1&quot;        &quot;OR8B3&quot;       
-## [217] &quot;OR8B8&quot;        &quot;OR8B12&quot;       &quot;OR8A1&quot;        &quot;OR10AD1&quot;     
-## [221] &quot;OR8S1&quot;        &quot;OR10A7&quot;       &quot;OR6C74&quot;       &quot;OR6C6&quot;       
-## [225] &quot;OR6C1&quot;        &quot;OR6C3&quot;        &quot;OR6C75&quot;       &quot;OR6C65&quot;      
-## [229] &quot;OR6C76&quot;       &quot;OR6C2&quot;        &quot;OR6C70&quot;       &quot;OR6C68&quot;      
-## [233] &quot;OR6C4&quot;        &quot;OR11H12&quot;      &quot;OR11H2&quot;       &quot;OR11K2P&quot;     
-## [237] &quot;OR4Q3&quot;        &quot;OR4H12P&quot;      &quot;snoU13&quot;       &quot;OR4M1&quot;       
-## [241] &quot;OR4N1P&quot;       &quot;OR4N2&quot;        &quot;OR4K2&quot;        &quot;OR4K5&quot;       
-## [245] &quot;OR4K1&quot;        &quot;OR4K15&quot;       &quot;OR4K14&quot;       &quot;OR4K13&quot;      
-## [249] &quot;OR4L1&quot;        &quot;OR11G2&quot;       &quot;OR11H6&quot;       &quot;OR11H4&quot;      
-## [253] &quot;OR5AU1&quot;       &quot;OR10G3&quot;       &quot;OR10G2&quot;       &quot;OR4E2&quot;       
-## [257] &quot;OR4M2&quot;        &quot;OR4N4&quot;        &quot;OR4F6&quot;        &quot;OR4F15&quot;      
-## [261] &quot;OR1F1&quot;        &quot;OR2C1&quot;        &quot;OR1D5&quot;        &quot;OR1D2&quot;       
-## [265] &quot;OR1G1&quot;        &quot;OR1A1&quot;        &quot;OR1A2&quot;        &quot;OR3A2&quot;       
-## [269] &quot;OR3A1&quot;        &quot;OR1E1&quot;        &quot;OR3A3&quot;        &quot;OR1E2&quot;       
-## [273] &quot;OR4D1&quot;        &quot;OR2Z1&quot;        &quot;OR1M1&quot;        &quot;OR7G2&quot;       
-## [277] &quot;OR7G1&quot;        &quot;OR7G3&quot;        &quot;OR7D2&quot;        &quot;OR7D4&quot;       
-## [281] &quot;OR7E24&quot;       &quot;AC005255.3&quot;   &quot;OR7C1&quot;        &quot;OR7A5&quot;       
-## [285] &quot;OR7A10&quot;       &quot;OR7A17&quot;       &quot;OR7C2&quot;        &quot;OR1I1&quot;       
-## [289] &quot;OR10H2&quot;       &quot;OR13H1&quot;</code></pre>
+##  [45] &quot;OR14I1&quot;       &quot;PRR21&quot;        &quot;OR6B3&quot;        &quot;OR5H14&quot;      
+##  [49] &quot;OR5H15&quot;       &quot;OR5K4&quot;        &quot;OR5K3&quot;        &quot;OR5K2&quot;       
+##  [53] &quot;MGAT1&quot;        &quot;OR2Y1&quot;        &quot;OR2V2&quot;        &quot;OR2V1&quot;       
+##  [57] &quot;OR2B2&quot;        &quot;OR2B6&quot;        &quot;OR2W1&quot;        &quot;OR2B3&quot;       
+##  [61] &quot;OR2J2&quot;        &quot;OR5V1&quot;        &quot;OR2H1&quot;        &quot;OR2H2&quot;       
+##  [65] &quot;OR2AE1&quot;       &quot;OR9A4&quot;        &quot;OR9A2&quot;        &quot;OR6V1&quot;       
+##  [69] &quot;OR2F2&quot;        &quot;OR2A5&quot;        &quot;OR2A12&quot;       &quot;OR2A2&quot;       
+##  [73] &quot;OR2A14&quot;       &quot;OR2A7&quot;        &quot;OR13J1&quot;       &quot;OR13F1&quot;      
+##  [77] &quot;OR13C4&quot;       &quot;OR13C3&quot;       &quot;OR13C8&quot;       &quot;OR13C5&quot;      
+##  [81] &quot;OR13C2&quot;       &quot;OR13C9&quot;       &quot;OR13D1&quot;       &quot;OR2K2&quot;       
+##  [85] &quot;OR1J1&quot;        &quot;OR1J2&quot;        &quot;OR1J4&quot;        &quot;OR1N1&quot;       
+##  [89] &quot;OR1N2&quot;        &quot;OR1L8&quot;        &quot;OR1Q1&quot;        &quot;OR1L3&quot;       
+##  [93] &quot;OR1L4&quot;        &quot;OR1L6&quot;        &quot;OR5C1&quot;        &quot;OR13A1&quot;      
+##  [97] &quot;TRIM21&quot;       &quot;OR52K2&quot;       &quot;OR52K1&quot;       &quot;OR52M1&quot;      
+## [101] &quot;OR51E1&quot;       &quot;OR51T1&quot;       &quot;OR51F2&quot;       &quot;OR51S1&quot;      
+## [105] &quot;OR51L1&quot;       &quot;OR52J3&quot;       &quot;OR52A5&quot;       &quot;OR52A1&quot;      
+## [109] &quot;OR51V1&quot;       &quot;OR51B6&quot;       &quot;OR51I2&quot;       &quot;UBQLN3&quot;      
+## [113] &quot;OR52D1&quot;       &quot;OR52H1&quot;       &quot;TRIM6-TRIM34&quot; &quot;OR56B1&quot;      
+## [117] &quot;OR52N5&quot;       &quot;OR52N1&quot;       &quot;OR52N2&quot;       &quot;OR52E6&quot;      
+## [121] &quot;OR52E8&quot;       &quot;OR52E4&quot;       &quot;OR56A1&quot;       &quot;OR56B4&quot;      
+## [125] &quot;OR52B2&quot;       &quot;OR52W1&quot;       &quot;C11orf42&quot;     &quot;OR2AG2&quot;      
+## [129] &quot;OR6A2&quot;        &quot;OR10A5&quot;       &quot;OR10A2&quot;       &quot;OR10A4&quot;      
+## [133] &quot;OR2D3&quot;        &quot;ZNF215&quot;       &quot;OR5P2&quot;        &quot;OR5P3&quot;       
+## [137] &quot;OR10A6&quot;       &quot;OR10A3&quot;       &quot;PTPRJ&quot;        &quot;OR4B1&quot;       
+## [141] &quot;OR4S1&quot;        &quot;OR4C3&quot;        &quot;OR4A47&quot;       &quot;OR4C12&quot;      
+## [145] &quot;OR4A5&quot;        &quot;OR4C46&quot;       &quot;OR4A16&quot;       &quot;OR4C15&quot;      
+## [149] &quot;OR4A15&quot;       &quot;OR4P4&quot;        &quot;OR4C11&quot;       &quot;OR4S2&quot;       
+## [153] &quot;OR4C6&quot;        &quot;OR5D16&quot;       &quot;OR5D14&quot;       &quot;OR5L2&quot;       
+## [157] &quot;OR5I1&quot;        &quot;OR5W2&quot;        &quot;OR5AS1&quot;       &quot;OR10AG1&quot;     
+## [161] &quot;OR5F1&quot;        &quot;OR5T2&quot;        &quot;OR8J3&quot;        &quot;OR8I2&quot;       
+## [165] &quot;OR8H2&quot;        &quot;OR8H3&quot;        &quot;OR5J2&quot;        &quot;OR5T3&quot;       
+## [169] &quot;OR5T1&quot;        &quot;OR8H1&quot;        &quot;OR8K1&quot;        &quot;OR8J1&quot;       
+## [173] &quot;OR5M9&quot;        &quot;OR5M3&quot;        &quot;OR5M11&quot;       &quot;OR5M10&quot;      
+## [177] &quot;OR5M1&quot;        &quot;OR5AP2&quot;       &quot;OR9G1&quot;        &quot;OR9G4&quot;       
+## [181] &quot;OR5AK2&quot;       &quot;OR9Q1&quot;        &quot;OR9Q2&quot;        &quot;OR1S2&quot;       
+## [185] &quot;OR10Q1&quot;       &quot;OR10W1&quot;       &quot;OR5B17&quot;       &quot;OR5B2&quot;       
+## [189] &quot;OR5B12&quot;       &quot;OR5B21&quot;       &quot;OR5AN1&quot;       &quot;OR5A2&quot;       
+## [193] &quot;OR5A1&quot;        &quot;OR4D10&quot;       &quot;OR4D11&quot;       &quot;OR4D9&quot;       
+## [197] &quot;OR10V1&quot;       &quot;OR2AT4&quot;       &quot;OR6M1&quot;        &quot;OR8D4&quot;       
+## [201] &quot;OR4D5&quot;        &quot;OR10S1&quot;       &quot;OR10G6&quot;       &quot;OR10G4&quot;      
+## [205] &quot;OR10G9&quot;       &quot;OR10G8&quot;       &quot;OR10G7&quot;       &quot;OR8G5&quot;       
+## [209] &quot;OR8D1&quot;        &quot;OR8B3&quot;        &quot;OR8B8&quot;        &quot;OR8B12&quot;      
+## [213] &quot;OR8A1&quot;        &quot;OR10AD1&quot;      &quot;OR8S1&quot;        &quot;OR10A7&quot;      
+## [217] &quot;OR6C74&quot;       &quot;OR6C6&quot;        &quot;OR6C1&quot;        &quot;OR6C3&quot;       
+## [221] &quot;OR6C75&quot;       &quot;OR6C65&quot;       &quot;OR6C76&quot;       &quot;OR6C2&quot;       
+## [225] &quot;OR6C70&quot;       &quot;OR6C68&quot;       &quot;OR6C4&quot;        &quot;OR11H12&quot;     
+## [229] &quot;OR11H2&quot;       &quot;OR11K2P&quot;      &quot;OR4Q3&quot;        &quot;OR4H12P&quot;     
+## [233] &quot;snoU13&quot;       &quot;OR4M1&quot;        &quot;OR4N1P&quot;       &quot;OR4N2&quot;       
+## [237] &quot;OR4K2&quot;        &quot;OR4K5&quot;        &quot;OR4K1&quot;        &quot;OR4K15&quot;      
+## [241] &quot;OR4K14&quot;       &quot;OR4K13&quot;       &quot;OR4L1&quot;        &quot;OR11G2&quot;      
+## [245] &quot;OR11H6&quot;       &quot;OR11H4&quot;       &quot;OR5AU1&quot;       &quot;OR10G3&quot;      
+## [249] &quot;OR10G2&quot;       &quot;OR4E2&quot;        &quot;OR4M2&quot;        &quot;OR4N4&quot;       
+## [253] &quot;OR4F6&quot;        &quot;OR4F15&quot;       &quot;OR1F1&quot;        &quot;OR2C1&quot;       
+## [257] &quot;OR1D5&quot;        &quot;OR1D2&quot;        &quot;OR1G1&quot;        &quot;OR1A1&quot;       
+## [261] &quot;OR1A2&quot;        &quot;OR3A2&quot;        &quot;OR3A1&quot;        &quot;OR1E1&quot;       
+## [265] &quot;OR3A3&quot;        &quot;OR1E2&quot;        &quot;OR4D1&quot;        &quot;OR2Z1&quot;       
+## [269] &quot;OR1M1&quot;        &quot;OR7G2&quot;        &quot;OR7G1&quot;        &quot;OR7G3&quot;       
+## [273] &quot;OR7D2&quot;        &quot;OR7D4&quot;        &quot;AC005255.3&quot;   &quot;OR7C1&quot;       
+## [277] &quot;OR7A5&quot;        &quot;OR7A10&quot;       &quot;OR7A17&quot;       &quot;OR7C2&quot;       
+## [281] &quot;OR1I1&quot;        &quot;OR10H2&quot;       &quot;OR13H1&quot;</code></pre>
 </div>
 <div id="syncronise_filtered_variants_and_genotype_data_fathmm_mkl_nc_cadd_phred" class="section level1">
 <h1>syncronise_filtered_variants_and_genotype_data_fathmm_mkl_nc_cadd_phred</h1>
@@ -816,7 +813,6 @@ output_hc.mx &lt;- output.mx[rownames(output_hc.df),]
 output_hc.df[1:20,1:5]</code></pre>
 <pre><code>##                           CHROM       POS                    ID       REF
 ## rs528419934_35                1     70351           rs528419934        TA
-## rs549358873_137               1 158369841           rs549358873         A
 ## rs574009346_145               1 158370041           rs574009346         C
 ## rs539650513_267               1 158434443           rs539650513         A
 ## rs534126638_489               1 158451674           rs534126638        AT
@@ -828,38 +824,38 @@ output_hc.df[1:20,1:5]</code></pre>
 ## esv3587678_1006               1 158694006            esv3587678         G
 ## esv3587680_1007               1 158697228            esv3587680         A
 ## rs542032193_1008              1 158723559           rs542032193       CTT
-## rs575308510_1138              1 158726673           rs575308510         T
 ## rs538519340_1161              1 158735012           rs538519340        TA
 ## rs570511631_1242              1 158737122           rs570511631         T
 ## rs551210058_1434              1 159408542           rs551210058         G
 ## rs558061699_1436              1 159408667           rs558061699         G
-## rs547008125_1444              1 159408891           rs547008125         G
 ## rs376681523_1602              1 159505811           rs376681523        TG
-##                              ALT
-## rs528419934_35                 T
-## rs549358873_137                G
-## rs574009346_145               CT
-## rs539650513_267               AT
-## rs534126638_489                A
-## esv3587675;esv3587676_530  &lt;CN2&gt;
-## rs532502178_780                A
-## rs540772754_818           TTGGTC
-## rs147952043_884                T
-## rs142389297_910                A
-## esv3587678_1006            &lt;CN0&gt;
-## esv3587680_1007            &lt;CN0&gt;
-## rs542032193_1008               C
-## rs575308510_1138               A
-## rs538519340_1161               T
-## rs570511631_1242              TA
-## rs551210058_1434               A
-## rs558061699_1436              GT
-## rs547008125_1444               A
-## rs376681523_1602               T</code></pre>
+## esv3589518_1793               1 247692340            esv3589518         T
+## rs149892854_1950              1 247697287           rs149892854         T
+## esv3589520_2052               1 247752627            esv3589520         A
+##                                    ALT
+## rs528419934_35                       T
+## rs574009346_145                     CT
+## rs539650513_267                     AT
+## rs534126638_489                      A
+## esv3587675;esv3587676_530        &lt;CN2&gt;
+## rs532502178_780                      A
+## rs540772754_818                 TTGGTC
+## rs147952043_884                      T
+## rs142389297_910                      A
+## esv3587678_1006                  &lt;CN0&gt;
+## esv3587680_1007                  &lt;CN0&gt;
+## rs542032193_1008                     C
+## rs538519340_1161                     T
+## rs570511631_1242                    TA
+## rs551210058_1434                     A
+## rs558061699_1436                    GT
+## rs376681523_1602                     T
+## esv3589518_1793                  &lt;CN0&gt;
+## rs149892854_1950                   TTA
+## esv3589520_2052           &lt;INS:ME:ALU&gt;</code></pre>
 <pre class="r"><code>output_hc.mx[1:20,1:2]</code></pre>
 <pre><code>##                           HG00096 HG00097
 ## rs528419934_35            &quot;0|0&quot;   &quot;0|0&quot;  
-## rs549358873_137           &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs574009346_145           &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs539650513_267           &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs534126638_489           &quot;0|0&quot;   &quot;0|0&quot;  
@@ -871,109 +867,25 @@ output_hc.df[1:20,1:5]</code></pre>
 ## esv3587678_1006           &quot;0|0&quot;   &quot;0|0&quot;  
 ## esv3587680_1007           &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs542032193_1008          &quot;0|0&quot;   &quot;0|0&quot;  
-## rs575308510_1138          &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs538519340_1161          &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs570511631_1242          &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs551210058_1434          &quot;0|0&quot;   &quot;0|0&quot;  
 ## rs558061699_1436          &quot;0|0&quot;   &quot;0|0&quot;  
-## rs547008125_1444          &quot;0|0&quot;   &quot;0|0&quot;  
-## rs376681523_1602          &quot;0|0&quot;   &quot;0|0&quot;</code></pre>
-</div>
-<div id="additional_filtering_exac_pli" class="section level1">
-<h1>additional_filtering_exac_pli</h1>
-<p>Deleterious non-coding variants in a single allele are expected to have a greater impact in loss intolerant genes (ExAC pLI &gt;= 0.9)</p>
-<pre class="r"><code># Assessment of impact of filtering ExAC pLI &gt;= 0.9
-sum(is.na(output_hc.df$ExACpLI))</code></pre>
-<pre><code>## [1] 200</code></pre>
-<pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &lt; 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 572</code></pre>
-<pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &gt;= 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 0</code></pre>
-<pre class="r"><code># Additional filtration based on ExAC pLI &gt;= 0.9
-output_hc.df &lt;- tibble::rownames_to_column(output_hc.df, var = &quot;rowname&quot;)
-output_hc_pli.df &lt;- output_hc.df %&gt;% 
-  filter(as.numeric(ExACpLI) &gt;= 0.9)
-output_hc_pli.df &lt;- tibble::column_to_rownames(output_hc_pli.df, var = &quot;rowname&quot;)
-
-# Check output dataframe
-dim(output_hc_pli.df)</code></pre>
-<pre><code>## [1]  0 94</code></pre>
-<pre class="r"><code>output_hc_pli.df[1:20,1:10]</code></pre>
-<pre><code>##       CHROM POS   ID  REF  ALT QUAL FILTER   AA   AC   AF
-## NA     &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.1   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.2   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.3   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.4   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.5   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.6   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.7   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.8   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.9   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.10  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.11  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.12  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.13  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.14  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.15  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.16  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.17  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.18  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.19  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</code></pre>
-<pre class="r"><code>output_hc_pli.df$Consequence[1:20]</code></pre>
-<pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
-<pre class="r"><code>output_hc_pli.df$FATHMM_MKL_NC[1:20]</code></pre>
-<pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
-<pre class="r"><code>output_hc_pli.df$CADD_PHRED[1:20]</code></pre>
-<pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
-<pre class="r"><code>output_hc_pli.df$ExACpLI[1:20]</code></pre>
-<pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
-<pre class="r"><code>unique(output_hc_pli.df$SYMBOL)</code></pre>
-<pre><code>## character(0)</code></pre>
-</div>
-<div id="syncronise_filtered_variants_and_genotype_data_exac_pli" class="section level1">
-<h1>syncronise_filtered_variants_and_genotype_data_exac_pli</h1>
-<pre class="r"><code># Isolate relavent rows from genotype matrix
-output_hc_pli.mx &lt;- output_hc.mx[rownames(output_hc_pli.df),]
-
-# Compare filtered fixed column dataframe and genotype matrix
-output_hc_pli.df[1:20,1:5]</code></pre>
-<pre><code>##       CHROM POS   ID  REF  ALT
-## NA     &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.1   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.2   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.3   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.4   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.5   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.6   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.7   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.8   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.9   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.10  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.11  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.12  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.13  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.14  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.15  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.16  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.17  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.18  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;
-## NA.19  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;</code></pre>
-<pre class="r"><code>output_hc_pli.mx[1:2]</code></pre>
-<pre><code>## [1] NA NA</code></pre>
+## rs376681523_1602          &quot;0|0&quot;   &quot;0|0&quot;  
+## esv3589518_1793           &quot;0|0&quot;   &quot;0|0&quot;  
+## rs149892854_1950          &quot;0|0&quot;   &quot;0|0&quot;  
+## esv3589520_2052           &quot;0|0&quot;   &quot;0|1&quot;</code></pre>
 </div>
 <div id="update_dataframe_naming" class="section level1">
 <h1>update_dataframe_naming</h1>
 <pre class="r"><code># Reset of output dataframe names
 fixed_nc_filt_kgen_or.df &lt;- output.df
 fixed_nc_hc_filt_kgen_or.df &lt;- output_hc.df
-fixed_nc_hc_pli_filt_kgen_or.df &lt;- output_hc_pli.df
 gt_nc_filt_kgen_or.mx &lt;- output.mx
 gt_nc_hc_filt_kgen_or.mx &lt;- output_hc.mx
-gt_nc_hc_pli_filt_kgen_or.mx &lt;- output_hc_pli.mx
 
 # Clean-up
-rm(input.df, output.df, output_hc.df, output_hc_pli.df, input.mx, output.mx, output_hc.mx, output_hc_pli.mx, or_genes, removed_variant.df)</code></pre>
+rm(input.df, output.df, output_hc.df, input.mx, output.mx, output_hc.mx, or_genes, removed_variant.df)</code></pre>
 </div>
 <div id="save_results" class="section level1">
 <h1>save_results</h1>
@@ -982,11 +894,10 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, input.mx, output.mx, out
 <div id="final_section" class="section level1">
 <h1>final_section</h1>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>##  [1] &quot;base_folder&quot;                     &quot;fixed_nc_filt_kgen_or.df&quot;       
-##  [3] &quot;fixed_nc_hc_filt_kgen_or.df&quot;     &quot;fixed_nc_hc_pli_filt_kgen_or.df&quot;
-##  [5] &quot;gt_nc_filt_kgen_or.mx&quot;           &quot;gt_nc_hc_filt_kgen_or.mx&quot;       
-##  [7] &quot;gt_nc_hc_pli_filt_kgen_or.mx&quot;    &quot;input_folder&quot;                   
-##  [9] &quot;meta.df&quot;                         &quot;output_folder&quot;</code></pre>
+<pre><code>## [1] &quot;base_folder&quot;                 &quot;fixed_nc_filt_kgen_or.df&quot;   
+## [3] &quot;fixed_nc_hc_filt_kgen_or.df&quot; &quot;gt_nc_filt_kgen_or.mx&quot;      
+## [5] &quot;gt_nc_hc_filt_kgen_or.mx&quot;    &quot;input_folder&quot;               
+## [7] &quot;meta.df&quot;                     &quot;output_folder&quot;</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.4.1 (2017-06-30)
 ## Platform: x86_64-redhat-linux-gnu (64-bit)
@@ -1017,7 +928,7 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, input.mx, output.mx, out
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-07 20:32:58 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-17 10:53:25 UTC&quot;</code></pre>
 </div>
 
 

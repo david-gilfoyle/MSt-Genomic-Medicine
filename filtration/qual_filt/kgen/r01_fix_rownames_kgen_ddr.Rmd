@@ -6,16 +6,16 @@ editor_options:
 ---
 
 Started: David Gilfoyle 2 May 2018  
-Updated: David Gilfoyle 2 May 2018
+Updated: David Gilfoyle 16 May 2018
 
 ---
 
 # Summary
 
 Syncronise row names between fixed column and genotype data sets
-Dataset: 1000 Genome Project 
-Gene Selection: DNA Repair Genes  
-Input Variants: 368,639
+Dataset: 1000 Genome Project  
+Gene Selection: DNA Repair Genes   
+Input Variants: 368,639  
 
 # start_section
 
@@ -47,8 +47,6 @@ load(paste(input_folder, "r01_import_vcf_kgen_ddr.RData", sep="/"))
 # Check input fixed column dataframe
 dim(fixed_kgen_ddr.df)
 class(fixed_kgen_ddr.df)
-str(fixed_kgen_ddr.df)
-colnames(fixed_kgen_ddr.df)
 fixed_kgen_ddr.df[1:20,1:10]
 
 # Check input genotype matrix
@@ -57,8 +55,8 @@ class(gt_kgen_ddr.mx)
 gt_kgen_ddr.mx[1:5,1:5]
 
 # Setup base and output folders
-base_folder="/home/ec2-user/scripts/r_import/kgen"
-output_folder="/home/ec2-user/results/qual_filt/kgen"
+base_folder="/home/ec2-user/scripts/filtration/qual_filt/kgen"
+output_folder="/home/ec2-user/results/filtered/qual_filt/kgen"
 
 getwd()
 setwd(base_folder)

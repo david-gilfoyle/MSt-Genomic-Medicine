@@ -123,11 +123,11 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 13 May 2018</p>
+Updated: David Gilfoyle 16 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of AF filtered dataset to select missense (Consequence, SIFT [deleterious] and PolyPhen [likely_damaging]), high confidence (HC) missense (missense variants with FATHMM &lt; -1.5 and CADD_PHRED &gt; 15) and HC missense variants in genes with pLI &gt;= 0.9<br />
+<p>Variant filtering of AF filtered dataset to select missense (Consequence, SIFT [deleterious] and PolyPhen [likely_damaging]), high confidence (HC) missense (missense variants with FATHMM &lt; -1.5 and CADD_PHRED &gt; 20) and HC missense variants in genes with pLI &gt;= 0.9<br />
 Dataset: ExAC (full)<br />
 Gene Selection: DNA Repair Genes (removing PMS2P3, PRKDC and RECQL4)<br />
 Input Variants: 99,236</p>
@@ -135,7 +135,7 @@ Input Variants: 99,236</p>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-13 09:26:02 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 19:04:14 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -463,7 +463,7 @@ dim(output.df)</code></pre>
 <h1>additional_filtering_fathmm_cadd</h1>
 <p>Output assessed based on further filtering with:<br />
 1) FATHMM &lt; -1.5 - FATHMM contains score and information - needs to be split prior to filtering. A relatively low number of FATHMM entries are “Prediction(Available)” - status of these variants is unknown, but there is no obvious reason for the lack of score. However, in order to enrich the dataset for deleterious missense variants, these variants have been removed (appear as NA in seperated FATHMM_SCORE column)<br />
-2) CADD_PHRED &gt; 15 - assessment indicates that some entries are NA - these appear to be indels (substitution variants) and will be retained. However, removal of variants with CADD_PHRED &lt;= 15 is considered appropriate to enrich dataset for potentially pathogenic variants</p>
+2) CADD_PHRED &gt; 20 - assessment indicates that some entries are NA - these appear to be indels (substitution variants) and will be retained. However, removal of variants with CADD_PHRED &lt;= 20 is considered appropriate to enrich dataset for potentially pathogenic variants</p>
 <pre class="r"><code># Assessment of FATHMM column in output dataframe
 sum(is.na(output.df$FATHMM))</code></pre>
 <pre><code>## [1] 0</code></pre>
@@ -501,27 +501,27 @@ class(output_cor.df$FATHMM_SCORE)</code></pre>
 <pre><code>## [1] 5675</code></pre>
 <pre class="r"><code>sum(output_cor.df$FATHMM_SCORE &lt; -1.5, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 1948</code></pre>
-<pre class="r"><code># Assessment of impact of filtering CADD_PHREDD &gt; 15 in seperated dataframe
+<pre class="r"><code># Assessment of impact of filtering CADD_PHREDD &gt; 20 in seperated dataframe
 sum(is.na(output_cor.df$CADD_PHRED))</code></pre>
 <pre><code>## [1] 22</code></pre>
-<pre class="r"><code>sum(output_cor.df$CADD_PHRED == 15, na.rm = TRUE)</code></pre>
+<pre class="r"><code>sum(output_cor.df$CADD_PHRED == 20, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
-<pre class="r"><code>sum(output_cor.df$CADD_PHRED &lt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 22</code></pre>
-<pre class="r"><code>sum(output_cor.df$CADD_PHRED &gt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 7703</code></pre>
+<pre class="r"><code>sum(output_cor.df$CADD_PHRED &lt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 78</code></pre>
+<pre class="r"><code>sum(output_cor.df$CADD_PHRED &gt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 7647</code></pre>
 <pre class="r"><code># output_cadd_na.df &lt;- output.df %&gt;% 
 #  filter(is.na(CADD_PHRED))
 
 # Additional filtration based on FATHMM_SCORE and CADD_PHRED
 output_hc.df &lt;- output_cor.df %&gt;% 
   filter(FATHMM_SCORE &lt; -1.5) %&gt;%
-  filter((as.numeric(CADD_PHRED) &gt; 15) |
+  filter((as.numeric(CADD_PHRED) &gt; 20) |
            (is.na(CADD_PHRED)))
 
 # Check output dataframe
 dim(output_hc.df)</code></pre>
-<pre><code>## [1] 1945  155</code></pre>
+<pre><code>## [1] 1931  155</code></pre>
 <pre class="r"><code>output_hc.df[1:20,1:10]</code></pre>
 <pre><code>##    CHROM      POS          ID REF ALT      QUAL FILTER  AC AC_AFR AC_AMR
 ## 1      1 45796900 rs138353003   G   A   4964.44   PASS   1      0      0
@@ -592,12 +592,12 @@ dim(output_hc.df)</code></pre>
 </div>
 <div id="additional_filtering_exac_pli" class="section level1">
 <h1>additional_filtering_exac_pli</h1>
-<p>Deleterious missense variants in a single allele are expected to have a greater impact in loss intolerant genes (ExAC pLI &gt;= 0.9)</p>
+<p>Confirm HC missense variants in loss intolerant genes (ExAC pLI &gt;= 0.9)</p>
 <pre class="r"><code># Assessment of impact of filtering ExAC pLI &gt;= 0.9
 sum(is.na(output_hc.df$ExACpLI))</code></pre>
-<pre><code>## [1] 99</code></pre>
+<pre><code>## [1] 98</code></pre>
 <pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &lt; 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 1773</code></pre>
+<pre><code>## [1] 1760</code></pre>
 <pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &gt;= 0.9, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 73</code></pre>
 <pre class="r"><code># Additional filtration based on ExAC pLI &gt;= 0.9
@@ -705,7 +705,7 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, ddr_genes, removed_varia
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-13 09:26:16 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 19:04:23 UTC&quot;</code></pre>
 </div>
 
 

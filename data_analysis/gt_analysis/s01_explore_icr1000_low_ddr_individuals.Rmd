@@ -1,0 +1,351 @@
+---
+title: "s01_explore_icr1000_low_DDR_individuals"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 18 May 2018  
+Updated: David Gilfoyle 21 May 2018
+
+---
+
+# Summary
+
+Production of an additive genotype matrix and simple allele burden vector to allow assessment of ICR1000 individuals in the AF < 0.01 filtered dataset (only DDR gene variants) with a low DDR variant burden.    
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+# Make output wider (default was 80 columns?)
+options(width = 100)
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/af_filt/icr1000"
+
+# Load RData file - contains dataframe containing all variants and genotype matrix
+load(paste(input_folder, "r01_icr1000_ddr_af_filtered.RData", sep="/"))
+
+# Check dataframe and matrix
+dim(fixed_af_filt_icr1000_ddr.df)
+class(fixed_af_filt_icr1000_ddr.df)
+fixed_af_filt_icr1000_ddr.df[1:20,1:10]
+
+dim(gt_add_af_filt_icr1000_ddr.mx)
+class(gt_add_af_filt_icr1000_ddr.mx)
+gt_add_af_filt_icr1000_ddr.mx[1:20,1:3]
+
+# Check rowmnames are same 
+sum(rownames(gt_add_af_filt_icr1000_ddr.mx) != rownames(fixed_af_filt_icr1000_ddr.df)) # should be 0
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/data_analysis/gt_analysis"
+output_folder="/home/ec2-user/results/data_analysis/gt_analysis"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# variants_associated_with_ddr_genes
+
+```{r variants_associated_with_ddr_genes}
+
+# Set of DDR genes supporting variant filtration
+ddr_genes <- c("UNG", "SMUG1", "MBD4", "TDG", "OGG1", "MUTYH", "NTHL1", "MPG", "NEIL1", "NEIL2", "NEIL3", "HMGB1", "APEX1", "APEX2", "LIG3", "XRCC1", "PNKP", "APLF", "PARP1", "PARP2", "PARP3", "MGMT", "ALKBH2", "ALKBH3", "TDP1", "TDP2", "MSH2", "MSH3", "MSH6", "MLH1", "PMS2", "MSH4", "MSH5", "MLH3", "PMS1", "PMS2P3", "XPC", "RAD23B", "CETN2", "RAD23A", "XPA", "DDB1", "DDB2", "RPA1", "RPA2", "RPA3", "ERCC3", "ERCC2", "GTF2H1", "GTF2H2", "GTF2H3", "GTF2H4", "GTF2H5", "CDK7", "CCNH", "MNAT1", "ERCC5", "ERCC1", "ERCC4", "LIG1", "RBX1", "CUL4A", "CUL4B", "ERCC8", "ERCC6", "UVSSA", "XAB2", "MMS19", "RAD51", "RAD51B", "RAD51D", "DMC1", "XRCC2", "XRCC3", "RAD52", "RAD54L", "RAD54B", "BRCA1", "SHFM1", "RAD50", "MRE11A", "NBN", "RBBP8", "MUS81", "EME1", "EME2", "SLX1A", "SLX1B", "GEN1", "BARD1", "BABAM1", "FAM175A", "BRE", "UIMC1", "BRCC3", "SYCP3", "FANCA", "FANCB", "FANCC", "BRCA2", "FANCD2", "FANCE", "FANCF", "FANCG", "FANCI", "BRIP1", "FANCL", "FANCM", "PALB2", "RAD51C", "SLX4", "C1orf86", "C19orf40", "APITD1", "WDR48", "USP1", "C17orf70", "HES1", "RMI1", "RMI2", "TOP3A", "UBE2T", "XRCC6", "XRCC5", "PRKDC", "LIG4", "XRCC4", "DCLRE1C", "NHEJ1", "DNTT", "NUDT1", "DUT", "RRM2B", "POLB", "POLG", "POLD1", "POLE", "PCNA", "REV3L", "MAD2L2", "REV1", "POLH", "POLI", "POLQ", "POLK", "POLL", "POLM", "POLN", "FEN1", "FAN1", "TREX1", "TREX2", "EXO1", "APTX", "SPO11", "ENDOV", "UBE2A", "UBE2B", "RAD18", "SHPRH", "HLTF", "RNF168", "SPRTN", "RNF8", "RNF4", "UBE2V2", "UBE2N", "H2AFX", "CHAF1A", "SETMAR", "BLM", "WRN", "RECQL4", "ATM", "MPLKIP", "DCLRE1A", "DCLRE1B", "RPA4", "PRPF19", "RECQL", "RECQL5", "HELQ", "RDM1", "NABP2", "RFC1", "RFC2", "RFC3", "RFC4", "RFC5", "ATR", "ATRIP", "MDC1", "RAD1", "RAD9A", "HUS1", "RAD17", "CHEK1", "CHEK2", "TP53", "TP53BP1", "RIF1", "TOPBP1", "CLK2", "PER1")
+
+# Filtering of variants based on DDR genes using SYMBOL 
+fixed_af_filt_icr1000_ddr.df <- tibble::rownames_to_column(fixed_af_filt_icr1000_ddr.df, var = "rowname")
+fixed_af_filt_icr1000_ddr_only.df <- fixed_af_filt_icr1000_ddr.df %>%
+  filter(fixed_af_filt_icr1000_ddr.df$SYMBOL %in% ddr_genes)
+fixed_af_filt_icr1000_ddr_only.df <- tibble::column_to_rownames(fixed_af_filt_icr1000_ddr_only.df, var = "rowname")
+
+removed_variant.df <- fixed_af_filt_icr1000_ddr.df %>%
+  filter(!fixed_af_filt_icr1000_ddr.df$SYMBOL %in% ddr_genes)
+
+# Check output dataframe
+dim(fixed_af_filt_icr1000_ddr_only.df)
+class(fixed_af_filt_icr1000_ddr_only.df)
+fixed_af_filt_icr1000_ddr_only.df[1:20,1:10]
+class(fixed_af_filt_icr1000_ddr_only.df$SYMBOL)
+unique(fixed_af_filt_icr1000_ddr_only.df$SYMBOL)
+unique(removed_variant.df$SYMBOL)
+
+```
+
+# syncronise_filtered_variants_and_genotype_data_lof 
+
+```{r syncronise_filtered_variants_and_genotype_data_lof}
+
+# Isolate relavent rows from genotype matrix
+gt_add_af_filt_icr1000_ddr_only.mx <- gt_add_af_filt_icr1000_ddr.mx[rownames(fixed_af_filt_icr1000_ddr_only.df),]
+
+# Compare filtered fixed column dataframe and genotype matrix
+fixed_af_filt_icr1000_ddr_only.df[1:20,1:5]
+gt_add_af_filt_icr1000_ddr_only.mx[1:20,1:2]
+
+# Check rowmnames are same 
+sum(rownames(gt_add_af_filt_icr1000_ddr_only.mx) != rownames(fixed_af_filt_icr1000_ddr_only.df)) # should be 0
+
+```
+
+# count_variants_burden_per_individual  
+
+Make and keep the named vector for later use  
+
+```{r count_variants_burden_per_individual}
+
+# explore genotypes table
+summary(as.factor(gt_add_af_filt_icr1000_ddr_only.mx))
+
+# count
+simple_burden <- apply(gt_add_af_filt_icr1000_ddr_only.mx, 2, sum, na.rm = TRUE)
+names(simple_burden) <- colnames(gt_add_af_filt_icr1000_ddr_only.mx)
+
+# explore simple burden and select individuals to assess further
+simple_burden[1:5]
+sum(is.na(simple_burden)) # sanity check
+table(simple_burden)
+hist(simple_burden, labels = TRUE)
+which(simple_burden == 3) # 3 alleles - 1 subject
+which(simple_burden == 4) # 4 alleles - 3 subjects
+which(simple_burden == 5) # 5 alleles - 1 subject
+which(simple_burden == 6) # 6 alleles - 4 subjects
+which(simple_burden == 7) # 7 alleles - 13 subjects
+which(simple_burden == 8) # 8 alleles - 15 subjects
+
+```
+
+# function_to_explore_selected_individuals
+
+What genes are affected in selected individuals ?  
+
+```{r function_to_explore_selected_individuals}
+
+get_case_summary.udf <- function(case){
+  
+  variants <- which(gt_add_af_filt_icr1000_ddr_only.mx[,case] != "0|0" & 
+                  gt_add_af_filt_icr1000_ddr_only.mx[,case] != "0")
+
+  genotypes <- gt_add_af_filt_icr1000_ddr_only.mx[variants,case]
+
+  summary.df <- cbind(fixed_af_filt_icr1000_ddr_only.df[variants,c("SYMBOL", "CHROM", "POS", "REF", "ALT", "Consequence", "IMPACT", "VARIANT_CLASS", "SIFT", "PolyPhen", "CADD_PHRED", "CLIN_SIG")],
+                      genotypes)
+  summary.df
+
+}
+
+```
+
+# explore_selected_individuals
+
+Look at what genes are affected in selected individuals
+
+Excluded individuals:  
+EGAR00001238165_1622_A04 (3 alleles) - BLM - PolyPhen and CADD  
+EGAR00001237960_1528_G07 (6 alleles) - XAB2 - SIFT and CADD  
+EGAR00001238105_1620_G03 (6 alleles) - ATR - SIFT, PolyPhen and CADD  
+EGAR00001237551_1520_B08 (7 alleles) - FANCM - SIFT and CADD; ERCC4/LIG4 - SIFT, PolyPhen and CADD  
+EGAR00001237623_1521_F11 (7 alleles) - APLF - SIFT and CADD  
+EGAR00001237644_1522_B03 (7 alleles) - MSH2 - SIFT, PolyPhen and CADD  
+EGAR00001237726_1523_H02 (7 alleles) - POLG - SIFT, PolyPhen and CADD  
+EGAR00001237807_1525_E05 (7 alleles) - UVSSA - PolyPhen and CADD  
+EGAR00001238280_1626_E09 (7 alleles) - UIMC1 - SIFT and CADD  
+EGAR00001237758_1524_E04 (8 alleles) - RAD50 - SIFT, PolyPhen and CADD  
+EGAR00001237657_1522_D04 (8 alleles) - RFC4/ERCC6 - SIFT, PolyPhen and CADD  
+EGAR00001237704_1523_D03 (8 alleles) - NEIL3 - SIFT, PolyPhen and CADD  
+EGAR00001237721_1523_G03 (8 alleles) - ERCC5 - SIFT and CADD  
+EGAR00001237820_1525_G06 (8 alleles) - SHPRH - SIFT and CADD; LIG1 - SIFT & CADD  
+EGAR00001237887_1527_B12 (8 alleles) - MLH3 - SIFT, PolyPhen and CADD  
+EGAR00001238107_1620_G05 (8 alleles) - RAD54B - SIFT and CADD  
+EGAR00001238209_1625_A05 (8 alleles) - REV3L - SIFT, PolyPhen and CADD; POLE - SIFT & CADD; ERCC5 - SIFT and CADD  
+EGAR00001238377_1628_E10 (8 alleles) - REV3L - SIFT, PolyPhen and CADD  
+EGAR00001238393_1628_H08 (8 alleles) - OGG1 - SIFT, PolyPhen and CADD  
+
+### EGAR00001237811_1525_F03
+
+```{r EGAR00001237811_1525_F03}
+
+get_case_summary.udf("EGAR00001237811_1525_F03")
+
+```
+
+### EGAR00001237971_1528_H12
+
+```{r EGAR00001237971_1528_H12}
+
+get_case_summary.udf("EGAR00001237971_1528_H12")
+
+```
+
+### EGAR00001237982_1529_B11 - BRCA2 variant considered acceptable
+
+```{r EGAR00001237982_1529_B11}
+
+get_case_summary.udf("EGAR00001237982_1529_B11")
+
+```
+
+### EGAR00001238086_1620_D02
+
+```{r EGAR00001238086_1620_D02}
+
+get_case_summary.udf("EGAR00001238086_1620_D02")
+
+```
+
+### EGAR00001238429_1629_F03 - SLX4 - SIFT ?
+
+```{r EGAR00001238429_1629_F03}
+
+get_case_summary.udf("EGAR00001238429_1629_F03")
+
+```
+
+### EGAR00001238065_1619_H05 - FANCC - CADD ?
+
+```{r EGAR00001238065_1619_H05}
+
+get_case_summary.udf("EGAR00001238065_1619_H05")
+
+```
+
+### EGAR00001238102_1620_F06 - MSH6 - PolyPhen & CADD with benign clin sig ? 
+
+```{r EGAR00001238102_1620_F06}
+
+get_case_summary.udf("EGAR00001238102_1620_F06")
+
+```
+
+### EGAR00001238302_1627_A05
+
+```{r EGAR00001238302_1627_A05}
+
+get_case_summary.udf("EGAR00001238302_1627_A05")
+
+```
+
+### EGAR00001238348_1627_H09
+
+```{r EGAR00001238348_1627_H09}
+
+get_case_summary.udf("EGAR00001238348_1627_H09")
+
+```
+
+### EGAR00001238376_1628_E09
+
+```{r EGAR00001238376_1628_E09}
+
+get_case_summary.udf("EGAR00001238376_1628_E09")
+
+```
+
+### EGAR00001238465_1631_D03
+
+```{r EGAR00001238465_1631_D03}
+
+get_case_summary.udf("EGAR00001238465_1631_D03")
+
+```
+
+### EGAR00001237853_1526_E05 - UVSSA - SIFT ?
+
+```{r EGAR00001237853_1526_E05}
+
+get_case_summary.udf("EGAR00001237853_1526_E05")
+
+```
+
+### EGAR00001237892_1527_C11
+
+```{r EGAR00001237892_1527_C11}
+
+get_case_summary.udf("EGAR00001237892_1527_C11")
+
+```
+
+### EGAR00001238108_1620_G06
+
+```{r EGAR00001238108_1620_G06}
+
+get_case_summary.udf("EGAR00001238108_1620_G06")
+
+```
+
+### EGAR00001238189_1622_F03 - MRE11A - SIFT and CADD with uncertain significance clin sig ?
+
+```{r EGAR00001238189_1622_F03}
+
+get_case_summary.udf("EGAR00001238189_1622_F03")
+
+```
+
+### EGAR00001238266_1626_C07
+
+```{r EGAR00001238266_1626_C07}
+
+get_case_summary.udf("EGAR00001238266_1626_C07")
+
+```
+
+### EGAR00001238454_1631_B04
+
+```{r EGAR00001238454_1631_B04}
+
+get_case_summary.udf("EGAR00001238454_1631_B04")
+
+```
+
+### EGAR00001238453_1631_B03
+
+```{r EGAR00001238453_1631_B03}
+
+get_case_summary.udf("EGAR00001238453_1631_B03")
+
+```
+
+# clean_up
+
+```{r clean_up}
+
+rm(fixed_af_filt_icr1000_ddr.df, fixed_af_filt_icr1000_ddr_only.df, gt_add_af_filt_icr1000_ddr.mx, gt_add_af_filt_icr1000_ddr_only.mx, meta.df, removed_variant.df, ddr_genes, get_case_summary.udf, input_folder)
+
+```
+
+# save_results
+
+```{r save_results}
+
+save.image(paste(output_folder, "r01_icr1000_ddr_simple_burden.RData", sep="/"))
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```

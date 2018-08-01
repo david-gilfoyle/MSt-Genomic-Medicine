@@ -6,7 +6,7 @@ editor_options:
 ---
 
 Started: David Gilfoyle 03 May 2018  
-Updated: David Gilfoyle 15 May 2018
+Updated: David Gilfoyle 16 May 2018
 
 ---
 
@@ -46,9 +46,9 @@ load(paste(input_folder, "r01_import_vcf_icr1000_ddr.RData", sep="/"))
 
 # Check input fixed column dataframe
 dim(fixed_icr1000_ddr.df)
-class(fixed_icr1000_ddr.df)
 str(fixed_icr1000_ddr.df)
 colnames(fixed_icr1000_ddr.df)
+class(fixed_icr1000_ddr.df)
 fixed_icr1000_ddr.df[1:20,1:10]
 
 # Check input genotype matrix
@@ -109,6 +109,7 @@ fixed_icr1000_ddr.df[1:5,1:10]
 gt_icr1000_ddr.mx[1:5,1:5]
 gq_icr1000_ddr.mx[1:5,1:5]
 sum(rownames(gt_icr1000_ddr.mx) != rownames(fixed_icr1000_ddr.df)) # should be 0
+sum(rownames(gq_icr1000_ddr.mx) != rownames(fixed_icr1000_ddr.df)) # should be 0
 
 # Clean up
 rm(labels, new_vars, old_vars)

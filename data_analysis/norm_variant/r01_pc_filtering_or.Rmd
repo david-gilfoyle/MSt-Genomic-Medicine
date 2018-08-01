@@ -6,7 +6,7 @@ editor_options:
 ---
 
 Started: David Gilfoyle 7 May 2018  
-Updated: David Gilfoyle 13 May 2018
+Updated: David Gilfoyle 17 May 2018
 
 ---
 
@@ -43,15 +43,15 @@ kgen_input_folder="/home/ec2-user/results/filtered/af_filt/kgen"
 load(paste(exac_input_folder, "r01_exac_full_or_af_filtered.RData", sep="/"))
 load(paste(exac_input_folder, "r01_exac_nontcga_or_af_filtered.RData", sep="/"))
 load(paste(icr1000_input_folder, "r01_icr1000_or_af_filtered.RData", sep="/"))
-rm(gt_af_filt_icr1000_or.mx)
+rm(gt_add_af_filt_icr1000_or.mx)
 load(paste(kgen_input_folder, "r01_kgen_or_af_filtered.RData", sep="/"))
 rm(gt_af_filt_kgen_or.mx)
 
 # Check input dataframe
 dim(fixed_af_filt_exac_full_or.df) # should be 56,122
 dim(fixed_af_filt_exac_nontcga_or.df) # should be 51,672
-dim(fixed_af_filt_icr1000_or.df) # should be 2,632
-dim(fixed_af_filt_kgen_or.df) # should be 47,624
+dim(fixed_af_filt_icr1000_or.df) # should be 2,539
+dim(fixed_af_filt_kgen_or.df) # should be 47,482
 
 # Setup base folder
 base_folder="/home/ec2-user/scripts/data_analysis/norm_variant"
@@ -87,8 +87,8 @@ kgen_or.df <- fixed_af_filt_kgen_or.df %>%
 # Check OR gene filtered dataframes
 dim(exac_full_or.df) # should be 55,000
 dim(exac_nontcga_or.df) # should be 50,655
-dim(icr1000_or.df) # should be 2,592
-dim(kgen_or.df) # should be 42,130
+dim(icr1000_or.df) # should be 2,503
+dim(kgen_or.df) # should be 42,006
 
 # Clean-up
 rm(fixed_af_filt_exac_full_or.df, fixed_af_filt_exac_nontcga_or.df, fixed_af_filt_icr1000_or.df, fixed_af_filt_kgen_or.df)

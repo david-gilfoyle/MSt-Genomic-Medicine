@@ -6,7 +6,7 @@ editor_options:
 ---
 
 Started: David Gilfoyle 2 May 2018  
-Updated: David Gilfoyle 2 May 2018
+Updated: David Gilfoyle 16 May 2018
 
 ---
 
@@ -58,7 +58,7 @@ gt_kgen_or.mx[1:5,1:5]
 
 # Setup base and output folders
 base_folder="/home/ec2-user/scripts/r_import/kgen"
-output_folder="/home/ec2-user/results/qual_filt/kgen"
+output_folder="/home/ec2-user/results/filtered/qual_filt/kgen"
 
 getwd()
 setwd(base_folder)

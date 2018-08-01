@@ -6,17 +6,16 @@ editor_options:
 ---
 
 Started: David Gilfoyle 3 May 2018  
-Updated: David Gilfoyle 13 May 2018
+Updated: David Gilfoyle 16 May 2018
 
 ---
 
 # Summary
 
-Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC)  
-and HC LoF variants in genes with pLI >= 0.9  
+Variant filtering of AF filtered dataset to select loss of function (LoF; Consequence), LoF with LOFTEE High Confidence (HC) and HC LoF variants in genes with pLI >= 0.9  
 Dataset: ICR1000  
 Gene Selection: Olfactory Receptor Genes (removing OR10G6, OR11H2, OR14A2, OR14K1, OR1F12, OR2AJ1, OR2T7, OR8U9 and OR9G9)   
-Input Variants: 2,632
+Input Variants: 2,539
 
 # start_section
 
@@ -45,8 +44,8 @@ load(paste(input_folder, "r01_icr1000_or_af_filtered.RData", sep="/"))
 # Setup script input dataframe naming
 input.df <- fixed_af_filt_icr1000_or.df
 rm(fixed_af_filt_icr1000_or.df)
-input.mx <- gt_af_filt_icr1000_or.mx
-rm(gt_af_filt_icr1000_or.mx)
+input.mx <- gt_add_af_filt_icr1000_or.mx
+rm(gt_add_af_filt_icr1000_or.mx)
 
 # Check input dataframe
 dim(input.df)
@@ -155,7 +154,7 @@ output.mx[1:20,1:2]
 
 Output assessed based on further filtering with:  
 1) LOFTEE high confidence - assessment indicates that some entries are NA - these appear to be mainly start_lost and stop_lost and they will be retained. However, removal of low confidence variants (LC) is considered appropriate to enrich dataset for potentially deleterious variants  
-2) CADD_PHRED > 15 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED <= 15 is considered appropriate to enrich dataset for potentially deleterious variants
+2) CADD_PHRED > 20 - assessment indicates that some entries are NA - these appear to be mainly missense (insertion and deletion variants) and they will be retained. However, removal of variants with CADD_PHRED <= 20 is considered appropriate to enrich dataset for potentially deleterious variants
 
 ```{r additional_filtering_loftee_hc}
 
@@ -169,21 +168,21 @@ sum(output.df$LoF == "LC", na.rm = TRUE)
 # output_lof_na.df <- output.df %>% 
 #   filter(is.na(LoF))
 
-# Assessment of filtering CADD_PHREDD > 15
+# Assessment of filtering CADD_PHREDD > 20
 sum(is.na(output.df$CADD_PHRED))
-sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)
-sum(as.numeric(output.df$CADD_PHRED) < 15, na.rm = TRUE)
-sum(as.numeric(output.df$CADD_PHRED) > 15, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) == 20, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) < 20, na.rm = TRUE)
+sum(as.numeric(output.df$CADD_PHRED) > 20, na.rm = TRUE)
 
 # output_cadd_na.df <- output.df %>% 
 #  filter(is.na(CADD_PHRED))
 
-# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED > 15
+# Additional filtration based on LOFTEE (high confidence) and CADD_PHRED > 20
 output.df <- tibble::rownames_to_column(output.df, var = "rowname")
 output_hc.df <- output.df %>% 
   filter((LoF == "HC") |
            (is.na(LoF))) %>%
-  filter((as.numeric(CADD_PHRED) > 15) |
+  filter((as.numeric(CADD_PHRED) > 20) |
            (is.na(CADD_PHRED)))
 output_hc.df <- tibble::column_to_rownames(output_hc.df, var = "rowname")
 
@@ -259,9 +258,9 @@ output_hc_pli.mx[1:2]
 fixed_lof_filt_icr1000_or.df <- output.df
 fixed_lof_hc_filt_icr1000_or.df <- output_hc.df
 fixed_lof_hc_pli_filt_icr1000_or.df <- output_hc_pli.df
-gt_lof_filt_icr1000_or.mx <- output.mx
-gt_lof_hc_filt_icr1000_or.mx <- output_hc.mx
-gt_lof_hc_pli_filt_icr1000_or.mx <- output_hc_pli.mx
+gt_add_lof_filt_icr1000_or.mx <- output.mx
+gt_add_lof_hc_filt_icr1000_or.mx <- output_hc.mx
+gt_add_lof_hc_pli_filt_icr1000_or.mx <- output_hc_pli.mx
 
 # Clean-up
 rm(input.df, output.df, output_hc.df, output_hc_pli.df, input.mx, output.mx, output_hc.mx, output_hc_pli.mx, or_genes, removed_variant.df)

@@ -123,11 +123,11 @@ $(document).ready(function () {
 
 
 <p>Started: David Gilfoyle 3 May 2018<br />
-Updated: David Gilfoyle 7 May 2018</p>
+Updated: David Gilfoyle 16 May 2018</p>
 <hr />
 <div id="summary" class="section level1">
 <h1>Summary</h1>
-<p>Variant filtering of AF filtered dataset to select non-coding (Consequence), high confidence (HC) non-coding (FATHMM_MKL_NC &gt; 0.5 and CADD_PHRED &gt; 15) and HC non-coding variants in genes with pLI &gt;= 0.9<br />
+<p>Variant filtering of AF filtered dataset to select non-coding (Consequence) and high confidence (HC) non-coding (FATHMM_MKL_NC &gt; 0.5 and CADD_PHRED &gt; 15)<br />
 Dataset: ExAC (full)<br />
 Gene Selection: Olfactory Receptor Genes<br />
 Input Variants: 56,122</p>
@@ -135,7 +135,7 @@ Input Variants: 56,122</p>
 <div id="start_section" class="section level1">
 <h1>start_section</h1>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-07 20:28:12 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 19:34:08 UTC&quot;</code></pre>
 <pre class="r"><code>rm(list=ls())
 graphics.off()
 
@@ -395,7 +395,7 @@ dim(output.df)</code></pre>
 <h1>additional_filtering</h1>
 <p>Output assessed based on further filtering with:<br />
 1) FATHMM_MKL_NC &gt; 0.5 - assessment indicates that some entries are NA - these appear to be insertion, deletion and substitution variants and they will be retained. However, removal of variants with FATHMM_MKL_NC &gt; 0.5 is considered appropriate to enrich dataset for potentially deleterious variants<br />
-2) CADD_PHRED &gt; 15 - assessment indicates that some entries are NA - these appear to be mainly insertion, deletion and substitution variants and they will be retained. However, removal of variants with CADD_PHRED &lt;= 15 is considered appropriate to enrich dataset for potentially deleterious variants</p>
+2) CADD_PHRED &gt; 20 - assessment indicates that some entries are NA - these appear to be mainly insertion, deletion and substitution variants and they will be retained. However, removal of variants with CADD_PHRED &lt;= 20 is considered appropriate to enrich dataset for potentially deleterious variants</p>
 <pre class="r"><code># Assessment of filtering FATHMM_MKL_NC &gt; 0.5
 class(output.df$FATHMM_MKL_NC)</code></pre>
 <pre><code>## [1] &quot;character&quot;</code></pre>
@@ -410,15 +410,15 @@ class(output.df$FATHMM_MKL_NC)</code></pre>
 <pre class="r"><code># output_fathmm_na.df &lt;- output.df %&gt;% 
 #   filter(is.na(FATHMM_MKL_NC))
 
-# Assessment of filtering CADD_PHREDD &gt; 15
+# Assessment of filtering CADD_PHREDD &gt; 20
 sum(is.na(output.df$CADD_PHRED))</code></pre>
 <pre><code>## [1] 319</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 15, na.rm = TRUE)</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) == 20, na.rm = TRUE)</code></pre>
 <pre><code>## [1] 0</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 3163</code></pre>
-<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 15, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 39</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &lt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 3191</code></pre>
+<pre class="r"><code>sum(as.numeric(output.df$CADD_PHRED) &gt; 20, na.rm = TRUE)</code></pre>
+<pre><code>## [1] 11</code></pre>
 <pre class="r"><code># output_cadd_na.df &lt;- output.df %&gt;% 
 #  filter(is.na(CADD_PHRED))
 
@@ -426,178 +426,126 @@ sum(is.na(output.df$CADD_PHRED))</code></pre>
 output_hc.df &lt;- output.df %&gt;% 
   filter((as.numeric(FATHMM_MKL_NC) &gt; 0.5) |
            (is.na(FATHMM_MKL_NC))) %&gt;%
-  filter((as.numeric(CADD_PHRED) &gt; 15) |
+  filter((as.numeric(CADD_PHRED) &gt; 20) |
            (is.na(CADD_PHRED)))
 
 # Check output dataframe
 dim(output_hc.df)</code></pre>
-<pre><code>## [1] 335 154</code></pre>
+<pre><code>## [1] 327 154</code></pre>
 <pre class="r"><code>output_hc.df[1:20,1:10]</code></pre>
 <pre><code>##    CHROM       POS          ID    REF
 ## 1      1 158450704        &lt;NA&gt;   AAAT
 ## 2      1 158450704        &lt;NA&gt;   AAAT
 ## 3      1 158517903        &lt;NA&gt;      T
-## 4      1 158517905        &lt;NA&gt;      T
-## 5      1 158576193        &lt;NA&gt;      G
-## 6      1 158686908        &lt;NA&gt;      C
+## 4      1 158576193        &lt;NA&gt;      G
+## 5      1 158686908        &lt;NA&gt;      C
+## 6      1 158686910        &lt;NA&gt; AAAAAC
 ## 7      1 158686910        &lt;NA&gt; AAAAAC
-## 8      1 158686910        &lt;NA&gt; AAAAAC
-## 9      1 158686934        &lt;NA&gt;      C
-## 10     1 158747464        &lt;NA&gt;     AT
+## 8      1 158686934        &lt;NA&gt;      C
+## 9      1 158747464        &lt;NA&gt;     AT
+## 10     1 159505811        &lt;NA&gt;     TG
 ## 11     1 159505811        &lt;NA&gt;     TG
-## 12     1 159505811        &lt;NA&gt;     TG
-## 13     1 247695831        &lt;NA&gt;     GC
+## 12     1 247695831        &lt;NA&gt;     GC
+## 13     1 247752620        &lt;NA&gt;     TA
 ## 14     1 247752620        &lt;NA&gt;     TA
-## 15     1 247752620        &lt;NA&gt;     TA
+## 15     1 247752627 rs112232857      A
 ## 16     1 247752627 rs112232857      A
 ## 17     1 247752627 rs112232857      A
 ## 18     1 247752627 rs112232857      A
 ## 19     1 247752627 rs112232857      A
-## 20     1 247752627 rs112232857      A
+## 20     1 247752629        &lt;NA&gt;      A
 ##                                                    ALT       QUAL FILTER
 ## 1                                                 CAAT    1342.00   PASS
 ## 2                                                    A    1342.00   PASS
 ## 3                                                    C    1168.64   PASS
-## 4                                                    C    8589.53   PASS
-## 5                                                   GA    2043.78   PASS
-## 6                                                   CA    5507.34   PASS
-## 7                                                    A    5902.00   PASS
-## 8                                          AAAAACAAAAC    5902.00   PASS
-## 9                                                CGGAA   32846.10   PASS
-## 10                                                   A    1397.33   PASS
-## 11                                                   T   47650.90   PASS
-## 12                                                  CG   47650.90   PASS
-## 13                                                   G   10326.50   PASS
-## 14                                                 TAA    2150.34   PASS
-## 15                                                   T    2150.34   PASS
-## 16                        AGGGCCGGGCGCGGTGGCTCACGCCTGT 1538770.00   PASS
-## 17 AGGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCG 1538770.00   PASS
-## 18               AGGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGC 1538770.00   PASS
-## 19       AGGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGG 1538770.00   PASS
-## 20                  AGGGCCGGGCGCGGTGGCTCACGCCTGTAATCCC 1538770.00   PASS
+## 4                                                   GA    2043.78   PASS
+## 5                                                   CA    5507.34   PASS
+## 6                                                    A    5902.00   PASS
+## 7                                          AAAAACAAAAC    5902.00   PASS
+## 8                                                CGGAA   32846.10   PASS
+## 9                                                    A    1397.33   PASS
+## 10                                                   T   47650.90   PASS
+## 11                                                  CG   47650.90   PASS
+## 12                                                   G   10326.50   PASS
+## 13                                                 TAA    2150.34   PASS
+## 14                                                   T    2150.34   PASS
+## 15                        AGGGCCGGGCGCGGTGGCTCACGCCTGT 1538770.00   PASS
+## 16 AGGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGGAGGCCG 1538770.00   PASS
+## 17               AGGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGC 1538770.00   PASS
+## 18       AGGGCCGGGCGCGGTGGCTCACGCCTGTAATCCCAGCACTTTGGG 1538770.00   PASS
+## 19                  AGGGCCGGGCGCGGTGGCTCACGCCTGTAATCCC 1538770.00   PASS
+## 20                                          ATCCCAGCAC  302029.00   PASS
 ##     AC AC_AFR AC_AMR
 ## 1    1      0      0
 ## 2    3      0      0
 ## 3    1      0      0
 ## 4    2      0      0
-## 5    2      0      0
-## 6    5      2      0
+## 5    5      2      0
+## 6    1      0      0
 ## 7    1      0      0
-## 8    1      0      0
-## 9    3      0      0
-## 10   2      0      0
-## 11  36     36      0
-## 12   1      1      0
-## 13  11      0      0
-## 14  12      0      0
-## 15  24      4      3
-## 16 506      9     22
-## 17  80      0      3
-## 18  55      1      7
-## 19  98      4      4
-## 20  43      1      4</code></pre>
+## 8    3      0      0
+## 9    2      0      0
+## 10  36     36      0
+## 11   1      1      0
+## 12  11      0      0
+## 13  12      0      0
+## 14  24      4      3
+## 15 506      9     22
+## 16  80      0      3
+## 17  55      1      7
+## 18  98      4      4
+## 19  43      1      4
+## 20 332      6     14</code></pre>
 <pre class="r"><code>output_hc.df$Consequence[1:20]</code></pre>
 <pre><code>##  [1] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
 ##  [3] &quot;upstream_gene_variant&quot;   &quot;upstream_gene_variant&quot;  
-##  [5] &quot;upstream_gene_variant&quot;   &quot;downstream_gene_variant&quot;
+##  [5] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
 ##  [7] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
-##  [9] &quot;downstream_gene_variant&quot; &quot;upstream_gene_variant&quot;  
+##  [9] &quot;upstream_gene_variant&quot;   &quot;5_prime_UTR_variant&quot;    
 ## [11] &quot;5_prime_UTR_variant&quot;     &quot;5_prime_UTR_variant&quot;    
-## [13] &quot;5_prime_UTR_variant&quot;     &quot;downstream_gene_variant&quot;
+## [13] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
 ## [15] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
 ## [17] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;
 ## [19] &quot;downstream_gene_variant&quot; &quot;downstream_gene_variant&quot;</code></pre>
 <pre class="r"><code>output_hc.df$FATHMM_MKL_NC[1:20]</code></pre>
-<pre><code>##  [1] NA        NA        &quot;0.90203&quot; &quot;0.80172&quot; NA        NA        NA       
+<pre><code>##  [1] NA        NA        &quot;0.90203&quot; NA        NA        NA        NA       
 ##  [8] NA        NA        NA        NA        NA        NA        NA       
 ## [15] NA        NA        NA        NA        NA        NA</code></pre>
 <pre class="r"><code>output_hc.df$CADD_PHRED[1:20]</code></pre>
-<pre><code>##  [1] NA      NA      &quot;21.2&quot;  &quot;19.29&quot; NA      NA      NA      NA     
-##  [9] NA      NA      NA      NA      NA      NA      NA      NA     
-## [17] NA      NA      NA      NA</code></pre>
+<pre><code>##  [1] NA     NA     &quot;21.2&quot; NA     NA     NA     NA     NA     NA     NA    
+## [11] NA     NA     NA     NA     NA     NA     NA     NA     NA     NA</code></pre>
 <pre class="r"><code>unique(output_hc.df$SYMBOL)</code></pre>
 <pre><code>##   [1] &quot;OR10R2&quot;  &quot;OR6Y1&quot;   &quot;OR10Z1&quot;  &quot;OR6K3&quot;   &quot;OR6N2&quot;   &quot;OR10J5&quot;  &quot;OR2C3&quot;  
 ##   [8] &quot;OR2G2&quot;   &quot;OR6F1&quot;   &quot;OR14K1&quot;  &quot;OR11L1&quot;  &quot;OR2T8&quot;   &quot;OR2L13&quot;  &quot;OR2AK2&quot; 
 ##  [15] &quot;OR2L2&quot;   &quot;OR2M5&quot;   &quot;OR2M4&quot;   &quot;OR2T12&quot;  &quot;OR2T7&quot;   &quot;OR2T2&quot;   &quot;OR2T3&quot;  
 ##  [22] &quot;OR2G6&quot;   &quot;OR2T29&quot;  &quot;OR2T34&quot;  &quot;OR2T10&quot;  &quot;OR2T35&quot;  &quot;OR2T27&quot;  &quot;OR14I1&quot; 
-##  [29] &quot;PRR21&quot;   &quot;OR5AC2&quot;  &quot;OR5H14&quot;  &quot;OR5K1&quot;   &quot;OR2Y1&quot;   &quot;OR2V1&quot;   &quot;OR2B6&quot;  
-##  [36] &quot;OR2W1&quot;   &quot;OR2J3&quot;   &quot;OR2J2&quot;   &quot;OR14J1&quot;  &quot;OR2A4&quot;   &quot;OR2F2&quot;   &quot;OR6B1&quot;  
-##  [43] &quot;OR2A25&quot;  &quot;OR2A12&quot;  &quot;OR2A2&quot;   &quot;OR2A14&quot;  &quot;OR2A7&quot;   &quot;OR13J1&quot;  &quot;OR13C4&quot; 
-##  [50] &quot;OR13C5&quot;  &quot;OR2K2&quot;   &quot;OR1J2&quot;   &quot;OR1N1&quot;   &quot;OR1N2&quot;   &quot;OR1Q1&quot;   &quot;OR1L1&quot;  
-##  [57] &quot;OR1L3&quot;   &quot;OR1L6&quot;   &quot;OR1K1&quot;   &quot;OR13A1&quot;  &quot;OR52K2&quot;  &quot;OR52K1&quot;  &quot;OR52I1&quot; 
-##  [64] &quot;OR51F2&quot;  &quot;OR51S1&quot;  &quot;OR51G2&quot;  &quot;OR51L1&quot;  &quot;OR52E2&quot;  &quot;OR52A1&quot;  &quot;OR51V1&quot; 
-##  [71] &quot;OR51B4&quot;  &quot;OR51B5&quot;  &quot;OR51B6&quot;  &quot;OR51M1&quot;  &quot;OR52D1&quot;  &quot;OR52N5&quot;  &quot;OR52N2&quot; 
-##  [78] &quot;OR52E8&quot;  &quot;OR56A4&quot;  &quot;OR56B4&quot;  &quot;OR6A2&quot;   &quot;OR10A5&quot;  &quot;OR10A2&quot;  &quot;OR10A4&quot; 
-##  [85] &quot;OR2D2&quot;   &quot;OR5P2&quot;   &quot;OR5P3&quot;   &quot;OR4C12&quot;  &quot;OR4A5&quot;   &quot;OR4C46&quot;  &quot;OR4A16&quot; 
-##  [92] &quot;OR4C15&quot;  &quot;OR4S2&quot;   &quot;OR4C6&quot;   &quot;OR5D14&quot;  &quot;OR5L2&quot;   &quot;OR5D16&quot;  &quot;OR5W2&quot;  
-##  [99] &quot;OR10AG1&quot; &quot;OR8I2&quot;   &quot;OR8H3&quot;   &quot;OR5T3&quot;   &quot;OR8U1&quot;   &quot;OR5M3&quot;   &quot;OR5M10&quot; 
-## [106] &quot;OR9G1&quot;   &quot;OR5AK2&quot;  &quot;OR1S2&quot;   &quot;OR10Q1&quot;  &quot;OR5B17&quot;  &quot;OR5B2&quot;   &quot;OR5B21&quot; 
-## [113] &quot;OR4D10&quot;  &quot;OR6X1&quot;   &quot;OR6M1&quot;   &quot;OR6T1&quot;   &quot;OR10G4&quot;  &quot;OR10G7&quot;  &quot;OR8G5&quot;  
-## [120] &quot;OR8B2&quot;   &quot;OR8B8&quot;   &quot;OR6C6&quot;   &quot;OR6C3&quot;   &quot;OR6C68&quot;  &quot;OR6C4&quot;   &quot;OR11H2&quot; 
-## [127] &quot;OR4Q3&quot;   &quot;OR4N2&quot;   &quot;OR4K2&quot;   &quot;OR4K5&quot;   &quot;OR4K15&quot;  &quot;OR4K14&quot;  &quot;OR4K13&quot; 
-## [134] &quot;OR5AU1&quot;  &quot;OR4E2&quot;   &quot;OR4N4&quot;   &quot;OR4F15&quot;  &quot;OR1D5&quot;   &quot;OR1D2&quot;   &quot;OR1E2&quot;  
-## [141] &quot;OR4D1&quot;   &quot;OR4D2&quot;   &quot;OR2Z1&quot;   &quot;OR1M1&quot;   &quot;OR7G2&quot;   &quot;OR7G1&quot;   &quot;OR7G3&quot;  
-## [148] &quot;OR7C1&quot;   &quot;OR7A10&quot;  &quot;OR7A17&quot;  &quot;OR7C2&quot;   &quot;OR1I1&quot;   &quot;OR13H1&quot;</code></pre>
-</div>
-<div id="additional_filtering_exac_pli" class="section level1">
-<h1>additional_filtering_exac_pli</h1>
-<p>Deleterious non-coding variants in a single allele are expected to have a greater impact in loss intolerant genes (ExAC pLI &gt;= 0.9)</p>
-<pre class="r"><code># Assessment of impact of filtering ExAC pLI &gt;= 0.9
-sum(is.na(output_hc.df$ExACpLI))</code></pre>
-<pre><code>## [1] 8</code></pre>
-<pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &lt; 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 327</code></pre>
-<pre class="r"><code>sum(as.numeric(output_hc.df$ExACpLI) &gt;= 0.9, na.rm = TRUE)</code></pre>
-<pre><code>## [1] 0</code></pre>
-<pre class="r"><code># Additional filtration based on ExAC pLI &gt;= 0.9
-output_hc_pli.df &lt;- output_hc.df %&gt;% 
-  filter(as.numeric(ExACpLI) &gt;= 0.9)
-
-# Check output dataframe
-dim(output_hc_pli.df)</code></pre>
-<pre><code>## [1]   0 154</code></pre>
-<pre class="r"><code>output_hc_pli.df[1:20,1:10]</code></pre>
-<pre><code>##       CHROM POS   ID  REF  ALT QUAL FILTER   AC AC_AFR AC_AMR
-## NA     &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.1   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.2   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.3   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.4   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.5   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.6   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.7   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.8   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.9   &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.10  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.11  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.12  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.13  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.14  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.15  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.16  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.17  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.18  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;
-## NA.19  &lt;NA&gt;  NA &lt;NA&gt; &lt;NA&gt; &lt;NA&gt;   NA   &lt;NA&gt; &lt;NA&gt;   &lt;NA&gt;   &lt;NA&gt;</code></pre>
-<pre class="r"><code>output_hc_pli.df$Consequence[1:20]</code></pre>
-<pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
-<pre class="r"><code>output_hc_pli.df$FATHMM_MKL_NC[1:20]</code></pre>
-<pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
-<pre class="r"><code>output_hc_pli.df$CADD_PHRED[1:20]</code></pre>
-<pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
-<pre class="r"><code>output_hc_pli.df$ExACpLI[1:20]</code></pre>
-<pre><code>##  [1] NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA NA</code></pre>
-<pre class="r"><code>unique(output_hc_pli.df$SYMBOL)</code></pre>
-<pre><code>## character(0)</code></pre>
+##  [29] &quot;PRR21&quot;   &quot;OR5AC2&quot;  &quot;OR5H14&quot;  &quot;OR5K1&quot;   &quot;OR2Y1&quot;   &quot;OR2V1&quot;   &quot;OR2W1&quot;  
+##  [36] &quot;OR2J3&quot;   &quot;OR2J2&quot;   &quot;OR14J1&quot;  &quot;OR2A4&quot;   &quot;OR2F2&quot;   &quot;OR6B1&quot;   &quot;OR2A25&quot; 
+##  [43] &quot;OR2A12&quot;  &quot;OR2A2&quot;   &quot;OR2A14&quot;  &quot;OR2A7&quot;   &quot;OR13J1&quot;  &quot;OR13C4&quot;  &quot;OR13C5&quot; 
+##  [50] &quot;OR2K2&quot;   &quot;OR1J2&quot;   &quot;OR1N1&quot;   &quot;OR1N2&quot;   &quot;OR1Q1&quot;   &quot;OR1L1&quot;   &quot;OR1L3&quot;  
+##  [57] &quot;OR1L6&quot;   &quot;OR1K1&quot;   &quot;OR52K2&quot;  &quot;OR52K1&quot;  &quot;OR52I1&quot;  &quot;OR51F2&quot;  &quot;OR51G2&quot; 
+##  [64] &quot;OR51L1&quot;  &quot;OR52E2&quot;  &quot;OR52A1&quot;  &quot;OR51V1&quot;  &quot;OR51B4&quot;  &quot;OR51B5&quot;  &quot;OR51B6&quot; 
+##  [71] &quot;OR52D1&quot;  &quot;OR52N5&quot;  &quot;OR52N2&quot;  &quot;OR52E8&quot;  &quot;OR56A4&quot;  &quot;OR56B4&quot;  &quot;OR6A2&quot;  
+##  [78] &quot;OR10A5&quot;  &quot;OR10A2&quot;  &quot;OR10A4&quot;  &quot;OR2D2&quot;   &quot;OR5P2&quot;   &quot;OR5P3&quot;   &quot;OR4C12&quot; 
+##  [85] &quot;OR4A5&quot;   &quot;OR4C46&quot;  &quot;OR4A16&quot;  &quot;OR4C15&quot;  &quot;OR4S2&quot;   &quot;OR4C6&quot;   &quot;OR5D14&quot; 
+##  [92] &quot;OR5L2&quot;   &quot;OR5D16&quot;  &quot;OR5W2&quot;   &quot;OR10AG1&quot; &quot;OR8I2&quot;   &quot;OR8H3&quot;   &quot;OR5T3&quot;  
+##  [99] &quot;OR8U1&quot;   &quot;OR5M3&quot;   &quot;OR5M10&quot;  &quot;OR9G1&quot;   &quot;OR5AK2&quot;  &quot;OR1S2&quot;   &quot;OR10Q1&quot; 
+## [106] &quot;OR5B17&quot;  &quot;OR5B2&quot;   &quot;OR5B21&quot;  &quot;OR4D10&quot;  &quot;OR6X1&quot;   &quot;OR6M1&quot;   &quot;OR6T1&quot;  
+## [113] &quot;OR10G4&quot;  &quot;OR10G7&quot;  &quot;OR8G5&quot;   &quot;OR8B2&quot;   &quot;OR8B8&quot;   &quot;OR6C6&quot;   &quot;OR6C3&quot;  
+## [120] &quot;OR6C68&quot;  &quot;OR6C4&quot;   &quot;OR11H2&quot;  &quot;OR4Q3&quot;   &quot;OR4N2&quot;   &quot;OR4K2&quot;   &quot;OR4K5&quot;  
+## [127] &quot;OR4K15&quot;  &quot;OR4K14&quot;  &quot;OR4K13&quot;  &quot;OR5AU1&quot;  &quot;OR4E2&quot;   &quot;OR4N4&quot;   &quot;OR4F15&quot; 
+## [134] &quot;OR1D5&quot;   &quot;OR1D2&quot;   &quot;OR1E2&quot;   &quot;OR4D1&quot;   &quot;OR4D2&quot;   &quot;OR2Z1&quot;   &quot;OR1M1&quot;  
+## [141] &quot;OR7G2&quot;   &quot;OR7G1&quot;   &quot;OR7G3&quot;   &quot;OR7C1&quot;   &quot;OR7A10&quot;  &quot;OR7A17&quot;  &quot;OR7C2&quot;  
+## [148] &quot;OR1I1&quot;   &quot;OR13H1&quot;</code></pre>
 </div>
 <div id="update_dataframe_naming" class="section level1">
 <h1>update_dataframe_naming</h1>
 <pre class="r"><code># Reset of output dataframe names
 fixed_nc_filt_exac_full_or.df &lt;- output.df
 fixed_nc_hc_filt_exac_full_or.df &lt;- output_hc.df
-fixed_nc_hc_pli_filt_exac_full_or.df &lt;- output_hc_pli.df
 
 # Clean-up
-rm(input.df, output.df, output_hc.df, output_hc_pli.df, or_genes, removed_variant.df)</code></pre>
+rm(input.df, output.df, output_hc.df, or_genes, removed_variant.df)</code></pre>
 </div>
 <div id="save_results" class="section level1">
 <h1>save_results</h1>
@@ -606,13 +554,9 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, or_genes, removed_varian
 <div id="final_section" class="section level1">
 <h1>final_section</h1>
 <pre class="r"><code>ls()</code></pre>
-<pre><code>## [1] &quot;base_folder&quot;                         
-## [2] &quot;fixed_nc_filt_exac_full_or.df&quot;       
-## [3] &quot;fixed_nc_hc_filt_exac_full_or.df&quot;    
-## [4] &quot;fixed_nc_hc_pli_filt_exac_full_or.df&quot;
-## [5] &quot;input_folder&quot;                        
-## [6] &quot;meta.df&quot;                             
-## [7] &quot;output_folder&quot;</code></pre>
+<pre><code>## [1] &quot;base_folder&quot;                      &quot;fixed_nc_filt_exac_full_or.df&quot;   
+## [3] &quot;fixed_nc_hc_filt_exac_full_or.df&quot; &quot;input_folder&quot;                    
+## [5] &quot;meta.df&quot;                          &quot;output_folder&quot;</code></pre>
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>## R version 3.4.1 (2017-06-30)
 ## Platform: x86_64-redhat-linux-gnu (64-bit)
@@ -643,7 +587,7 @@ rm(input.df, output.df, output_hc.df, output_hc_pli.df, or_genes, removed_varian
 ## [17] compiler_3.4.1   pkgconfig_2.0.1  htmltools_0.3.6  bindr_0.1.1     
 ## [21] tibble_1.4.2</code></pre>
 <pre class="r"><code>Sys.time()</code></pre>
-<pre><code>## [1] &quot;2018-05-07 20:28:17 UTC&quot;</code></pre>
+<pre><code>## [1] &quot;2018-05-16 19:34:13 UTC&quot;</code></pre>
 </div>
 
 

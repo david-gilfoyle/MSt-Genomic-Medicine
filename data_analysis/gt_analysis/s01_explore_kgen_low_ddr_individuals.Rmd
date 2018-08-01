@@ -1,0 +1,709 @@
+---
+title: "s01_explore_kgen_low_ddr_individuals"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 18 May 2018  
+Updated: David Gilfoyle 21 May 2018
+
+---
+
+# Summary
+
+Production of an additive genotype matrix and simple alt allele burden vector to allow assessment of 1000 Genomes Project individuals in the AF < 0.01 filtered dataset with a low DDR variant burden.
+
+In order to reduce variants to workable levels, non-DDR gene variants and selected variants based on consequence are removed.
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Install libraries
+library(dplyr)
+library(knitr)
+
+# Make output wider (default was 80 columns?)
+options(width = 100)
+
+```
+
+# load_rdata_file
+
+```{r load_rdata_file}
+
+# Setup input folder
+input_folder="/home/ec2-user/results/filtered/af_filt/kgen"
+
+# Load RData file - contains dataframe containing all variants and genotype matrix
+load(paste(input_folder, "r01_kgen_ddr_af_filtered.RData", sep="/"))
+
+# Check remaining dataframe and matrix
+dim(fixed_af_filt_kgen_ddr.df)
+class(fixed_af_filt_kgen_ddr.df)
+fixed_af_filt_kgen_ddr.df[1:20,1:10]
+
+dim(gt_af_filt_kgen_ddr.mx)
+class(gt_af_filt_kgen_ddr.mx)
+gt_af_filt_kgen_ddr.mx[1:20,1:3]
+
+# Check rowmnames are same 
+sum(rownames(gt_af_filt_kgen_ddr.mx) != rownames(fixed_af_filt_kgen_ddr.df)) # should be 0
+
+# Setup base and output folders
+base_folder="/home/ec2-user/scripts/data_analysis/gt_analysis"
+output_folder="/home/ec2-user/results/data_analysis/gt_analysis"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# variants_associated_with_ddr_genes
+
+```{r variants_associated_with_ddr_genes}
+
+# Set of DDR genes supporting variant filtration
+ddr_genes <- c("UNG", "SMUG1", "MBD4", "TDG", "OGG1", "MUTYH", "NTHL1", "MPG", "NEIL1", "NEIL2", "NEIL3", "HMGB1", "APEX1", "APEX2", "LIG3", "XRCC1", "PNKP", "APLF", "PARP1", "PARP2", "PARP3", "MGMT", "ALKBH2", "ALKBH3", "TDP1", "TDP2", "MSH2", "MSH3", "MSH6", "MLH1", "PMS2", "MSH4", "MSH5", "MLH3", "PMS1", "PMS2P3", "XPC", "RAD23B", "CETN2", "RAD23A", "XPA", "DDB1", "DDB2", "RPA1", "RPA2", "RPA3", "ERCC3", "ERCC2", "GTF2H1", "GTF2H2", "GTF2H3", "GTF2H4", "GTF2H5", "CDK7", "CCNH", "MNAT1", "ERCC5", "ERCC1", "ERCC4", "LIG1", "RBX1", "CUL4A", "CUL4B", "ERCC8", "ERCC6", "UVSSA", "XAB2", "MMS19", "RAD51", "RAD51B", "RAD51D", "DMC1", "XRCC2", "XRCC3", "RAD52", "RAD54L", "RAD54B", "BRCA1", "SHFM1", "RAD50", "MRE11A", "NBN", "RBBP8", "MUS81", "EME1", "EME2", "SLX1A", "SLX1B", "GEN1", "BARD1", "BABAM1", "FAM175A", "BRE", "UIMC1", "BRCC3", "SYCP3", "FANCA", "FANCB", "FANCC", "BRCA2", "FANCD2", "FANCE", "FANCF", "FANCG", "FANCI", "BRIP1", "FANCL", "FANCM", "PALB2", "RAD51C", "SLX4", "C1orf86", "C19orf40", "APITD1", "WDR48", "USP1", "C17orf70", "HES1", "RMI1", "RMI2", "TOP3A", "UBE2T", "XRCC6", "XRCC5", "PRKDC", "LIG4", "XRCC4", "DCLRE1C", "NHEJ1", "DNTT", "NUDT1", "DUT", "RRM2B", "POLB", "POLG", "POLD1", "POLE", "PCNA", "REV3L", "MAD2L2", "REV1", "POLH", "POLI", "POLQ", "POLK", "POLL", "POLM", "POLN", "FEN1", "FAN1", "TREX1", "TREX2", "EXO1", "APTX", "SPO11", "ENDOV", "UBE2A", "UBE2B", "RAD18", "SHPRH", "HLTF", "RNF168", "SPRTN", "RNF8", "RNF4", "UBE2V2", "UBE2N", "H2AFX", "CHAF1A", "SETMAR", "BLM", "WRN", "RECQL4", "ATM", "MPLKIP", "DCLRE1A", "DCLRE1B", "RPA4", "PRPF19", "RECQL", "RECQL5", "HELQ", "RDM1", "NABP2", "RFC1", "RFC2", "RFC3", "RFC4", "RFC5", "ATR", "ATRIP", "MDC1", "RAD1", "RAD9A", "HUS1", "RAD17", "CHEK1", "CHEK2", "TP53", "TP53BP1", "RIF1", "TOPBP1", "CLK2", "PER1")
+
+# Filtering of variants based on DDR genes using SYMBOL 
+fixed_af_filt_kgen_ddr.df <- tibble::rownames_to_column(fixed_af_filt_kgen_ddr.df, var = "rowname")
+ddr_only.df <- fixed_af_filt_kgen_ddr.df %>%
+  filter(fixed_af_filt_kgen_ddr.df$SYMBOL %in% ddr_genes)
+ddr_only.df <- tibble::column_to_rownames(ddr_only.df, var = "rowname")
+
+removed_variant.df <- fixed_af_filt_kgen_ddr.df %>%
+  filter(!fixed_af_filt_kgen_ddr.df$SYMBOL %in% ddr_genes)
+
+# Check output dataframe
+dim(ddr_only.df)
+class(ddr_only.df)
+ddr_only.df[1:20,1:10]
+class(ddr_only.df$SYMBOL)
+unique(ddr_only.df$SYMBOL)
+unique(removed_variant.df$SYMBOL)
+
+```
+
+# syncronise_ddr_variants_and_genotype_data_lof 
+
+```{r syncronise_ddr_variants_and_genotype_data_lof}
+
+# Isolate relavent rows from genotype matrix
+ddr_only.mx <- gt_af_filt_kgen_ddr.mx[rownames(ddr_only.df),]
+
+# Compare filtered fixed column dataframe and genotype matrix
+ddr_only.df[1:20,1:5]
+ddr_only.mx[1:20,1:2]
+
+# Check rowmnames are same 
+sum(rownames(ddr_only.mx) != rownames(ddr_only.df)) # should be 0
+
+# Clean up
+rm(fixed_af_filt_kgen_ddr.df, gt_af_filt_kgen_ddr.mx, removed_variant.df, ddr_genes)
+
+```
+
+# variant_filtering
+
+Exclude selected variants assumed non-deleterious based on VEP consequences:  
+1) synonymous  
+2) intron variant  
+3) upstream gene variant  
+4) downstream gene variant  
+5) intergenic variant  
+6) 3' UTR variant 
+7) 5' UTR variant  
+  
+3' and 5' UTR variants were filtered to allow screening of individuals from AFR sub-populations - high numbers of variants (including insertion / deletions)  
+were observed in these variants - may have consequences on gene expression, although not considered for this assessment  
+
+```{r variant_filtering}
+
+# Filtration based on consequence
+ddr_only.df <- tibble::rownames_to_column(ddr_only.df, var = "rowname")
+var_ddr_only.df <- ddr_only.df %>% 
+  filter(!grepl("synonymous_variant",Consequence)) %>%
+  filter(!grepl("intron_variant",Consequence)) %>%
+  filter(!grepl("upstream_gene_variant",Consequence)) %>%
+  filter(!grepl("downstream_gene_variant",Consequence)) %>%
+  filter(!grepl("intergenic_variant",Consequence)) %>%
+  filter(!grepl("3_prime_UTR_variant",Consequence)) %>%
+  filter(!grepl("5_prime_UTR_variant",Consequence))
+var_ddr_only.df <- tibble::column_to_rownames(var_ddr_only.df, var = "rowname")
+
+# Check removed variants
+removed_variant.df <- ddr_only.df %>% 
+  filter(grepl("synonymous_variant",Consequence) |
+           grepl("intron_variant",Consequence) |
+           grepl("upstream_gene_variant",Consequence) |
+           grepl("downstream_gene_variant",Consequence) |
+           grepl("intergenic_variant",Consequence) |
+           grepl("3_prime_UTR_variant",Consequence) |
+           grepl("5_prime_UTR_variant",Consequence))
+
+unique(removed_variant.df$Consequence)
+
+# Check output dataframe
+dim(var_ddr_only.df)
+var_ddr_only.df[1:20,1:10]
+var_ddr_only.df$Consequence[1:20]
+unique(var_ddr_only.df$Consequence)
+
+```
+
+# syncronise_filtered_variants_and_genotype_data_lof 
+
+```{r syncronise_filtered_variants_and_genotype_data_lof}
+
+# Isolate relavent rows from genotype matrix
+var_ddr_only.mx <- ddr_only.mx[rownames(var_ddr_only.df),]
+
+# Compare filtered fixed column dataframe and genotype matrix
+var_ddr_only.df[1:20,1:5]
+var_ddr_only.mx[1:20,1:2]
+
+# Check rowmnames are same 
+sum(rownames(var_ddr_only.mx) != rownames(var_ddr_only.df)) # should be 0
+
+# Clean up
+rm(ddr_only.df, ddr_only.mx, removed_variant.df)
+
+```
+
+# recode_genotypes_to_additive_numeric
+
+0,1,2 for REF-REF, REF-ALT and ALT-ALT respectively  
+Loosing phasing and hemizygous information  
+
+```{r recode_genotypes_to_additive_numeric}
+
+# Prepare matrix of NA-s
+gt_add.mx <- matrix(NA,
+                    nrow=nrow(var_ddr_only.mx),
+                    ncol=ncol(var_ddr_only.mx))
+
+colnames(gt_add.mx) <- colnames(var_ddr_only.mx)
+rownames(gt_add.mx) <- rownames(var_ddr_only.mx)
+
+dim(gt_add.mx)
+gt_add.mx[1:5,1:5]
+
+# explore the source matrix
+var_ddr_only.mx[1:5,1:5]
+# summary(as.factor(var_ddr_only.mx)) # long run time > 12 hours
+sum(is.na(var_ddr_only.mx))
+
+# populate the new matrix
+0 -> gt_add.mx[ var_ddr_only.mx == "0"]
+0 -> gt_add.mx[ var_ddr_only.mx == "0|0"]
+1 -> gt_add.mx[ var_ddr_only.mx == "1"]
+1 -> gt_add.mx[ var_ddr_only.mx == "0|1"]
+1 -> gt_add.mx[ var_ddr_only.mx == "1|0"]
+2 -> gt_add.mx[ var_ddr_only.mx == "1|1"]
+
+# check result
+dim(gt_add.mx)
+gt_add.mx[1:5,1:5]
+# summary(as.factor(gt_add.mx)) # long run time > 12 hours
+sum(is.na(gt_add.mx))
+
+# clean up
+rm(meta.df)
+
+```
+
+# count_variants_burden_per_individual  
+
+Make and keep the named vector for later use  
+
+```{r count_variants_burden_per_individual}
+
+# count
+simple_burden <- apply(gt_add.mx, 2, sum)
+names(simple_burden) <- colnames(gt_add.mx)
+
+# explore
+simple_burden[1:5]
+sum(is.na(simple_burden)) # sanity check
+table(simple_burden)
+hist(simple_burden)
+which(simple_burden == 0) # 0 alleles - 1 subject
+which(simple_burden == 1) # 1 allele - 7 subjects
+which(simple_burden == 2) # 2 alleles - 19 subjects
+which(simple_burden == 3) # 3 alleles - 27 subjects
+which(simple_burden == 4) # 4 alleles - 101 subjects
+which(simple_burden == 5) # 5 alleles - 156 subjects
+
+# clean-up
+rm(gt_add.mx)
+
+```
+
+# function_to_explore_selected_individuals
+
+What genes are affected in selected individuals ?  
+
+```{r function_to_explore_selected_individuals}
+
+get_case_summary.udf <- function(case){
+  
+  variants <- which(var_ddr_only.mx[,case] != "0|0" & 
+                  var_ddr_only.mx[,case] != "0")
+
+  genotypes <- var_ddr_only.mx[variants,case]
+
+  summary.df <- cbind(var_ddr_only.df[variants,c("SYMBOL", "CHROM", "POS", "REF", "ALT", "Consequence", "IMPACT", "VARIANT_CLASS", "SIFT", "PolyPhen", "CADD_PHRED", "CLIN_SIG")],
+                      genotypes)
+  summary.df
+
+}
+
+```
+
+# explore_selected_individuals
+
+Look at what genes are affected in selected individuals
+
+### NA19024 - LWK (AFR) - Female
+
+```{r NA19024}
+
+get_case_summary.udf("NA19024")
+
+```
+
+### NA19035 - LWK (AFR) - Male
+
+```{r NA19035}
+
+get_case_summary.udf("NA19035")
+
+```
+
+### NA19310 - LWK (AFR) - Female # Use
+
+```{r NA19310}
+
+get_case_summary.udf("NA19310")
+
+```
+
+### NA19315 - LWK (AFR) - Female # Use
+
+```{r NA19315}
+
+get_case_summary.udf("NA19315")
+
+```
+
+### NA18504 - YRI (AFR) - Male # Use
+
+```{r NA18504}
+
+get_case_summary.udf("NA18504")
+
+```
+
+### NA18853 - YRI (AFR) - Male
+
+```{r NA18853}
+
+get_case_summary.udf("NA18853")
+
+```
+
+### NA18909 - YRI (AFR) - Female
+
+```{r NA18909}
+
+get_case_summary.udf("NA18909")
+
+```
+
+### NA19712 - ASW (AFR) - Female
+
+```{r NA19712}
+
+get_case_summary.udf("NA19712")
+
+```
+
+### NA19835 - ASW (AFR) - Female # Use
+
+```{r NA19835}
+
+get_case_summary.udf("NA19835")
+
+```
+
+### NA19900 - ASW (AFR) - Male
+
+```{r NA19900}
+
+get_case_summary.udf("NA19900")
+
+```
+
+### NA19908 - ASW (AFR) - Male # Use
+
+```{r NA19908}
+
+get_case_summary.udf("NA19908")
+
+```
+
+### HG02462 - GWD (AFR) - Female # Use
+
+```{r HG02462}
+
+get_case_summary.udf("HG02462")
+
+```
+
+### HG02611 - GWD (AFR) - Female
+
+```{r HG02611}
+
+get_case_summary.udf("HG02611")
+
+```
+
+### HG02944 - ESN (AFR) - Male
+
+```{r HG02944}
+
+get_case_summary.udf("HG02944")
+
+```
+
+### HG02952 - ESN (AFR) - Female # Use
+
+```{r HG02952}
+
+get_case_summary.udf("HG02952")
+
+```
+
+### HG02968 - ESN (AFR) - Male
+
+```{r HG02968}
+
+get_case_summary.udf("HG02968")
+
+```
+
+### HG02981 - ESN (AFR) - Male # Use
+
+```{r HG02981}
+
+get_case_summary.udf("HG02981")
+
+```
+
+### HG03052 - MSL (AFR) - Female
+
+```{r HG03052}
+
+get_case_summary.udf("HG03052")
+
+```
+
+### HG03397 - MSL (AFR) - Male # Use
+
+```{r HG03397}
+
+get_case_summary.udf("HG03397")
+
+```
+
+### HG03437 - MSL (AFR) - Female
+
+```{r HG03437}
+
+get_case_summary.udf("HG03437")
+
+```
+
+### HG00610 - CHS (EAS) - Male
+
+```{r HG00610}
+
+get_case_summary.udf("HG00610")
+
+```
+
+### HG00656 - CHS (EAS) - Male
+
+```{r HG00656}
+
+get_case_summary.udf("HG00656")
+
+```
+
+### HG00698 - CHS (EAS) - Male # Use
+
+```{r HG00698}
+
+get_case_summary.udf("HG00698")
+
+```
+
+### HG01070 - PUR (AMR) - Female
+
+```{r HG01070}
+
+get_case_summary.udf("HG01070")
+
+```
+
+### HG01055 - PUR (AMR) - Female # Use
+
+```{r HG01055}
+
+get_case_summary.udf("HG01055")
+
+```
+
+### HG02067 - KHV (EAS) - Male # Use
+
+```{r HG02067}
+
+get_case_summary.udf("HG02067")
+
+```
+
+### HG01846 - KHV (EAS) - Male
+
+```{r HG01846}
+
+get_case_summary.udf("HG01846")
+
+```
+
+### HG02050 - KHV (EAS) - Male
+
+```{r HG02050}
+
+get_case_summary.udf("HG02050")
+
+```
+
+### HG01848 - KHV (EAS) - Female
+
+```{r HG01848}
+
+get_case_summary.udf("HG01848")
+
+```
+
+### HG01870 - KHV (EAS) - Female
+
+```{r HG01870}
+
+get_case_summary.udf("HG01870")
+
+```
+
+### HG02035 - KHV (EAS) - Male
+
+```{r HG02035}
+
+get_case_summary.udf("HG02035")
+
+```
+
+### HG02070 - KHV (EAS) - Male
+
+```{r HG02070}
+
+get_case_summary.udf("HG02070")
+
+```
+
+### HG01669 - IBS (EUR) - Male # Use
+
+```{r HG01669}
+
+get_case_summary.udf("HG01669")
+
+```
+
+### HG01771 - IBS (EUR) - Male
+
+```{r HG01771}
+
+get_case_summary.udf("HG01771")
+
+```
+
+### HG02230 - IBS (EUR) - Female
+
+```{r HG02230}
+
+get_case_summary.udf("HG02230")
+
+```
+
+### HG02351 - CDX (EAS) - Male
+
+```{r HG02351}
+
+get_case_summary.udf("HG02351")
+
+```
+
+### HG00956 - CDX (EAS) - Female # Use
+
+```{r HG00956}
+
+get_case_summary.udf("HG00956")
+
+```
+
+### HG02154 - CDX (EAS) - Female
+
+```{r HG02154}
+
+get_case_summary.udf("HG02154")
+
+```
+
+### NA20847 - GIH (SAS) - Female
+
+```{r NA20847}
+
+get_case_summary.udf("NA20847")
+
+```
+
+### NA20904 - GIH (SAS) - Male # Use
+
+```{r NA20904}
+
+get_case_summary.udf("NA20904")
+
+```
+
+### NA20875 - GIH (SAS) - Female
+
+```{r NA20875}
+
+get_case_summary.udf("NA20875")
+
+```
+
+### NA21142 - CHS (EAS) - Female # Use
+
+```{r NA21142}
+
+get_case_summary.udf("NA21142")
+
+```
+
+### HG00185 - FIN (EUR) - Male # Use
+
+```{r HG00185}
+
+get_case_summary.udf("HG00185")
+
+```
+
+### HG00353 - FIN (EUR) - Female
+
+```{r HG00353}
+
+get_case_summary.udf("HG00353")
+
+```
+
+### HG00366 - FIN (EUR) - Male
+
+```{r HG00366}
+
+get_case_summary.udf("HG00366")
+
+```
+
+### HG00350 - FIN (EUR) - Female # Use ?
+
+```{r HG00350}
+
+get_case_summary.udf("HG00350")
+
+```
+
+### HG00351 - FIN (EUR) - Male # Use
+
+```{r HG00351}
+
+get_case_summary.udf("HG00351")
+
+```
+
+### HG00267 - FIN (EUR) - Male # Use
+
+```{r HG00267}
+
+get_case_summary.udf("HG00267")
+
+```
+
+### HG00278 - FIN (EUR) - Male
+
+```{r HG00278}
+
+get_case_summary.udf("HG00278")
+
+```
+
+### HG00174 - FIN (EUR) - Female
+
+```{r HG00174}
+
+get_case_summary.udf("HG00174")
+
+```
+
+### HG00179 - FIN (EUR) - Female # Use
+
+```{r HG00179}
+
+get_case_summary.udf("HG00179")
+
+```
+
+# clean_up
+
+```{r clean_up}
+
+rm(get_case_summary.udf, ddr_only.df, ddr_only.mx)
+
+```
+
+
+# save_results
+
+```{r save_results}
+
+save.image(paste(output_folder, "r01_kgen_ddr_simple_burden.RData", sep="/"))
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```
