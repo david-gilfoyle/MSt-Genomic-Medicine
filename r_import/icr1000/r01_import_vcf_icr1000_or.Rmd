@@ -1,0 +1,133 @@
+---
+title: "r01_import_vcf_icr1000_or"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+Started: David Gilfoyle 30 Apr 2018  
+Updated: David Gilfoyle 16 May 2018
+
+---
+
+# Summary
+
+Import VEP annotated VCF file using vcfR (not yet parsed VEP)  
+Dataset: ICR1000  
+Gene Selection: Olfactory Receptor Genes  
+
+# start_section
+
+```{r start_section}
+
+Sys.time()
+rm(list=ls())
+graphics.off()
+
+# Make sure all the libraries installed 
+#install.packages("vcfR")
+
+# Set base folder
+library(knitr)
+
+base_folder="/home/ec2-user/scripts/r_import/icr1000"
+input_folder="/home/ec2-user/results/annotated/icr1000"
+output_folder="/home/ec2-user/results/r_import/icr1000"
+
+getwd()
+setwd(base_folder)
+getwd()
+
+opts_knit$set(root.dir = base_folder)
+
+```
+
+# import_vcf_using_vcfR
+
+```{r import_vcf_using_vcfR}
+
+# Loading required libraries (should be preinstalled)
+library(vcfR) # the main work-horse
+library(stringr) # for word
+library(tidyr) # for separate
+  
+# read vcf to vcfR object
+vcf_file <- paste(input_folder,"s01_or_icr1000_vep_annotated.vcf",sep="/")
+vcfr <- read.vcfR(vcf_file)
+class(vcfr)
+dim(vcfr)
+str(vcfr)
+summary(vcfr)
+
+# get data from header and fixed columns
+meta_fix <- vcfR2tidy(vcfr, info_only=T)
+
+# data frame with meta-information from vcf header
+meta.df <- meta_fix$meta
+
+# data frame with fixed columns (including parsed INFO, convert tibble to data-frame)
+fixed_icr1000_or.df <- as.data.frame(meta_fix$fix)
+dim(fixed_icr1000_or.df)
+fixed_icr1000_or.df[1:20,1:10]
+
+# extract genotypes matrix 
+gt_icr1000_or.mx <- extract.gt(vcfr) # original numeric codes: 0/1, 1/1 etc
+NA -> gt_icr1000_or.mx[gt_icr1000_or.mx == "."] # assign NA to '.'
+dim(gt_icr1000_or.mx)
+gt_icr1000_or.mx[1:5,1:3]
+
+# extract GQ matrix 
+gq_icr1000_or.mx <- extract.gt(vcfr, element = "GQ", as.numeric=T)
+dim(gq_icr1000_or.mx)
+gq_icr1000_or.mx[1:5,1:3]
+
+# Clean-up
+rm(vcfr, meta_fix, vcf_file)
+
+```
+
+# extract_VEP_annotations
+
+```{r extract_VEP_annotations}
+
+# Get list of VEP annptations
+vep_fields <- as.character(meta.df[meta.df$ID=="CSQ","Description"])
+vep_fields <- word(vep_fields,-1) # requires stringr
+vep_fields <- strsplit(vep_fields, "\\|")
+
+# Note \\ before |: this is because it is interpreted as regex (alternatively use fixed=T)
+
+vep_fields <- unlist(vep_fields)
+    
+# Use separate to split ANN/CSQ column
+fixed_icr1000_or.df <- separate_(fixed_icr1000_or.df, "CSQ", vep_fields, sep="\\|") 
+
+# Note \\ in sep: this is because it is interpreted as regex
+# Note _ at the end of separate_ : this is to accept variable instead of bare value for col name
+    
+# recode blanks as NAs
+NA -> fixed_icr1000_or.df[fixed_icr1000_or.df == ""] 
+dim(fixed_icr1000_or.df)
+fixed_icr1000_or.df[1:20,80:85]
+# Clean-up
+rm(vep_fields)
+
+```
+
+# save_results
+
+```{r save_results}
+
+save.image(paste(output_folder, "r01_import_vcf_icr1000_or.RData", sep="/"))
+
+```
+
+# final_section
+
+```{r final_section}
+
+ls()
+sessionInfo()
+Sys.time()
+
+```
